@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onItemTapped,
           backgroundColor: Colors.transparent,
-          indicatorColor: const Color(0xFF2563EB).withOpacity(0.08),
+          indicatorColor: const Color(0xFF2563EB).withAlpha((0.08 * 255).toInt()),
           elevation: 0,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           destinations: const [
@@ -334,7 +334,7 @@ class _HomeTab extends StatelessWidget {
             children: [
               ...featuredMaterials.expand((m) => m.tags).toSet().map((tag) => Chip(
                     label: Text(tag),
-                    backgroundColor: const Color(0xFF2563EB).withOpacity(0.15),
+                    backgroundColor: const Color(0xFF2563EB).withAlpha((0.15 * 255).toInt()),
                     labelStyle: const TextStyle(color: Color(0xFF2563EB)),
                   )),
             ],
