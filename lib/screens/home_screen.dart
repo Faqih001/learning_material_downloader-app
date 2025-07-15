@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onItemTapped,
           backgroundColor: Colors.transparent,
-          indicatorColor: const Color(0xFF2563EB).withAlpha((0.08 * 255).toInt()),
+          indicatorColor: const Color(0xFF2563EB).withValues(alpha: 0.08),
           elevation: 0,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
           destinations: const [
