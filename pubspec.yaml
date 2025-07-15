@@ -45,6 +45,7 @@ dependencies:
   lottie: any
   smooth_page_indicator: any
   flutter_dotenv: ^5.2.1
+  flutter_ai_toolkit: ^0.9.1
 
 dev_dependencies:
   flutter_test:
