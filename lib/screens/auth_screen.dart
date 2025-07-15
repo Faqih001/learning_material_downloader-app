@@ -90,7 +90,11 @@ class _AuthScreenState extends State<AuthScreen> {
 
   String? _validateEmail(String? v) {
     if (v == null || v.isEmpty) return 'Enter your email';
-    final emailReg = RegExp(r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,4}');
+    // Accepts emails ending with @gmail.com, @ac.ke, @co.ke, and other valid domains
+    final emailReg = RegExp(
+      r'^[\w\-.]+@([\w\-]+\.)+(com|ac\.ke|co\.ke|net|org|edu|gov|info|io|[a-z]{2,})$',
+      caseSensitive: false,
+    );
     if (!emailReg.hasMatch(v)) return 'Enter a valid email';
     return null;
   }
