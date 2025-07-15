@@ -8,6 +8,7 @@ import 'screens/upload_screen.dart';
 import 'screens/chatbot_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(const LearningDownloaderApp());
@@ -22,8 +23,9 @@ class LearningDownloaderApp extends StatelessWidget {
       title: 'Learning Downloader',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: '/onboarding',
+      initialRoute: '/splash',
       routes: {
+        '/splash': (context) => const SplashScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/auth': (context) => const AuthScreen(),
         '/home': (context) => const HomeScreen(),
