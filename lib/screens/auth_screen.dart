@@ -49,19 +49,41 @@ class _AuthScreenState extends State<AuthScreen> {
           _emailController.text.trim(),
           _passwordController.text,
         );
+        setState(() => _loading = false);
+        if (result == null) {
+          if (!mounted) return;
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          setState(() => _error = result);
+        }
       } else {
         result = await _authService.register(
           _nameController.text.trim(),
           _emailController.text.trim(),
           _passwordController.text,
         );
-      }
-      setState(() => _loading = false);
-      if (result == null) {
-        if (!mounted) return;
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        setState(() => _error = result);
+        setState(() => _loading = false);
+        if (result == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Registration successful! Please login.'),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              duration: Duration(seconds: 2),
+            ),
+          );
+          await Future.delayed(const Duration(seconds: 2));
+          if (!mounted) return;
+          setState(() {
+            isLogin = true;
+            _error = null;
+            _passwordController.clear();
+            _confirmPasswordController.clear();
+          });
+        } else {
+          setState(() => _error = result);
+        }
       }
     }
   }
@@ -75,7 +97,9 @@ class _AuthScreenState extends State<AuthScreen> {
 
   String? _validatePassword(String? v) {
     if (v == null || v.isEmpty) return 'Enter your password';
-    final passwordReg = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}');
+    final passwordReg = RegExp(
+      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}',
+    );
     if (!passwordReg.hasMatch(v)) {
       return 'Min 8 chars, upper, lower, digit, special char.';
     }
@@ -110,7 +134,9 @@ class _AuthScreenState extends State<AuthScreen> {
                     children: [
                       Text(
                         isLogin ? 'Login' : 'Register',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.headlineSmall?.copyWith(
                           color: const Color(0xFF2563EB),
                           fontWeight: FontWeight.bold,
                         ),
@@ -123,7 +149,11 @@ class _AuthScreenState extends State<AuthScreen> {
                             labelText: 'Name',
                             prefixIcon: Icon(Icons.person),
                           ),
-                          validator: (v) => v == null || v.isEmpty ? 'Enter your name' : null,
+                          validator:
+                              (v) =>
+                                  v == null || v.isEmpty
+                                      ? 'Enter your name'
+                                      : null,
                         ),
                       if (!isLogin) const SizedBox(height: 16),
                       TextFormField(
@@ -142,12 +172,22 @@ class _AuthScreenState extends State<AuthScreen> {
                           labelText: 'Password',
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
                             onPressed: _togglePassword,
                           ),
                         ),
                         obscureText: _obscurePassword,
-                        validator: isLogin ? (v) => v == null || v.isEmpty ? 'Enter your password' : null : _validatePassword,
+                        validator:
+                            isLogin
+                                ? (v) =>
+                                    v == null || v.isEmpty
+                                        ? 'Enter your password'
+                                        : null
+                                : _validatePassword,
                       ),
                       if (!isLogin)
                         Padding(
@@ -158,12 +198,20 @@ class _AuthScreenState extends State<AuthScreen> {
                               labelText: 'Confirm Password',
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
-                                icon: Icon(_obscureConfirm ? Icons.visibility : Icons.visibility_off),
+                                icon: Icon(
+                                  _obscureConfirm
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
                                 onPressed: _toggleConfirm,
                               ),
                             ),
                             obscureText: _obscureConfirm,
-                            validator: (v) => v != _passwordController.text ? 'Passwords do not match' : null,
+                            validator:
+                                (v) =>
+                                    v != _passwordController.text
+                                        ? 'Passwords do not match'
+                                        : null,
                           ),
                         ),
                       if (_error != null)
@@ -197,7 +245,9 @@ class _AuthScreenState extends State<AuthScreen> {
                       TextButton(
                         onPressed: _loading ? null : _toggleMode,
                         child: Text(
-                          isLogin ? "Don't have an account? Register" : 'Already have an account? Login',
+                          isLogin
+                              ? "Don't have an account? Register"
+                              : 'Already have an account? Login',
                         ),
                       ),
                     ],

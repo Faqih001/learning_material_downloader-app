@@ -11,14 +11,13 @@ class AuthService {
       return 'User already registered';
     }
     // Password validation: min 8 chars, at least 1 uppercase, 1 lowercase, 1 digit, 1 special char
-    final passwordReg = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}');
+    final passwordReg = RegExp(
+      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}',
+    );
     if (!passwordReg.hasMatch(password)) {
       return 'Password must be at least 8 characters, include upper, lower, digit, and special character.';
     }
-    users[email] = {
-      'name': name,
-      'password': password,
-    };
+    users[email] = {'name': name, 'password': password};
     await prefs.setString('users', jsonEncode(users));
     await prefs.setString('current_user', email);
     await prefs.setBool('is_logged_in', true);
@@ -62,9 +61,6 @@ class AuthService {
     final usersJson = prefs.getString('users') ?? '{}';
     final users = Map<String, dynamic>.from(jsonDecode(usersJson));
     final user = users[email];
-    return {
-      'name': user?['name'],
-      'email': email,
-    };
+    return {'name': user?['name'], 'email': email};
   }
 }

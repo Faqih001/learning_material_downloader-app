@@ -42,7 +42,10 @@ class MapScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text('Nearby Libraries', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              child: Text(
+                'Nearby Libraries',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
             ),
           ),
           Expanded(
@@ -50,18 +53,22 @@ class MapScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: libraries.length,
               separatorBuilder: (_, __) => const Divider(),
-              itemBuilder: (context, i) => ListTile(
-                leading: const Icon(Icons.location_on, color: Color(0xFF2563EB)),
-                title: Text(libraries[i]['name']!),
-                subtitle: Text('Distance: ${libraries[i]['distance']}'),
-                trailing: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
+              itemBuilder:
+                  (context, i) => ListTile(
+                    leading: const Icon(
+                      Icons.location_on,
+                      color: Color(0xFF2563EB),
+                    ),
+                    title: Text(libraries[i]['name']!),
+                    subtitle: Text('Distance: ${libraries[i]['distance']}'),
+                    trailing: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                      ),
+                      child: const Text('View'),
+                    ),
                   ),
-                  child: const Text('View'),
-                ),
-              ),
             ),
           ),
         ],

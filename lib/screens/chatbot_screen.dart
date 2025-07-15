@@ -22,7 +22,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
     await Future.delayed(const Duration(seconds: 1));
     setState(() {
-      _messages.add({'role': 'ai', 'text': 'This is a mock AI response to: "$text"'});
+      _messages.add({
+        'role': 'ai',
+        'text': 'This is a mock AI response to: "$text"',
+      });
       _sending = false;
     });
   }
@@ -44,12 +47,17 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 final msg = _messages[i];
                 final isUser = msg['role'] == 'user';
                 return Align(
-                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment:
+                      isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
-                      color: isUser ? const Color(0xFF2563EB) : Colors.grey[200],
+                      color:
+                          isUser ? const Color(0xFF2563EB) : Colors.grey[200],
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(

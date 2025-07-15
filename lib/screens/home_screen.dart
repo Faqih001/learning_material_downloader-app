@@ -45,10 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -202,12 +199,14 @@ class _HomeTab extends StatelessWidget {
     ];
 
     Widget sectionTitle(String title) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Text(title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  )),
-        );
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Text(
+        title,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+      ),
+    );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -239,11 +238,12 @@ class _HomeTab extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: topSubjects.length,
               separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, i) => Chip(
-                label: Text(topSubjects[i]),
-                backgroundColor: const Color(0xFF60A5FA),
-                labelStyle: const TextStyle(color: Colors.white),
-              ),
+              itemBuilder:
+                  (context, i) => Chip(
+                    label: Text(topSubjects[i]),
+                    backgroundColor: const Color(0xFF60A5FA),
+                    labelStyle: const TextStyle(color: Colors.white),
+                  ),
             ),
           ),
           sectionTitle('Featured Materials'),
@@ -261,14 +261,19 @@ class _HomeTab extends StatelessWidget {
                 childAspectRatio: 0.85,
               ),
               itemCount: featuredMaterials.length,
-              itemBuilder: (context, i) => MaterialCard(
-                material: featuredMaterials[i],
-                onDownload: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Downloading ${featuredMaterials[i].title}...')),
-                  );
-                },
-              ),
+              itemBuilder:
+                  (context, i) => MaterialCard(
+                    material: featuredMaterials[i],
+                    onDownload: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Downloading ${featuredMaterials[i].title}...',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
             ),
           ),
           sectionTitle('Most Downloaded'),
@@ -277,10 +282,11 @@ class _HomeTab extends StatelessWidget {
             duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
             child: Column(
-              children: featuredMaterials
-                  .where((m) => m.downloads > 700)
-                  .map((m) => MaterialCard(material: m, onDownload: () {}))
-                  .toList(),
+              children:
+                  featuredMaterials
+                      .where((m) => m.downloads > 700)
+                      .map((m) => MaterialCard(material: m, onDownload: () {}))
+                      .toList(),
             ),
           ),
           sectionTitle('Recently Added'),
@@ -289,10 +295,11 @@ class _HomeTab extends StatelessWidget {
             duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
             child: Column(
-              children: featuredMaterials.reversed
-                  .take(3)
-                  .map((m) => MaterialCard(material: m, onDownload: () {}))
-                  .toList(),
+              children:
+                  featuredMaterials.reversed
+                      .take(3)
+                      .map((m) => MaterialCard(material: m, onDownload: () {}))
+                      .toList(),
             ),
           ),
           sectionTitle('Recommended For You'),
@@ -301,10 +308,11 @@ class _HomeTab extends StatelessWidget {
             duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
             child: Column(
-              children: featuredMaterials
-                  .where((m) => m.rating > 4.5)
-                  .map((m) => MaterialCard(material: m, onDownload: () {}))
-                  .toList(),
+              children:
+                  featuredMaterials
+                      .where((m) => m.rating > 4.5)
+                      .map((m) => MaterialCard(material: m, onDownload: () {}))
+                      .toList(),
             ),
           ),
           sectionTitle('By Subject'),
@@ -313,17 +321,18 @@ class _HomeTab extends StatelessWidget {
             height: 180,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              children: topSubjects.map((subject) {
-                final mat = featuredMaterials.firstWhere(
-                  (m) => m.subject == subject,
-                  orElse: () => featuredMaterials[0],
-                );
-                return Container(
-                  width: 220,
-                  margin: const EdgeInsets.only(right: 12),
-                  child: MaterialCard(material: mat, onDownload: () {}),
-                );
-              }).toList(),
+              children:
+                  topSubjects.map((subject) {
+                    final mat = featuredMaterials.firstWhere(
+                      (m) => m.subject == subject,
+                      orElse: () => featuredMaterials[0],
+                    );
+                    return Container(
+                      width: 220,
+                      margin: const EdgeInsets.only(right: 12),
+                      child: MaterialCard(material: mat, onDownload: () {}),
+                    );
+                  }).toList(),
             ),
           ),
           sectionTitle('Popular Tags'),
@@ -332,11 +341,18 @@ class _HomeTab extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              ...featuredMaterials.expand((m) => m.tags).toSet().map((tag) => Chip(
-                    label: Text(tag),
-                    backgroundColor: const Color(0xFF2563EB).withAlpha((0.15 * 255).toInt()),
-                    labelStyle: const TextStyle(color: Color(0xFF2563EB)),
-                  )),
+              ...featuredMaterials
+                  .expand((m) => m.tags)
+                  .toSet()
+                  .map(
+                    (tag) => Chip(
+                      label: Text(tag),
+                      backgroundColor: const Color(
+                        0xFF2563EB,
+                      ).withAlpha((0.15 * 255).toInt()),
+                      labelStyle: const TextStyle(color: Color(0xFF2563EB)),
+                    ),
+                  ),
             ],
           ),
         ],

@@ -69,7 +69,9 @@ class _UploadScreenState extends State<UploadScreen> {
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(10),
@@ -90,18 +92,25 @@ class _UploadScreenState extends State<UploadScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            Text('Select Subject', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'Select Subject',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
               value: _subject,
-              items: _subjects
-                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                  .toList(),
-              onChanged: _uploading ? null : (v) => setState(() => _subject = v),
+              items:
+                  _subjects
+                      .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                      .toList(),
+              onChanged:
+                  _uploading ? null : (v) => setState(() => _subject = v),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
               ),
             ),
             const SizedBox(height: 32),
@@ -116,14 +125,17 @@ class _UploadScreenState extends State<UploadScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: _uploading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Upload'),
+                child:
+                    _uploading
+                        ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        : const Text('Upload'),
               ),
             ),
             if (_uploadStatus != null)
@@ -132,9 +144,10 @@ class _UploadScreenState extends State<UploadScreen> {
                 child: Text(
                   _uploadStatus!,
                   style: TextStyle(
-                    color: _uploadStatus == 'Upload successful!'
-                        ? Colors.green
-                        : Colors.red,
+                    color:
+                        _uploadStatus == 'Upload successful!'
+                            ? Colors.green
+                            : Colors.red,
                   ),
                 ),
               ),
