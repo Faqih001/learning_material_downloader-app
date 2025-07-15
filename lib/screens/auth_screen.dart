@@ -58,6 +58,7 @@ class _AuthScreenState extends State<AuthScreen> {
       }
       setState(() => _loading = false);
       if (result == null) {
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         setState(() => _error = result);
@@ -67,14 +68,14 @@ class _AuthScreenState extends State<AuthScreen> {
 
   String? _validateEmail(String? v) {
     if (v == null || v.isEmpty) return 'Enter your email';
-    final emailReg = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}[0m');
+    final emailReg = RegExp(r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,4}');
     if (!emailReg.hasMatch(v)) return 'Enter a valid email';
     return null;
   }
 
   String? _validatePassword(String? v) {
     if (v == null || v.isEmpty) return 'Enter your password';
-    final passwordReg = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}[0m');
+    final passwordReg = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}');
     if (!passwordReg.hasMatch(v)) {
       return 'Min 8 chars, upper, lower, digit, special char.';
     }
