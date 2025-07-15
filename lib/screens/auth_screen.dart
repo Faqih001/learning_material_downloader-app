@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -18,6 +19,8 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   String? _error;
+  bool _loading = false;
+  final AuthService _authService = AuthService();
 
   void _toggleMode() {
     setState(() {
@@ -34,12 +37,48 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _obscureConfirm = !_obscureConfirm);
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_formKey.currentState?.validate() ?? false) {
-      setState(() => _error = null);
-      // Simulate login/register
-      Navigator.pushReplacementNamed(context, '/home');
+      setState(() {
+        _error = null;
+        _loading = true;
+      });
+      String? result;
+      if (isLogin) {
+        result = await _authService.login(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+      } else {
+        result = await _authService.register(
+          _nameController.text.trim(),
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+      }
+      setState(() => _loading = false);
+      if (result == null) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        setState(() => _error = result);
+      }
     }
+  }
+
+  String? _validateEmail(String? v) {
+    if (v == null || v.isEmpty) return 'Enter your email';
+    final emailReg = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}[0m');
+    if (!emailReg.hasMatch(v)) return 'Enter a valid email';
+    return null;
+  }
+
+  String? _validatePassword(String? v) {
+    if (v == null || v.isEmpty) return 'Enter your password';
+    final passwordReg = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}[0m');
+    if (!passwordReg.hasMatch(v)) {
+      return 'Min 8 chars, upper, lower, digit, special char.';
+    }
+    return null;
   }
 
   @override
@@ -70,9 +109,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     children: [
                       Text(
                         isLogin ? 'Login' : 'Register',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.headlineSmall?.copyWith(
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: const Color(0xFF2563EB),
                           fontWeight: FontWeight.bold,
                         ),
@@ -85,12 +122,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             labelText: 'Name',
                             prefixIcon: Icon(Icons.person),
                           ),
-                          validator:
-                              (v) =>
-                                  v == null || v.isEmpty
-                                      ? 'Enter your name'
-                                      : null,
+                          validator: (v) => v == null || v.isEmpty ? 'Enter your name' : null,
                         ),
+                      if (!isLogin) const SizedBox(height: 16),
                       TextFormField(
                         controller: _emailController,
                         decoration: const InputDecoration(
@@ -98,11 +132,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           prefixIcon: Icon(Icons.email),
                         ),
                         keyboardType: TextInputType.emailAddress,
-                        validator:
-                            (v) =>
-                                v == null || !v.contains('@')
-                                    ? 'Enter a valid email'
-                                    : null,
+                        validator: _validateEmail,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -111,20 +141,12 @@ class _AuthScreenState extends State<AuthScreen> {
                           labelText: 'Password',
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
+                            icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
                             onPressed: _togglePassword,
                           ),
                         ),
                         obscureText: _obscurePassword,
-                        validator:
-                            (v) =>
-                                v == null || v.length < 6
-                                    ? 'Password must be at least 6 characters'
-                                    : null,
+                        validator: isLogin ? (v) => v == null || v.isEmpty ? 'Enter your password' : null : _validatePassword,
                       ),
                       if (!isLogin)
                         Padding(
@@ -135,20 +157,12 @@ class _AuthScreenState extends State<AuthScreen> {
                               labelText: 'Confirm Password',
                               prefixIcon: const Icon(Icons.lock),
                               suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscureConfirm
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                ),
+                                icon: Icon(_obscureConfirm ? Icons.visibility : Icons.visibility_off),
                                 onPressed: _toggleConfirm,
                               ),
                             ),
                             obscureText: _obscureConfirm,
-                            validator:
-                                (v) =>
-                                    v != _passwordController.text
-                                        ? 'Passwords do not match'
-                                        : null,
+                            validator: (v) => v != _passwordController.text ? 'Passwords do not match' : null,
                           ),
                         ),
                       if (_error != null)
@@ -159,11 +173,16 @@ class _AuthScreenState extends State<AuthScreen> {
                             style: const TextStyle(color: Colors.red),
                           ),
                         ),
+                      if (_loading)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: CircularProgressIndicator(),
+                        ),
                       const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _submit,
+                          onPressed: _loading ? null : _submit,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2563EB),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -175,11 +194,9 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: _toggleMode,
+                        onPressed: _loading ? null : _toggleMode,
                         child: Text(
-                          isLogin
-                              ? "Don't have an account? Register"
-                              : 'Already have an account? Login',
+                          isLogin ? "Don't have an account? Register" : 'Already have an account? Login',
                         ),
                       ),
                     ],
