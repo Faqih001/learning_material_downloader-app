@@ -10,9 +10,7 @@ class MapScreen extends StatelessWidget {
         title: const Text('Map'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body: Center(
-        child: Text('Map Screen'),
-      ),
+      body: Center(child: Text('Map Screen')),
     );
   }
 }

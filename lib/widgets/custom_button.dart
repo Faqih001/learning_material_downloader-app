@@ -21,9 +21,17 @@ class CustomButton extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: isLoading ? null : onPressed,
       icon: icon != null ? Icon(icon) : const SizedBox.shrink(),
-      label: isLoading
-          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-          : Text(label),
+      label:
+          isLoading
+              ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+              : Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: isPrimary ? const Color(0xFF2563EB) : Colors.grey[300],
         foregroundColor: isPrimary ? Colors.white : Colors.black,

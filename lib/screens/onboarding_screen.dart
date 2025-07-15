@@ -16,23 +16,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _OnboardingPage(
       icon: Icons.menu_book,
       title: 'Access Learning Materials',
-      description: 'Browse and download a variety of educational resources for your studies.',
+      description:
+          'Browse and download a variety of educational resources for your studies.',
     ),
     _OnboardingPage(
       icon: Icons.location_on,
       title: 'Find Nearby Libraries',
-      description: 'Locate libraries near you and explore their collections easily.',
+      description:
+          'Locate libraries near you and explore their collections easily.',
     ),
     _OnboardingPage(
       icon: Icons.smart_toy,
       title: 'AI Study Assistant',
-      description: 'Get help from an AI assistant to boost your learning experience.',
+      description:
+          'Get help from an AI assistant to boost your learning experience.',
     ),
   ];
 
   void _onNext() {
     if (_currentPage < _pages.length - 1) {
-      _controller.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+      _controller.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       Navigator.pushReplacementNamed(context, '/auth');
     }
@@ -61,25 +67,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: SmoothPageIndicator(
                 controller: _controller,
                 count: _pages.length,
-                effect: const WormEffect(dotColor: Colors.grey, activeDotColor: Color(0xFF2563EB)),
+                effect: const WormEffect(
+                  dotColor: Colors.grey,
+                  activeDotColor: Color(0xFF2563EB),
+                ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 8.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextButton(
-                    onPressed: _onSkip,
-                    child: const Text('Skip'),
-                  ),
+                  TextButton(onPressed: _onSkip, child: const Text('Skip')),
                   ElevatedButton(
                     onPressed: _onNext,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2563EB),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
-                    child: Text(_currentPage == _pages.length - 1 ? 'Get Started' : 'Next'),
+                    child: Text(
+                      _currentPage == _pages.length - 1
+                          ? 'Get Started'
+                          : 'Next',
+                    ),
                   ),
                 ],
               ),
@@ -95,7 +110,11 @@ class _OnboardingPage extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
-  const _OnboardingPage({required this.icon, required this.title, required this.description});
+  const _OnboardingPage({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,9 +125,18 @@ class _OnboardingPage extends StatelessWidget {
         children: [
           Icon(icon, size: 100, color: const Color(0xFF2563EB)),
           const SizedBox(height: 32),
-          Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
-          Text(description, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+          Text(
+            description,
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

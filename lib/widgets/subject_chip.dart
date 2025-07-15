@@ -4,7 +4,12 @@ class SubjectChip extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback? onTap;
-  const SubjectChip({super.key, required this.label, this.selected = false, this.onTap});
+  const SubjectChip({
+    super.key,
+    required this.label,
+    this.selected = false,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -10,9 +10,7 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Profile'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body: Center(
-        child: Text('Profile Screen'),
-      ),
+      body: Center(child: Text('Profile Screen')),
     );
   }
 }

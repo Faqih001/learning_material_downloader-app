@@ -10,9 +10,7 @@ class SearchScreen extends StatelessWidget {
         title: const Text('Search'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body: Center(
-        child: Text('Search Screen'),
-      ),
+      body: Center(child: Text('Search Screen')),
     );
   }
 }

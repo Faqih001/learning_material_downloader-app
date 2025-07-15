@@ -10,9 +10,7 @@ class UploadScreen extends StatelessWidget {
         title: const Text('Upload'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body: Center(
-        child: Text('Upload Screen'),
-      ),
+      body: Center(child: Text('Upload Screen')),
     );
   }
 }

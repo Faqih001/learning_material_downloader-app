@@ -10,9 +10,7 @@ class ChatbotScreen extends StatelessWidget {
         title: const Text('AI Chatbot'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body: Center(
-        child: Text('Chatbot Screen'),
-      ),
+      body: Center(child: Text('Chatbot Screen')),
     );
   }
 }

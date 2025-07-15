@@ -10,9 +10,7 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Home'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body: Center(
-        child: Text('Home Screen'),
-      ),
+      body: Center(child: Text('Home Screen')),
     );
   }
 }
