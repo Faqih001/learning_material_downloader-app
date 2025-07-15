@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/google_map_widget.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -22,21 +23,7 @@ class MapScreen extends StatelessWidget {
             height: 220,
             width: double.infinity,
             margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.blue[100],
-              borderRadius: BorderRadius.circular(16),
-              image: const DecorationImage(
-                image: AssetImage('assets/mock_map.png'),
-                fit: BoxFit.cover,
-                onError: null,
-              ),
-            ),
-            child: const Center(
-              child: Text(
-                'Map Placeholder',
-                style: TextStyle(fontSize: 20, color: Colors.blueGrey),
-              ),
-            ),
+            child: const GoogleMapWidget(),
           ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),

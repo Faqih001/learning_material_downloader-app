@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/gemini_api_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -11,6 +13,13 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
   bool _sending = false;
+  GeminiApiService? _geminiService;
+
+  @override
+  void initState() {
+    super.initState();
+    _geminiService = GeminiApiService();
+  }
 
   void _sendMessage() async {
     final text = _controller.text.trim();
@@ -20,12 +29,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       _controller.clear();
       _sending = true;
     });
-    await Future.delayed(const Duration(seconds: 1));
+    final aiResponse = await _geminiService!.sendMessage(text);
     setState(() {
-      _messages.add({
-        'role': 'ai',
-        'text': 'This is a mock AI response to: "$text"',
-      });
+      _messages.add({'role': 'ai', 'text': aiResponse});
       _sending = false;
     });
   }
