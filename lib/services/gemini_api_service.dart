@@ -4,7 +4,8 @@ import 'dart:convert';
 
 class GeminiApiService {
   final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
-  final String _baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+  final String _baseUrl =
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
   Future<String> sendMessage(String message) async {
     if (_apiKey.isEmpty) {
@@ -16,10 +17,10 @@ class GeminiApiService {
       'contents': [
         {
           'parts': [
-            {'text': message}
-          ]
-        }
-      ]
+            {'text': message},
+          ],
+        },
+      ],
     });
     try {
       final response = await http.post(url, headers: headers, body: body);
