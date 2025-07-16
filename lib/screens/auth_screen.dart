@@ -35,7 +35,6 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   bool _rememberMe = false;
-  bool _rememberPassword = false;
 
   @override
   void initState() {
@@ -46,16 +45,14 @@ class _AuthScreenState extends State<AuthScreen> {
   Future<void> _loadRememberedEmail() async {
     final prefs = await SharedPreferences.getInstance();
     final remembered = prefs.getBool('remember_me') ?? false;
-    final rememberedPwd = prefs.getBool('remember_password') ?? false;
     final email = prefs.getString('remembered_email') ?? '';
     final password = prefs.getString('remembered_password') ?? '';
     setState(() {
       _rememberMe = remembered;
-      _rememberPassword = rememberedPwd;
       if (remembered && email.isNotEmpty) {
         _emailController.text = email;
       }
-      if (rememberedPwd && password.isNotEmpty) {
+      if (remembered && password.isNotEmpty) {
         _passwordController.text = password;
       }
     });
@@ -80,22 +77,11 @@ class _AuthScreenState extends State<AuthScreen> {
         final prefs = await SharedPreferences.getInstance();
         if (_rememberMe && result == null) {
           await prefs.setBool('remember_me', true);
-          await prefs.setString(
-            'remembered_email',
-            _emailController.text.trim(),
-          );
+          await prefs.setString('remembered_email', _emailController.text.trim());
+          await prefs.setString('remembered_password', _passwordController.text);
         } else {
           await prefs.setBool('remember_me', false);
           await prefs.remove('remembered_email');
-        }
-        if (_rememberPassword && result == null) {
-          await prefs.setBool('remember_password', true);
-          await prefs.setString(
-            'remembered_password',
-            _passwordController.text,
-          );
-        } else {
-          await prefs.setBool('remember_password', false);
           await prefs.remove('remembered_password');
         }
         setState(() => _loading = false);
@@ -195,6 +181,20 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
+                      if (isLogin)
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (val) {
+                                setState(() {
+                                  _rememberMe = val ?? false;
+                                });
+                              },
+                            ),
+                            const Text('Remember Me'),
+                          ],
+                        ),
                       if (!isLogin)
                         TextFormField(
                           controller: _nameController,
@@ -296,37 +296,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      if (isLogin)
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _rememberMe,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      _rememberMe = val ?? false;
-                                    });
-                                  },
-                                ),
-                                const Text('Remember Me'),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: _rememberPassword,
-                                  onChanged: (val) {
-                                    setState(() {
-                                      _rememberPassword = val ?? false;
-                                    });
-                                  },
-                                ),
-                                const Text('Remember Password'),
-                              ],
-                            ),
-                          ],
-                        ),
                       TextButton(
                         onPressed: _loading ? null : _toggleMode,
                         child: Text(
