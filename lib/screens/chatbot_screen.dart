@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ai_toolkit/flutter_ai_toolkit.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../services/gemini_api_service.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -13,12 +12,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
   bool _sending = false;
-  late final GeminiAI _geminiAI;
+  GeminiApiService? _geminiService;
 
   @override
   void initState() {
     super.initState();
-    _geminiAI = GeminiAI(apiKey: dotenv.env['GEMINI_API_KEY'] ?? '');
+    _geminiService = GeminiApiService();
   }
 
   void _sendMessage() async {
@@ -29,18 +28,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       _controller.clear();
       _sending = true;
     });
-    try {
-      final response = await _geminiAI.sendMessage(text);
-      setState(() {
-        _messages.add({'role': 'ai', 'text': response});
-        _sending = false;
-      });
-    } catch (e) {
-      setState(() {
-        _messages.add({'role': 'ai', 'text': 'Error: \\${e.toString()}'});
-        _sending = false;
-      });
-    }
+    final aiResponse = await _geminiService!.sendMessage(text);
+    setState(() {
+      _messages.add({'role': 'ai', 'text': aiResponse});
+      _sending = false;
+    });
   }
 
   @override

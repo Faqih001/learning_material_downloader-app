@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -33,6 +34,33 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _obscurePassword = !_obscurePassword);
   }
 
+  bool _rememberMe = false;
+  bool _rememberPassword = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberedEmail();
+  }
+
+  Future<void> _loadRememberedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final remembered = prefs.getBool('remember_me') ?? false;
+    final rememberedPwd = prefs.getBool('remember_password') ?? false;
+    final email = prefs.getString('remembered_email') ?? '';
+    final password = prefs.getString('remembered_password') ?? '';
+    setState(() {
+      _rememberMe = remembered;
+      _rememberPassword = rememberedPwd;
+      if (remembered && email.isNotEmpty) {
+        _emailController.text = email;
+      }
+      if (rememberedPwd && password.isNotEmpty) {
+        _passwordController.text = password;
+      }
+    });
+  }
+
   void _toggleConfirm() {
     setState(() => _obscureConfirm = !_obscureConfirm);
   }
@@ -49,6 +77,27 @@ class _AuthScreenState extends State<AuthScreen> {
           _emailController.text.trim(),
           _passwordController.text,
         );
+        final prefs = await SharedPreferences.getInstance();
+        if (_rememberMe && result == null) {
+          await prefs.setBool('remember_me', true);
+          await prefs.setString(
+            'remembered_email',
+            _emailController.text.trim(),
+          );
+        } else {
+          await prefs.setBool('remember_me', false);
+          await prefs.remove('remembered_email');
+        }
+        if (_rememberPassword && result == null) {
+          await prefs.setBool('remember_password', true);
+          await prefs.setString(
+            'remembered_password',
+            _passwordController.text,
+          );
+        } else {
+          await prefs.setBool('remember_password', false);
+          await prefs.remove('remembered_password');
+        }
         setState(() => _loading = false);
         if (result == null) {
           if (!mounted) return;
@@ -246,6 +295,38 @@ class _AuthScreenState extends State<AuthScreen> {
                           child: Text(isLogin ? 'Login' : 'Register'),
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      if (isLogin)
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _rememberMe,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _rememberMe = val ?? false;
+                                    });
+                                  },
+                                ),
+                                const Text('Remember Me'),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _rememberPassword,
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _rememberPassword = val ?? false;
+                                    });
+                                  },
+                                ),
+                                const Text('Remember Password'),
+                              ],
+                            ),
+                          ],
+                        ),
                       TextButton(
                         onPressed: _loading ? null : _toggleMode,
                         child: Text(
