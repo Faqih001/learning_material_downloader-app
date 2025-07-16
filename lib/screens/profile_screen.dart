@@ -19,17 +19,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUser() async {
-    final user = await AuthService().getCurrentUser();
-    setState(() {
-      _user = user;
-      _loading = false;
-    });
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      setState(() {
+        _user = user;
+        _loading = false;
+      });
+    } catch (e, st) {
+      debugPrint('Error loading user: $e\n$st');
+      if (!mounted) return;
+      setState(() {
+        _user = {};
+        _loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load user data.')),
+      );
+    }
   }
 
   Future<void> _logout() async {
-    await AuthService().logout();
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/auth');
+    try {
+      await AuthService().logout();
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/auth');
+      }
+    } catch (e, st) {
+      debugPrint('Error during logout: $e\n$st');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Logout failed. Please try again.')),
+      );
     }
   }
 

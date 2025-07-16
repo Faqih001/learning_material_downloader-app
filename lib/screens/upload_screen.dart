@@ -36,11 +36,24 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _loadUser() async {
-    final user = await AuthService().getCurrentUser();
-    setState(() {
-      _user = user;
-      _loadingUser = false;
-    });
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      setState(() {
+        _user = user;
+        _loadingUser = false;
+      });
+    } catch (e, st) {
+      debugPrint('Error loading user: $e\n$st');
+      if (!mounted) return;
+      setState(() {
+        _user = {};
+        _loadingUser = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load user data.')),
+      );
+    }
   }
 
   void _pickFile() async {
@@ -59,13 +72,26 @@ class _UploadScreenState extends State<UploadScreen> {
       _uploading = true;
       _uploadStatus = null;
     });
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      _uploading = false;
-      _uploadStatus = 'Upload successful!';
-      _fileName = null;
-      _subject = null;
-    });
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
+      setState(() {
+        _uploading = false;
+        _uploadStatus = 'Upload successful!';
+        _fileName = null;
+        _subject = null;
+      });
+    } catch (e, st) {
+      debugPrint('Error uploading: $e\n$st');
+      if (!mounted) return;
+      setState(() {
+        _uploading = false;
+        _uploadStatus = 'Upload failed!';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to upload file.')),
+      );
+    }
   }
 
   @override

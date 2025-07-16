@@ -66,11 +66,24 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<void> _loadUser() async {
-    final user = await AuthService().getCurrentUser();
-    setState(() {
-      _user = user;
-      _loadingUser = false;
-    });
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      setState(() {
+        _user = user;
+        _loadingUser = false;
+      });
+    } catch (e, st) {
+      debugPrint('Error loading user: $e\n$st');
+      if (!mounted) return;
+      setState(() {
+        _user = {};
+        _loadingUser = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load user data.')),
+      );
+    }
   }
 
   List<LearningMaterial> get _filteredMaterials {

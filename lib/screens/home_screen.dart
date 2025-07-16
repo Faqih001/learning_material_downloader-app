@@ -26,6 +26,29 @@ class _HomeScreenState extends State<HomeScreen> {
     const ProfileScreen(),
   ];
 
+  Widget _buildSafePage(int index) {
+    try {
+      return _pages[index];
+    } catch (e, st) {
+      debugPrint('Error building page $index: $e\n$st');
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, color: Colors.red, size: 48),
+              const SizedBox(height: 16),
+              const Text('Something went wrong loading this page.'),
+              const SizedBox(height: 8),
+              Text('$e', style: const TextStyle(color: Colors.red)),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -45,7 +68,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: IndexedStack(index: _selectedIndex, children: _pages),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: List.generate(_pages.length, (i) => _buildSafePage(i)),
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

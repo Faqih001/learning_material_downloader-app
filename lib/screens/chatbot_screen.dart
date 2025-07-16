@@ -26,11 +26,24 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   Future<void> _loadUser() async {
-    final user = await AuthService().getCurrentUser();
-    setState(() {
-      _user = user;
-      _loadingUser = false;
-    });
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      setState(() {
+        _user = user;
+        _loadingUser = false;
+      });
+    } catch (e, st) {
+      debugPrint('Error loading user: $e\n$st');
+      if (!mounted) return;
+      setState(() {
+        _user = {};
+        _loadingUser = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load user data.')),
+      );
+    }
   }
 
   void _sendMessage() async {
@@ -41,11 +54,23 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       _controller.clear();
       _sending = true;
     });
-    final aiResponse = await _geminiService!.sendMessage(text);
-    setState(() {
-      _messages.add({'role': 'ai', 'text': aiResponse});
-      _sending = false;
-    });
+    try {
+      final aiResponse = await _geminiService!.sendMessage(text);
+      if (!mounted) return;
+      setState(() {
+        _messages.add({'role': 'ai', 'text': aiResponse});
+        _sending = false;
+      });
+    } catch (e, st) {
+      debugPrint('Error sending message: $e\n$st');
+      if (!mounted) return;
+      setState(() {
+        _sending = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to get AI response.')),
+      );
+    }
   }
 
   @override
