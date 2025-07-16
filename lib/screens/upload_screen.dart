@@ -88,9 +88,9 @@ class _UploadScreenState extends State<UploadScreen> {
         _uploading = false;
         _uploadStatus = 'Upload failed!';
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to upload file.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to upload file.')));
     }
   }
 
