@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/material.dart';
 import '../widgets/material_card.dart';
+import '../services/auth_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -54,6 +55,23 @@ class _SearchScreenState extends State<SearchScreen> {
     ),
     // ...add more mock materials as needed
   ];
+
+  Map<String, String?> _user = {};
+  bool _loadingUser = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await AuthService().getCurrentUser();
+    setState(() {
+      _user = user;
+      _loadingUser = false;
+    });
+  }
 
   List<LearningMaterial> get _filteredMaterials {
     return _allMaterials.where((m) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -24,6 +25,23 @@ class _UploadScreenState extends State<UploadScreen> {
   ];
   bool _uploading = false;
   String? _uploadStatus;
+
+  Map<String, String?> _user = {};
+  bool _loadingUser = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await AuthService().getCurrentUser();
+    setState(() {
+      _user = user;
+      _loadingUser = false;
+    });
+  }
 
   void _pickFile() async {
     // Simulate file picking

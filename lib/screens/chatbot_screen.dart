@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/gemini_api_service.dart';
+import '../services/auth_service.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -14,10 +15,22 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   bool _sending = false;
   GeminiApiService? _geminiService;
 
+  Map<String, String?> _user = {};
+  bool _loadingUser = true;
+
   @override
   void initState() {
     super.initState();
     _geminiService = GeminiApiService();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await AuthService().getCurrentUser();
+    setState(() {
+      _user = user;
+      _loadingUser = false;
+    });
   }
 
   void _sendMessage() async {

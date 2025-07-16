@@ -1,8 +1,31 @@
 import 'package:flutter/material.dart';
 import '../widgets/google_map_widget.dart';
+import '../services/auth_service.dart';
 
-class MapScreen extends StatelessWidget {
+class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
+
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  Map<String, String?> _user = {};
+  bool _loadingUser = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final user = await AuthService().getCurrentUser();
+    setState(() {
+      _user = user;
+      _loadingUser = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
