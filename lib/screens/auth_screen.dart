@@ -77,8 +77,14 @@ class _AuthScreenState extends State<AuthScreen> {
         final prefs = await SharedPreferences.getInstance();
         if (_rememberMe && result == null) {
           await prefs.setBool('remember_me', true);
-          await prefs.setString('remembered_email', _emailController.text.trim());
-          await prefs.setString('remembered_password', _passwordController.text);
+          await prefs.setString(
+            'remembered_email',
+            _emailController.text.trim(),
+          );
+          await prefs.setString(
+            'remembered_password',
+            _passwordController.text,
+          );
         } else {
           await prefs.setBool('remember_me', false);
           await prefs.remove('remembered_email');
@@ -181,20 +187,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      if (isLogin)
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (val) {
-                                setState(() {
-                                  _rememberMe = val ?? false;
-                                });
-                              },
-                            ),
-                            const Text('Remember Me'),
-                          ],
-                        ),
                       if (!isLogin)
                         TextFormField(
                           controller: _nameController,
@@ -242,6 +234,20 @@ class _AuthScreenState extends State<AuthScreen> {
                                         : null
                                 : _validatePassword,
                       ),
+                      if (isLogin)
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (val) {
+                                setState(() {
+                                  _rememberMe = val ?? false;
+                                });
+                              },
+                            ),
+                            const Text('Remember Me'),
+                          ],
+                        ),
                       if (!isLogin)
                         Padding(
                           padding: const EdgeInsets.only(top: 16),
