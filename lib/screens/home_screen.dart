@@ -312,7 +312,80 @@ class _HomeTab extends StatelessWidget {
                       ),
                 ),
               ),
-              // ...existing code...
+              sectionTitle('Most Downloaded'),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+                child: Column(
+                  children:
+                      featuredMaterials
+                          .where((m) => m.downloads > 700)
+                          .map((m) => MaterialCard(material: m, onDownload: () {}))
+                          .toList(),
+                ),
+              ),
+              sectionTitle('Recently Added'),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+                child: Column(
+                  children:
+                      featuredMaterials.reversed
+                          .take(3)
+                          .map((m) => MaterialCard(material: m, onDownload: () {}))
+                          .toList(),
+                ),
+              ),
+              sectionTitle('Recommended For You'),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+                child: Column(
+                  children:
+                      featuredMaterials
+                          .where((m) => m.rating > 4.5)
+                          .map((m) => MaterialCard(material: m, onDownload: () {}))
+                          .toList(),
+                ),
+              ),
+              sectionTitle('By Subject'),
+              SizedBox(
+                height: 180,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children:
+                      topSubjects.map((subject) {
+                        final mat = featuredMaterials.firstWhere(
+                          (m) => m.subject == subject,
+                          orElse: () => featuredMaterials[0],
+                        );
+                        return Container(
+                          width: 220,
+                          margin: const EdgeInsets.only(right: 12),
+                          child: MaterialCard(material: mat, onDownload: () {}),
+                        );
+                      }).toList(),
+                ),
+              ),
+              sectionTitle('Popular Tags'),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ...featuredMaterials
+                      .expand((m) => m.tags)
+                      .toSet()
+                      .map(
+                        (tag) => Chip(
+                          label: Text(tag),
+                          backgroundColor: const Color(
+                            0xFF2563EB,
+                          ).withAlpha((0.15 * 255).toInt()),
+                          labelStyle: const TextStyle(color: Color(0xFF2563EB)),
+                        ),
+                      ),
+                ],
+              ),
             ],
           ),
         );
