@@ -224,84 +224,100 @@ class _HomeTab extends StatelessWidget {
       ),
     ];
 
-    Widget sectionTitle(String title) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Text(
-        title,
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-      ),
-    );
+    Widget sectionTitle(String title) {
+      final scale = MediaQuery.of(context).textScaleFactor;
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: 18 * scale,
+          ),
+        ),
+      );
+    }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Welcome
-          Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final crossAxisCount = width < 600 ? 2 : 3;
+        final cardAspectRatio = width < 600 ? 0.85 : 1.1;
+        final padding = width < 400 ? 12.0 : 24.0;
+        return SingleChildScrollView(
+          padding: EdgeInsets.all(padding),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: const Color(0xFF2563EB),
-                child: Text('Hi', style: TextStyle(color: Colors.white)),
+              // 1. Welcome
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: width < 400 ? 20 : 28,
+                    backgroundColor: const Color(0xFF2563EB),
+                    child: Text('Hi', style: TextStyle(color: Colors.white, fontSize: width < 400 ? 14 : 18)),
+                  ),
+                  SizedBox(width: width < 400 ? 8 : 16),
+                  Expanded(
+                    child: Text(
+                      'Welcome back!\nFind the best learning materials for your studies.',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: width < 400 ? 14 : 18),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  'Welcome back!\nFind the best learning materials for your studies.',
-                  style: Theme.of(context).textTheme.titleMedium,
+              sectionTitle('Top Subjects'),
+              // 2. Top Subjects
+              SizedBox(
+                height: width < 400 ? 32 : 40,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: topSubjects.length,
+                  separatorBuilder: (_, __) => SizedBox(width: width < 400 ? 4 : 8),
+                  itemBuilder:
+                      (context, i) => Chip(
+                        label: Text(topSubjects[i], style: TextStyle(fontSize: width < 400 ? 12 : 14)),
+                        backgroundColor: const Color(0xFF60A5FA),
+                        labelStyle: const TextStyle(color: Colors.white),
+                      ),
                 ),
               ),
+              sectionTitle('Featured Materials'),
+              // 3. Featured Materials (animated grid)
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: GridView.builder(
+                  key: ValueKey(featuredMaterials.length),
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: cardAspectRatio,
+                  ),
+                  itemCount: featuredMaterials.length,
+                  itemBuilder:
+                      (context, i) => MaterialCard(
+                        material: featuredMaterials[i],
+                        onDownload: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Downloading ${featuredMaterials[i].title}...',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                ),
+              ),
+              // ...existing code...
             ],
           ),
-          sectionTitle('Top Subjects'),
-          // 2. Top Subjects
-          SizedBox(
-            height: 40,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: topSubjects.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder:
-                  (context, i) => Chip(
-                    label: Text(topSubjects[i]),
-                    backgroundColor: const Color(0xFF60A5FA),
-                    labelStyle: const TextStyle(color: Colors.white),
-                  ),
-            ),
-          ),
-          sectionTitle('Featured Materials'),
-          // 3. Featured Materials (animated grid)
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            child: GridView.builder(
-              key: ValueKey(featuredMaterials.length),
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.85,
-              ),
-              itemCount: featuredMaterials.length,
-              itemBuilder:
-                  (context, i) => MaterialCard(
-                    material: featuredMaterials[i],
-                    onDownload: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Downloading ${featuredMaterials[i].title}...',
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-            ),
-          ),
+        );
+      },
+    );
           sectionTitle('Most Downloaded'),
           // 4. Most Downloaded (animated list)
           AnimatedContainer(
