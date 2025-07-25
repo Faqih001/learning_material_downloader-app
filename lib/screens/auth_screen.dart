@@ -162,160 +162,163 @@ class _AuthScreenState extends State<AuthScreen> {
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 8,
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        isLogin ? 'Login' : 'Register',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.headlineSmall?.copyWith(
-                          color: const Color(0xFF2563EB),
-                          fontWeight: FontWeight.bold,
-                        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 600;
+            return Center(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(isWide ? 48 : 24),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: isWide ? 420 : double.infinity),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 10,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isWide ? 40 : 24,
+                        vertical: isWide ? 40 : 24,
                       ),
-                      const SizedBox(height: 24),
-                      if (!isLogin)
-                        TextFormField(
-                          controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Name',
-                            prefixIcon: Icon(Icons.person),
-                          ),
-                          validator:
-                              (v) =>
-                                  v == null || v.isEmpty
-                                      ? 'Enter your name'
-                                      : null,
-                        ),
-                      if (!isLogin) const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email),
-                        ),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: _validateEmail,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _passwordController,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: _togglePassword,
-                          ),
-                        ),
-                        obscureText: _obscurePassword,
-                        validator:
-                            isLogin
-                                ? (v) =>
-                                    v == null || v.isEmpty
-                                        ? 'Enter your password'
-                                        : null
-                                : _validatePassword,
-                      ),
-                      if (isLogin)
-                        Row(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (val) {
-                                setState(() {
-                                  _rememberMe = val ?? false;
-                                });
-                              },
-                            ),
-                            const Text('Remember Me'),
-                          ],
-                        ),
-                      if (!isLogin)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: TextFormField(
-                            controller: _confirmPasswordController,
-                            decoration: InputDecoration(
-                              labelText: 'Confirm Password',
-                              prefixIcon: const Icon(Icons.lock),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscureConfirm
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                ),
-                                onPressed: _toggleConfirm,
+                            Text(
+                              isLogin ? 'Login' : 'Register',
+                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: const Color(0xFF2563EB),
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            obscureText: _obscureConfirm,
-                            validator:
-                                (v) =>
-                                    v != _passwordController.text
-                                        ? 'Passwords do not match'
-                                        : null,
-                          ),
-                        ),
-                      if (_error != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: Text(
-                            _error!,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      if (_loading)
-                        const Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: CircularProgressIndicator(),
-                        ),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _loading ? null : _submit,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2563EB),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                            const SizedBox(height: 24),
+                            if (!isLogin)
+                              TextFormField(
+                                controller: _nameController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Name',
+                                  prefixIcon: Icon(Icons.person),
+                                ),
+                                validator: (v) => v == null || v.isEmpty ? 'Enter your name' : null,
+                              ),
+                            if (!isLogin) const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _emailController,
+                              decoration: const InputDecoration(
+                                labelText: 'Email',
+                                prefixIcon: Icon(Icons.email),
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              validator: _validateEmail,
                             ),
-                          ),
-                          child: Text(isLogin ? 'Login' : 'Register'),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _passwordController,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon: const Icon(Icons.lock),
+                                suffixIcon: MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: IconButton(
+                                    icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                                    onPressed: _togglePassword,
+                                  ),
+                                ),
+                              ),
+                              obscureText: _obscurePassword,
+                              validator: isLogin
+                                  ? (v) => v == null || v.isEmpty ? 'Enter your password' : null
+                                  : _validatePassword,
+                            ),
+                            if (isLogin)
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _rememberMe = val ?? false;
+                                      });
+                                    },
+                                  ),
+                                  const Text('Remember Me'),
+                                ],
+                              ),
+                            if (!isLogin)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: TextFormField(
+                                  controller: _confirmPasswordController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Confirm Password',
+                                    prefixIcon: const Icon(Icons.lock),
+                                    suffixIcon: MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+                                      child: IconButton(
+                                        icon: Icon(_obscureConfirm ? Icons.visibility : Icons.visibility_off),
+                                        onPressed: _toggleConfirm,
+                                      ),
+                                    ),
+                                  ),
+                                  obscureText: _obscureConfirm,
+                                  validator: (v) => v != _passwordController.text ? 'Passwords do not match' : null,
+                                ),
+                              ),
+                            if (_error != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Text(
+                                  _error!,
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            if (_loading)
+                              const Padding(
+                                padding: EdgeInsets.only(top: 16),
+                                child: CircularProgressIndicator(),
+                              ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              child: MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: ElevatedButton(
+                                  onPressed: _loading ? null : _submit,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF2563EB),
+                                    padding: const EdgeInsets.symmetric(vertical: 18),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    textStyle: TextStyle(fontSize: isWide ? 18 : 16),
+                                    elevation: 2,
+                                  ),
+                                  child: Text(isLogin ? 'Login' : 'Register'),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: TextButton(
+                                onPressed: _loading ? null : _toggleMode,
+                                child: Text(
+                                  isLogin
+                                      ? "Don't have an account? Register"
+                                      : 'Already have an account? Login',
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: _loading ? null : _toggleMode,
-                        child: Text(
-                          isLogin
-                              ? "Don't have an account? Register"
-                              : 'Already have an account? Login',
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
