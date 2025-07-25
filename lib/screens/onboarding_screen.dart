@@ -51,56 +51,84 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _controller,
-                itemCount: _pages.length,
-                onPageChanged: (index) => setState(() => _currentPage = index),
-                itemBuilder: (context, index) => _pages[index],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24.0),
-              child: SmoothPageIndicator(
-                controller: _controller,
-                count: _pages.length,
-                effect: const WormEffect(
-                  dotColor: Colors.grey,
-                  activeDotColor: Color(0xFF2563EB),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth > 700;
+          return SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: isWide ? 600 : double.infinity),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: isWide ? 48 : 24, vertical: isWide ? 32 : 0),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: PageView.builder(
+                          controller: _controller,
+                          itemCount: _pages.length,
+                          onPageChanged: (index) => setState(() => _currentPage = index),
+                          itemBuilder: (context, index) => _pages[index],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: isWide ? 32 : 24),
+                        child: SmoothPageIndicator(
+                          controller: _controller,
+                          count: _pages.length,
+                          effect: const WormEffect(
+                            dotColor: Colors.grey,
+                            activeDotColor: Color(0xFF2563EB),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isWide ? 32 : 24,
+                          vertical: isWide ? 16 : 8,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: TextButton(
+                                onPressed: _onSkip,
+                                child: const Text('Skip'),
+                                style: TextButton.styleFrom(
+                                  textStyle: TextStyle(fontSize: isWide ? 18 : 16),
+                                ),
+                              ),
+                            ),
+                            MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: ElevatedButton(
+                                onPressed: _onNext,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF2563EB),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isWide ? 32 : 20,
+                                    vertical: isWide ? 18 : 12,
+                                  ),
+                                  textStyle: TextStyle(fontSize: isWide ? 18 : 16),
+                                ),
+                                child: Text(
+                                  _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 8.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(onPressed: _onSkip, child: const Text('Skip')),
-                  ElevatedButton(
-                    onPressed: _onNext,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2563EB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      _currentPage == _pages.length - 1
-                          ? 'Get Started'
-                          : 'Next',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -118,23 +146,26 @@ class _OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isWide = MediaQuery.of(context).size.width > 700;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 48.0),
+      padding: EdgeInsets.symmetric(horizontal: isWide ? 48 : 32, vertical: isWide ? 64 : 48),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 100, color: const Color(0xFF2563EB)),
-          const SizedBox(height: 32),
+          Icon(icon, size: isWide ? 140 : 100, color: const Color(0xFF2563EB)),
+          SizedBox(height: isWide ? 48 : 32),
           Text(
             title,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: isWide ? 30 : null,
+            ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isWide ? 24 : 16),
           Text(
             description,
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: isWide ? 20 : null),
             textAlign: TextAlign.center,
           ),
         ],
