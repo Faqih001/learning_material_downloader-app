@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../models/material.dart';
 import '../widgets/material_card.dart';
+import '../widgets/custom_button.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'search_screen.dart';
 import 'upload_screen.dart';
 import 'chatbot_screen.dart';
@@ -225,167 +228,334 @@ class _HomeTab extends StatelessWidget {
     ];
 
     Widget sectionTitle(String title) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        style: Theme.of(
+          context,
+        ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
       ),
     );
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 900;
-        final gridCount = isWide ? 3 : 2;
-        final horizontalPadding = isWide ? 48.0 : 24.0;
-        final verticalPadding = isWide ? 32.0 : 24.0;
+        final gridCount = isWide ? 4 : 2;
+        final horizontalPadding = isWide ? 64.0 : 16.0;
+        final verticalPadding = isWide ? 40.0 : 16.0;
         return Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: isWide ? 1200 : double.infinity),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 1. Welcome
-                  Row(
+            constraints: BoxConstraints(
+              maxWidth: isWide ? 1400 : double.infinity,
+            ),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: verticalPadding,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: isWide ? 36 : 28,
-                        backgroundColor: const Color(0xFF2563EB),
-                        child: Text('Hi', style: TextStyle(color: Colors.white, fontSize: isWide ? 22 : 16)),
-                      ),
-                      SizedBox(width: isWide ? 28 : 16),
-                      Expanded(
-                        child: Text(
-                          'Welcome back!\nFind the best learning materials for your studies.',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: isWide ? 22 : null),
-                        ),
-                      ),
-                    ],
-                  ),
-                  sectionTitle('Top Subjects'),
-                  // 2. Top Subjects
-                  SizedBox(
-                    height: isWide ? 48 : 40,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: topSubjects.length,
-                      separatorBuilder: (_, __) => SizedBox(width: isWide ? 16 : 8),
-                      itemBuilder: (context, i) => MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: Chip(
-                          label: Text(topSubjects[i]),
-                          backgroundColor: const Color(0xFF60A5FA),
-                          labelStyle: TextStyle(color: Colors.white, fontSize: isWide ? 16 : 14),
-                          padding: EdgeInsets.symmetric(horizontal: isWide ? 18 : 10, vertical: isWide ? 8 : 4),
-                        ),
-                      ),
-                    ),
-                  ),
-                  sectionTitle('Featured Materials'),
-                  // 3. Featured Materials (animated grid)
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    child: GridView.builder(
-                      key: ValueKey(featuredMaterials.length),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: gridCount,
-                        mainAxisSpacing: isWide ? 20 : 12,
-                        crossAxisSpacing: isWide ? 20 : 12,
-                        childAspectRatio: isWide ? 1.1 : 0.85,
-                      ),
-                      itemCount: featuredMaterials.length,
-                      itemBuilder: (context, i) => MaterialCard(
-                        material: featuredMaterials[i],
-                        onDownload: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Downloading ${featuredMaterials[i].title}...'),
+                      // Modern AppBar substitute
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: isWide ? 36 : 28,
+                            backgroundColor: const Color(0xFF2563EB),
+                            child: Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: isWide ? 32 : 22,
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  sectionTitle('Most Downloaded'),
-                  // 4. Most Downloaded (animated list)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                    child: Column(
-                      children: featuredMaterials
-                          .where((m) => m.downloads > 700)
-                          .map((m) => MaterialCard(material: m, onDownload: () {}))
-                          .toList(),
-                    ),
-                  ),
-                  sectionTitle('Recently Added'),
-                  // 5. Recently Added (animated list)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                    child: Column(
-                      children: featuredMaterials.reversed
-                          .take(3)
-                          .map((m) => MaterialCard(material: m, onDownload: () {}))
-                          .toList(),
-                    ),
-                  ),
-                  sectionTitle('Recommended For You'),
-                  // 6. Recommended (animated list)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                    child: Column(
-                      children: featuredMaterials
-                          .where((m) => m.rating > 4.5)
-                          .map((m) => MaterialCard(material: m, onDownload: () {}))
-                          .toList(),
-                    ),
-                  ),
-                  sectionTitle('By Subject'),
-                  // 7. By Subject (horizontal scroll)
-                  SizedBox(
-                    height: isWide ? 220 : 180,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: topSubjects.map((subject) {
-                        final mat = featuredMaterials.firstWhere(
-                          (m) => m.subject == subject,
-                          orElse: () => featuredMaterials[0],
-                        );
-                        return Container(
-                          width: isWide ? 280 : 220,
-                          margin: EdgeInsets.only(right: isWide ? 20 : 12),
-                          child: MaterialCard(material: mat, onDownload: () {}),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  sectionTitle('Popular Tags'),
-                  // 8. Popular Tags (chips)
-                  Wrap(
-                    spacing: isWide ? 16 : 8,
-                    runSpacing: isWide ? 16 : 8,
-                    children: [
-                      ...featuredMaterials
-                          .expand((m) => m.tags)
-                          .toSet()
-                          .map((tag) => MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: Chip(
-                                  label: Text(tag),
-                                  backgroundColor: const Color(0xFF2563EB).withAlpha((0.15 * 255).toInt()),
-                                  labelStyle: const TextStyle(color: Color(0xFF2563EB)),
-                                  padding: EdgeInsets.symmetric(horizontal: isWide ? 16 : 8, vertical: isWide ? 8 : 4),
+                          ),
+                          SizedBox(width: isWide ? 28 : 16),
+                          Expanded(
+                            child: Text(
+                              'Welcome back!\nFind the best learning materials for your studies.',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.titleLarge?.copyWith(
+                                fontSize: isWide ? 26 : 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.notifications_none,
+                              size: isWide ? 32 : 24,
+                            ),
+                            onPressed: () {},
+                            tooltip: 'Notifications',
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.search, size: isWide ? 32 : 24),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SearchScreen(),
                                 ),
-                              )),
+                              );
+                            },
+                            tooltip: 'Search',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      // Animated Carousel
+                      CarouselSlider(
+                        options: CarouselOptions(
+                          height: isWide ? 260 : 180,
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          viewportFraction: isWide ? 0.45 : 0.85,
+                          enableInfiniteScroll: true,
+                        ),
+                        items:
+                            featuredMaterials.map((mat) {
+                              return Builder(
+                                builder:
+                                    (context) => Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      elevation: 8,
+                                      child: Container(
+                                        width: double.infinity,
+                                        padding: EdgeInsets.all(
+                                          isWide ? 32 : 16,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Color(
+                                                0xFF2563EB,
+                                              ).withOpacity(0.9),
+                                              Color(
+                                                0xFF60A5FA,
+                                              ).withOpacity(0.7),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              mat.title,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: isWide ? 22 : 16,
+                                              ),
+                                            ),
+                                            SizedBox(height: isWide ? 18 : 10),
+                                            Text(
+                                              mat.description,
+                                              style: TextStyle(
+                                                color: Colors.white70,
+                                                fontSize: isWide ? 16 : 13,
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            CustomButton(
+                                              label: 'Download',
+                                              icon: Icons.download,
+                                              onPressed: () {},
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                              );
+                            }).toList(),
+                      ),
+                      const SizedBox(height: 32),
+                      sectionTitle('Top Subjects'),
+                      // Animated Category Cards
+                      SizedBox(
+                        height: isWide ? 120 : 80,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: topSubjects.length,
+                          separatorBuilder:
+                              (_, __) => SizedBox(width: isWide ? 24 : 12),
+                          itemBuilder:
+                              (context, i) => AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                child: Card(
+                                  elevation: 4,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(16),
+                                    onTap: () {},
+                                    child: Container(
+                                      width: isWide ? 120 : 80,
+                                      height: isWide ? 120 : 80,
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.book,
+                                            color: Color(0xFF2563EB),
+                                            size: isWide ? 38 : 26,
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            topSubjects[i],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: isWide ? 16 : 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      sectionTitle('Recently Added'),
+                      SizedBox(
+                        height: isWide ? 220 : 160,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: featuredMaterials.length,
+                          separatorBuilder:
+                              (_, __) => SizedBox(width: isWide ? 24 : 12),
+                          itemBuilder:
+                              (context, i) => SizedBox(
+                                width: isWide ? 320 : 220,
+                                child: MaterialCard(
+                                  material:
+                                      featuredMaterials.reversed.toList()[i],
+                                  onDownload: () {},
+                                ),
+                              ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      sectionTitle('Most Downloaded'),
+                      SizedBox(
+                        height: isWide ? 220 : 160,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              featuredMaterials
+                                  .where((m) => m.downloads > 700)
+                                  .length,
+                          separatorBuilder:
+                              (_, __) => SizedBox(width: isWide ? 24 : 12),
+                          itemBuilder: (context, i) {
+                            final mats =
+                                featuredMaterials
+                                    .where((m) => m.downloads > 700)
+                                    .toList();
+                            return SizedBox(
+                              width: isWide ? 320 : 220,
+                              child: MaterialCard(
+                                material: mats[i],
+                                onDownload: () {},
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      sectionTitle('Recommended For You'),
+                      SizedBox(
+                        height: isWide ? 220 : 160,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              featuredMaterials
+                                  .where((m) => m.rating > 4.5)
+                                  .length,
+                          separatorBuilder:
+                              (_, __) => SizedBox(width: isWide ? 24 : 12),
+                          itemBuilder: (context, i) {
+                            final mats =
+                                featuredMaterials
+                                    .where((m) => m.rating > 4.5)
+                                    .toList();
+                            return SizedBox(
+                              width: isWide ? 320 : 220,
+                              child: MaterialCard(
+                                material: mats[i],
+                                onDownload: () {},
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      sectionTitle('Popular Tags'),
+                      Wrap(
+                        spacing: isWide ? 16 : 8,
+                        runSpacing: isWide ? 16 : 8,
+                        children: [
+                          ...featuredMaterials
+                              .expand((m) => m.tags)
+                              .toSet()
+                              .map(
+                                (tag) => MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: Chip(
+                                    label: Text(tag),
+                                    backgroundColor: const Color(
+                                      0xFF2563EB,
+                                    ).withAlpha((0.15 * 255).toInt()),
+                                    labelStyle: const TextStyle(
+                                      color: Color(0xFF2563EB),
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isWide ? 16 : 8,
+                                      vertical: isWide ? 8 : 4,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        ],
+                      ),
+                      const SizedBox(height: 80),
                     ],
                   ),
-                ],
-              ),
+                ),
+                // Floating Action Button
+                Positioned(
+                  bottom: 32,
+                  right: 32,
+                  child: FloatingActionButton.extended(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const UploadScreen()),
+                      );
+                    },
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text('Upload'),
+                    backgroundColor: const Color(0xFF2563EB),
+                    elevation: 8,
+                  ),
+                ),
+              ],
             ),
           ),
         );

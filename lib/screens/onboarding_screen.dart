@@ -57,21 +57,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           return SafeArea(
             child: Center(
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: isWide ? 600 : double.infinity),
+                constraints: BoxConstraints(
+                  maxWidth: isWide ? 600 : double.infinity,
+                ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: isWide ? 48 : 24, vertical: isWide ? 32 : 0),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isWide ? 48 : 24,
+                    vertical: isWide ? 32 : 0,
+                  ),
                   child: Column(
                     children: [
                       Expanded(
                         child: PageView.builder(
                           controller: _controller,
                           itemCount: _pages.length,
-                          onPageChanged: (index) => setState(() => _currentPage = index),
+                          onPageChanged:
+                              (index) => setState(() => _currentPage = index),
                           itemBuilder: (context, index) => _pages[index],
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(vertical: isWide ? 32 : 24),
+                        padding: EdgeInsets.symmetric(
+                          vertical: isWide ? 32 : 24,
+                        ),
                         child: SmoothPageIndicator(
                           controller: _controller,
                           count: _pages.length,
@@ -93,10 +101,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               cursor: SystemMouseCursors.click,
                               child: TextButton(
                                 onPressed: _onSkip,
-                                child: const Text('Skip'),
                                 style: TextButton.styleFrom(
-                                  textStyle: TextStyle(fontSize: isWide ? 18 : 16),
+                                  textStyle: TextStyle(
+                                    fontSize: isWide ? 18 : 16,
+                                  ),
                                 ),
+                                child: const Text('Skip'),
                               ),
                             ),
                             MouseRegion(
@@ -112,10 +122,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     horizontal: isWide ? 32 : 20,
                                     vertical: isWide ? 18 : 12,
                                   ),
-                                  textStyle: TextStyle(fontSize: isWide ? 18 : 16),
+                                  textStyle: TextStyle(
+                                    fontSize: isWide ? 18 : 16,
+                                  ),
                                 ),
                                 child: Text(
-                                  _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                                  _currentPage == _pages.length - 1
+                                      ? 'Get Started'
+                                      : 'Next',
                                 ),
                               ),
                             ),
@@ -148,7 +162,10 @@ class _OnboardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 700;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: isWide ? 48 : 32, vertical: isWide ? 64 : 48),
+      padding: EdgeInsets.symmetric(
+        horizontal: isWide ? 48 : 32,
+        vertical: isWide ? 64 : 48,
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -165,7 +182,9 @@ class _OnboardingPage extends StatelessWidget {
           SizedBox(height: isWide ? 24 : 16),
           Text(
             description,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: isWide ? 20 : null),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(fontSize: isWide ? 20 : null),
             textAlign: TextAlign.center,
           ),
         ],
