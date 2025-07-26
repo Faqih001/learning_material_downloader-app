@@ -15,6 +15,8 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   String? _fileName;
+  String? _editedFileName;
+  String? _description;
   String? _subject;
   final List<String> _subjects = [
     'Mathematics',
@@ -68,13 +70,14 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _pickedFile = result.files.first;
         _fileName = _pickedFile!.name;
+  _editedFileName = _pickedFile!.name;
       });
     }
   }
 
   void _upload() async {
-    if (_pickedFile == null || _subject == null) {
-      setState(() => _uploadStatus = 'Please select a file and subject.');
+    if (_pickedFile == null || _subject == null || (_editedFileName == null || _editedFileName!.isEmpty)) {
+      setState(() => _uploadStatus = 'Please select a file, subject, and enter a name.');
       return;
     }
     setState(() {
@@ -103,9 +106,11 @@ class _UploadScreenState extends State<UploadScreen> {
       // Save metadata to DB
       final material = LearningMaterial(
         id: '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}',
-        title: _fileName!,
+        title: _editedFileName!,
         subject: _subject!,
-        description: 'Uploaded by ${_user['name'] ?? 'Unknown'}',
+        description: _description?.isNotEmpty == true
+            ? _description!
+            : 'Uploaded by ${_user['name'] ?? 'Unknown'}',
         fileUrl: publicUrl,
         rating: 0.0,
         downloads: 0,
@@ -121,6 +126,8 @@ class _UploadScreenState extends State<UploadScreen> {
         _uploading = false;
         _uploadStatus = 'Upload successful!';
         _fileName = null;
+        _editedFileName = null;
+        _description = null;
         _pickedFile = null;
         _subject = null;
       });
@@ -256,6 +263,45 @@ class _UploadScreenState extends State<UploadScreen> {
                                 ),
                               ],
                             ),
+
+                            if (_pickedFile != null) ...[
+                              SizedBox(height: isWide ? 18 : 12),
+                              TextField(
+                                enabled: !_uploading,
+                                controller: TextEditingController(text: _editedFileName)
+                                  ..selection = TextSelection.collapsed(offset: _editedFileName?.length ?? 0),
+                                onChanged: (v) => setState(() => _editedFileName = v),
+                                decoration: InputDecoration(
+                                  labelText: 'Material Name',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(isWide ? 14 : 10),
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: isWide ? 18 : 12,
+                                    vertical: isWide ? 14 : 8,
+                                  ),
+                                ),
+                                style: TextStyle(fontSize: isWide ? 17 : 15),
+                              ),
+                              SizedBox(height: isWide ? 18 : 12),
+                              TextField(
+                                enabled: !_uploading,
+                                minLines: 2,
+                                maxLines: 4,
+                                onChanged: (v) => setState(() => _description = v),
+                                decoration: InputDecoration(
+                                  labelText: 'Description',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(isWide ? 14 : 10),
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: isWide ? 18 : 12,
+                                    vertical: isWide ? 14 : 8,
+                                  ),
+                                ),
+                                style: TextStyle(fontSize: isWide ? 17 : 15),
+                              ),
+                            ],
                             SizedBox(height: isWide ? 32 : 24),
                             Text(
                               'Select Subject',

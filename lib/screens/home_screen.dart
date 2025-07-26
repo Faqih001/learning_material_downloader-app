@@ -594,7 +594,7 @@ class _HomeTab extends StatelessWidget {
                                 return Align(
                                   alignment: Alignment.centerLeft,
                                   child: SizedBox(
-                                    height: isWide ? 220 : 160,
+                                    height: isWide ? 320 : 240,
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
                                       itemCount: recent.length,
@@ -613,7 +613,7 @@ class _HomeTab extends StatelessWidget {
                                             vertical: 4,
                                           ),
                                           child: Container(
-                                            width: isWide ? 320 : 220,
+                                            width: isWide ? 400 : 320,
                                             padding: const EdgeInsets.all(18),
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(18),
