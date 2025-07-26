@@ -42,11 +42,21 @@ class ChatbotCrudService {
     });
   }
 
-  Future<List<ChatMessage>> fetchMessages({String? userId, int limit = 50}) async {
-  final builder = userId != null
-    ? client.from('chatbot_messages').select().eq('user_id', userId)
-    : client.from('chatbot_messages').select();
-  final response = await builder.order('created_at', ascending: false).limit(limit);
-  return (response as List).map((e) => ChatMessage.fromMap(e)).toList().reversed.toList();
+  Future<List<ChatMessage>> fetchMessages({
+    String? userId,
+    int limit = 50,
+  }) async {
+    final builder =
+        userId != null
+            ? client.from('chatbot_messages').select().eq('user_id', userId)
+            : client.from('chatbot_messages').select();
+    final response = await builder
+        .order('created_at', ascending: false)
+        .limit(limit);
+    return (response as List)
+        .map((e) => ChatMessage.fromMap(e))
+        .toList()
+        .reversed
+        .toList();
   }
 }

@@ -78,13 +78,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     final userId = user?.id;
     final now = DateTime.now();
     setState(() {
-      _messages.add(ChatMessage(
-        id: UniqueKey().toString(),
-        userId: userId,
-        role: 'user',
-        content: text,
-        createdAt: now,
-      ));
+      _messages.add(
+        ChatMessage(
+          id: UniqueKey().toString(),
+          userId: userId,
+          role: 'user',
+          content: text,
+          createdAt: now,
+        ),
+      );
       _controller.clear();
       _sending = true;
     });
@@ -98,7 +100,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         content: aiResponse,
         createdAt: DateTime.now(),
       );
-      await _chatCrud?.addMessage(role: 'ai', content: aiResponse, userId: userId);
+      await _chatCrud?.addMessage(
+        role: 'ai',
+        content: aiResponse,
+        userId: userId,
+      );
       if (!mounted) return;
       setState(() {
         _messages.add(aiMsg);
@@ -123,132 +129,133 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         title: const Text('AI Study Assistant'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body: _loadingUser || _loadingHistory
-          ? const Center(child: CircularProgressIndicator())
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                final isWide = constraints.maxWidth > 700;
-                return Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth: isWide ? 700 : double.infinity,
-                    ),
-                    child: Column(
-                      children: [
-                        if ((_user['name']?.isNotEmpty ?? false) ||
-                            (_user['email']?.isNotEmpty ?? false))
-                          Container(
-                            width: double.infinity,
-                            color: Colors.blue.shade50,
-                            padding: EdgeInsets.symmetric(
-                              vertical: isWide ? 18 : 12,
-                              horizontal: isWide ? 32 : 16,
+      body:
+          _loadingUser || _loadingHistory
+              ? const Center(child: CircularProgressIndicator())
+              : LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth > 700;
+                  return Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: isWide ? 700 : double.infinity,
+                      ),
+                      child: Column(
+                        children: [
+                          if ((_user['name']?.isNotEmpty ?? false) ||
+                              (_user['email']?.isNotEmpty ?? false))
+                            Container(
+                              width: double.infinity,
+                              color: Colors.blue.shade50,
+                              padding: EdgeInsets.symmetric(
+                                vertical: isWide ? 18 : 12,
+                                horizontal: isWide ? 32 : 16,
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.account_circle,
+                                    color: Color(0xFF2563EB),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (_user['name'] != null &&
+                                            _user['name']!.isNotEmpty)
+                                          Text(
+                                            _user['name']!,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        if (_user['email'] != null &&
+                                            _user['email']!.isNotEmpty)
+                                          Text(
+                                            _user['email']!,
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isWide ? 32 : 12,
+                                vertical: isWide ? 24 : 8,
+                              ),
+                              child: ListView.builder(
+                                itemCount: _messages.length,
+                                itemBuilder: (context, i) {
+                                  final msg = _messages[i];
+                                  return ChatBubble(
+                                    text: msg.content,
+                                    isUser: msg.role == 'user',
+                                    timestamp: msg.createdAt,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          if (_sending)
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 8),
+                              child: CircularProgressIndicator(),
+                            ),
+                          Padding(
+                            padding: EdgeInsets.all(isWide ? 24 : 12),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.account_circle,
-                                  color: Color(0xFF2563EB),
-                                ),
-                                const SizedBox(width: 10),
                                 Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      if (_user['name'] != null &&
-                                          _user['name']!.isNotEmpty)
-                                        Text(
-                                          _user['name']!,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      if (_user['email'] != null &&
-                                          _user['email']!.isNotEmpty)
-                                        Text(
-                                          _user['email']!,
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                    ],
+                                  child: TextField(
+                                    controller: _controller,
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          'Ask a question... (English or Swahili)',
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      contentPadding: EdgeInsets.symmetric(
+                                        vertical: isWide ? 20 : 14,
+                                        horizontal: isWide ? 20 : 12,
+                                      ),
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: isWide ? 18 : 15,
+                                    ),
+                                    onSubmitted: (_) => _sendMessage(),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.send,
+                                      color: Color(0xFF2563EB),
+                                      size: isWide ? 32 : 24,
+                                    ),
+                                    onPressed: _sending ? null : _sendMessage,
+                                    tooltip: 'Send',
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isWide ? 32 : 12,
-                              vertical: isWide ? 24 : 8,
-                            ),
-                            child: ListView.builder(
-                              itemCount: _messages.length,
-                              itemBuilder: (context, i) {
-                                final msg = _messages[i];
-                                return ChatBubble(
-                                  text: msg.content,
-                                  isUser: msg.role == 'user',
-                                  timestamp: msg.createdAt,
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        if (_sending)
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: CircularProgressIndicator(),
-                          ),
-                        Padding(
-                          padding: EdgeInsets.all(isWide ? 24 : 12),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _controller,
-                                  decoration: InputDecoration(
-                                    hintText:
-                                        'Ask a question... (English or Swahili)',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: isWide ? 20 : 14,
-                                      horizontal: isWide ? 20 : 12,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: isWide ? 18 : 15,
-                                  ),
-                                  onSubmitted: (_) => _sendMessage(),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              MouseRegion(
-                                cursor: SystemMouseCursors.click,
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.send,
-                                    color: Color(0xFF2563EB),
-                                    size: isWide ? 32 : 24,
-                                  ),
-                                  onPressed: _sending ? null : _sendMessage,
-                                  tooltip: 'Send',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
     );
   }
 }

@@ -11,17 +11,14 @@ class GrokApiService {
       throw Exception('Grok API key or endpoint not set in .env');
     }
     final url = Uri.parse(endpoint!);
-    final headers = {
-      'Content-Type': 'application/json',
-      'api-key': apiKey!,
-    };
+    final headers = {'Content-Type': 'application/json', 'api-key': apiKey!};
     final body = jsonEncode({
       "messages": [
         {"role": "system", "content": "You are an helpful assistant."},
-        {"role": "user", "content": userMessage}
+        {"role": "user", "content": userMessage},
       ],
       "max_tokens": 1000,
-      "model": "grok-3"
+      "model": "grok-3",
     });
     final response = await http.post(url, headers: headers, body: body);
     if (response.statusCode == 200) {
@@ -29,7 +26,9 @@ class GrokApiService {
       // Adjust this according to the actual API response structure
       return data['choices']?[0]?['message']?['content'] ?? 'No response.';
     } else {
-      throw Exception('Grok API error: ${response.statusCode} ${response.body}');
+      throw Exception(
+        'Grok API error: ${response.statusCode} ${response.body}',
+      );
     }
   }
 }
