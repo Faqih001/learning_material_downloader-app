@@ -49,6 +49,7 @@ dependencies:
   google_generative_ai: ^0.4.7
   carousel_slider: ^5.1.1
   supabase_flutter: ^2.3.4
+  logger: ^2.6.1
 
 dev_dependencies:
   flutter_test:
