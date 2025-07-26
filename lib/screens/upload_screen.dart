@@ -70,14 +70,19 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _pickedFile = result.files.first;
         _fileName = _pickedFile!.name;
-  _editedFileName = _pickedFile!.name;
+        _editedFileName = _pickedFile!.name;
       });
     }
   }
 
   void _upload() async {
-    if (_pickedFile == null || _subject == null || (_editedFileName == null || _editedFileName!.isEmpty)) {
-      setState(() => _uploadStatus = 'Please select a file, subject, and enter a name.');
+    if (_pickedFile == null ||
+        _subject == null ||
+        (_editedFileName == null || _editedFileName!.isEmpty)) {
+      setState(
+        () =>
+            _uploadStatus = 'Please select a file, subject, and enter a name.',
+      );
       return;
     }
     setState(() {
@@ -108,9 +113,10 @@ class _UploadScreenState extends State<UploadScreen> {
         id: '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}',
         title: _editedFileName!,
         subject: _subject!,
-        description: _description?.isNotEmpty == true
-            ? _description!
-            : 'Uploaded by ${_user['name'] ?? 'Unknown'}',
+        description:
+            _description?.isNotEmpty == true
+                ? _description!
+                : 'Uploaded by ${_user['name'] ?? 'Unknown'}',
         fileUrl: publicUrl,
         rating: 0.0,
         downloads: 0,
@@ -268,13 +274,20 @@ class _UploadScreenState extends State<UploadScreen> {
                               SizedBox(height: isWide ? 18 : 12),
                               TextField(
                                 enabled: !_uploading,
-                                controller: TextEditingController(text: _editedFileName)
-                                  ..selection = TextSelection.collapsed(offset: _editedFileName?.length ?? 0),
-                                onChanged: (v) => setState(() => _editedFileName = v),
+                                controller: TextEditingController(
+                                    text: _editedFileName,
+                                  )
+                                  ..selection = TextSelection.collapsed(
+                                    offset: _editedFileName?.length ?? 0,
+                                  ),
+                                onChanged:
+                                    (v) => setState(() => _editedFileName = v),
                                 decoration: InputDecoration(
                                   labelText: 'Material Name',
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(isWide ? 14 : 10),
+                                    borderRadius: BorderRadius.circular(
+                                      isWide ? 14 : 10,
+                                    ),
                                   ),
                                   contentPadding: EdgeInsets.symmetric(
                                     horizontal: isWide ? 18 : 12,
@@ -288,11 +301,14 @@ class _UploadScreenState extends State<UploadScreen> {
                                 enabled: !_uploading,
                                 minLines: 2,
                                 maxLines: 4,
-                                onChanged: (v) => setState(() => _description = v),
+                                onChanged:
+                                    (v) => setState(() => _description = v),
                                 decoration: InputDecoration(
                                   labelText: 'Description',
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(isWide ? 14 : 10),
+                                    borderRadius: BorderRadius.circular(
+                                      isWide ? 14 : 10,
+                                    ),
                                   ),
                                   contentPadding: EdgeInsets.symmetric(
                                     horizontal: isWide ? 18 : 12,

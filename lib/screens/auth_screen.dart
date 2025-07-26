@@ -95,7 +95,7 @@ class _AuthScreenState extends State<AuthScreen> {
           if (!mounted) return;
           Navigator.pushReplacementNamed(context, '/home');
         } else {
-          setState(() => _error = result);
+          setState(() => _error = 'Invalid email or password');
         }
       } else {
         result = await _authService.register(
