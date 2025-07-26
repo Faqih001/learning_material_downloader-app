@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../models/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/supabase_crud_service.dart';
+import 'dart:math';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -56,15 +61,19 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
+  PlatformFile? _pickedFile;
   void _pickFile() async {
-    // Simulate file picking
-    setState(() {
-      _fileName = 'SampleFile.pdf';
-    });
+    final result = await FilePicker.platform.pickFiles(type: FileType.any);
+    if (result != null && result.files.isNotEmpty) {
+      setState(() {
+        _pickedFile = result.files.first;
+        _fileName = _pickedFile!.name;
+      });
+    }
   }
 
   void _upload() async {
-    if (_fileName == null || _subject == null) {
+    if (_pickedFile == null || _subject == null) {
       setState(() => _uploadStatus = 'Please select a file and subject.');
       return;
     }
@@ -73,12 +82,39 @@ class _UploadScreenState extends State<UploadScreen> {
       _uploadStatus = null;
     });
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      final supabase = Supabase.instance.client;
+      final storagePath = 'materials/${DateTime.now().millisecondsSinceEpoch}_${_pickedFile!.name}';
+      // Upload file to Supabase Storage
+      final storageResponse = await supabase.storage.from('materials').uploadBinary(
+        storagePath,
+        _pickedFile!.bytes!,
+        fileOptions: const FileOptions(upsert: true),
+      );
+      if (storageResponse.isEmpty) throw Exception('Failed to upload file to storage');
+      final publicUrl = supabase.storage.from('materials').getPublicUrl(storagePath);
+
+      // Save metadata to DB
+      final material = LearningMaterial(
+        id: '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}',
+        title: _fileName!,
+        subject: _subject!,
+        description: 'Uploaded by ${_user['name'] ?? 'Unknown'}',
+        fileUrl: publicUrl,
+        rating: 0.0,
+        downloads: 0,
+        size: (_pickedFile!.size / 1024).round(),
+        uploaderId: _user['email'] ?? 'unknown',
+        tags: [],
+      );
+      final crud = SupabaseCrudService(supabase);
+      await crud.addMaterial(material);
+
       if (!mounted) return;
       setState(() {
         _uploading = false;
         _uploadStatus = 'Upload successful!';
         _fileName = null;
+        _pickedFile = null;
         _subject = null;
       });
     } catch (e, st) {
