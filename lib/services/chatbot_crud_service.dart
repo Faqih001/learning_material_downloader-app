@@ -43,9 +43,9 @@ class ChatbotCrudService {
   }
 
   Future<List<ChatMessage>> fetchMessages({String? userId, int limit = 50}) async {
-    final query = client.from('chatbot_messages').select().order('created_at', ascending: false).limit(limit);
+    var query = client.from('chatbot_messages').select().order('created_at', ascending: false).limit(limit);
     if (userId != null) {
-      query.eq('user_id', userId);
+      query = query.match({'user_id': userId});
     }
     final response = await query;
     return (response as List).map((e) => ChatMessage.fromMap(e)).toList().reversed.toList();

@@ -31,15 +31,16 @@ class ChatBubble extends StatelessWidget {
             bottomLeft: Radius.circular(isUser ? 18 : 4),
             bottomRight: Radius.circular(isUser ? 4 : 18),
           ),
-          boxShadow: isUser
-              ? [
-                  BoxShadow(
-                    color: Colors.blue.withOpacity(0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : [],
+          boxShadow:
+              isUser
+                  ? [
+                    BoxShadow(
+                      color: Colors.blue.withAlpha((0.08 * 255).toInt()),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                  : [],
         ),
         child: Column(
           crossAxisAlignment:
