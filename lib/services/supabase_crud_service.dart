@@ -10,6 +10,7 @@ class SupabaseCrudService {
         .update({'rating': rating})
         .eq('id', materialId);
   }
+
   final SupabaseClient client;
   SupabaseCrudService(this.client);
 

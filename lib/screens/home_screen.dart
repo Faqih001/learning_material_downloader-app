@@ -598,12 +598,16 @@ class _HomeTab extends StatelessWidget {
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
                                       itemCount: recent.length,
-                                      separatorBuilder: (_, i) => SizedBox(width: isWide ? 24 : 12),
+                                      separatorBuilder:
+                                          (_, i) =>
+                                              SizedBox(width: isWide ? 24 : 12),
                                       itemBuilder: (context, i) {
                                         final mat = recent[i];
                                         return Card(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
                                           ),
                                           elevation: 6,
                                           margin: const EdgeInsets.symmetric(
@@ -614,10 +618,13 @@ class _HomeTab extends StatelessWidget {
                                             width: isWide ? 320 : 220,
                                             padding: const EdgeInsets.all(20),
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(20),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                               gradient: LinearGradient(
                                                 colors: [
-                                                  Color(0xFF60A5FA).withAlpha((255 * 0.15).round()),
+                                                  Color(0xFF60A5FA).withAlpha(
+                                                    (255 * 0.15).round(),
+                                                  ),
                                                   Colors.white,
                                                 ],
                                                 begin: Alignment.topLeft,
@@ -625,8 +632,10 @@ class _HomeTab extends StatelessWidget {
                                               ),
                                             ),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Text(
                                                   mat.title,
@@ -677,41 +686,70 @@ class _HomeTab extends StatelessWidget {
                                                 const SizedBox(height: 16),
                                                 ElevatedButton.icon(
                                                   style: ElevatedButton.styleFrom(
-                                                    backgroundColor: Color(0xFF2563EB),
-                                                    foregroundColor: Colors.white,
+                                                    backgroundColor: Color(
+                                                      0xFF2563EB,
+                                                    ),
+                                                    foregroundColor:
+                                                        Colors.white,
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(12),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
                                                     ),
                                                   ),
                                                   onPressed: () async {
                                                     final url = mat.fileUrl;
-                                                    if (url.isNotEmpty && await canLaunchUrl(Uri.parse(url))) {
+                                                    if (url.isNotEmpty &&
+                                                        await canLaunchUrl(
+                                                          Uri.parse(url),
+                                                        )) {
                                                       await launchUrl(
                                                         Uri.parse(url),
-                                                        mode: LaunchMode.externalApplication,
+                                                        mode:
+                                                            LaunchMode
+                                                                .externalApplication,
                                                       );
                                                       // Show rating dialog after download
-                                                      if (!context.mounted) return;
+                                                      if (!context.mounted)
+                                                        return;
                                                       int selectedRating = 0;
                                                       await showDialog(
                                                         context: context,
                                                         builder: (context) {
                                                           return AlertDialog(
-                                                            title: const Text('Rate this material'),
+                                                            title: const Text(
+                                                              'Rate this material',
+                                                            ),
                                                             content: StatefulBuilder(
-                                                              builder: (context, setState) {
+                                                              builder: (
+                                                                context,
+                                                                setState,
+                                                              ) {
                                                                 return Row(
-                                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                                  children: List.generate(5, (star) {
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: List.generate(5, (
+                                                                    star,
+                                                                  ) {
                                                                     return IconButton(
                                                                       icon: Icon(
-                                                                        Icons.star,
-                                                                        color: star < selectedRating ? Colors.amber : Colors.grey[400],
-                                                                        size: 32,
+                                                                        Icons
+                                                                            .star,
+                                                                        color:
+                                                                            star <
+                                                                                    selectedRating
+                                                                                ? Colors.amber
+                                                                                : Colors.grey[400],
+                                                                        size:
+                                                                            32,
                                                                       ),
                                                                       onPressed: () {
                                                                         setState(() {
-                                                                          selectedRating = star + 1;
+                                                                          selectedRating =
+                                                                              star +
+                                                                              1;
                                                                         });
                                                                       },
                                                                     );
@@ -722,40 +760,68 @@ class _HomeTab extends StatelessWidget {
                                                             actions: [
                                                               TextButton(
                                                                 onPressed: () {
-                                                                  Navigator.of(context).pop();
+                                                                  Navigator.of(
+                                                                    context,
+                                                                  ).pop();
                                                                 },
-                                                                child: const Text('Cancel'),
+                                                                child:
+                                                                    const Text(
+                                                                      'Cancel',
+                                                                    ),
                                                               ),
                                                               ElevatedButton(
-                                                                onPressed: selectedRating > 0
-                                                                    ? () async {
-                                                                        await SupabaseCrudService(Supabase.instance.client)
-                                                                            .updateMaterialRating(mat.id, selectedRating.toDouble());
-                                                                        Navigator.of(context).pop();
-                                                                        ScaffoldMessenger.of(context).showSnackBar(
-                                                                          SnackBar(
-                                                                            content: Text('Thanks for rating $selectedRating star${selectedRating > 1 ? 's' : ''}!'),
-                                                                            backgroundColor: Colors.green,
-                                                                          ),
-                                                                        );
-                                                                      }
-                                                                    : null,
-                                                                child: const Text('Submit'),
+                                                                onPressed:
+                                                                    selectedRating >
+                                                                            0
+                                                                        ? () async {
+                                                                          await SupabaseCrudService(
+                                                                            Supabase.instance.client,
+                                                                          ).updateMaterialRating(
+                                                                            mat.id,
+                                                                            selectedRating.toDouble(),
+                                                                          );
+                                                                          Navigator.of(
+                                                                            context,
+                                                                          ).pop();
+                                                                          ScaffoldMessenger.of(
+                                                                            context,
+                                                                          ).showSnackBar(
+                                                                            SnackBar(
+                                                                              content: Text(
+                                                                                'Thanks for rating $selectedRating star${selectedRating > 1 ? 's' : ''}!',
+                                                                              ),
+                                                                              backgroundColor:
+                                                                                  Colors.green,
+                                                                            ),
+                                                                          );
+                                                                        }
+                                                                        : null,
+                                                                child:
+                                                                    const Text(
+                                                                      'Submit',
+                                                                    ),
                                                               ),
                                                             ],
                                                           );
                                                         },
                                                       );
                                                     } else {
-                                                      if (!context.mounted) return;
-                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                      if (!context.mounted)
+                                                        return;
+                                                      ScaffoldMessenger.of(
+                                                        context,
+                                                      ).showSnackBar(
                                                         SnackBar(
-                                                          content: Text('Could not launch file URL.'),
+                                                          content: Text(
+                                                            'Could not launch file URL.',
+                                                          ),
                                                         ),
                                                       );
                                                     }
                                                   },
-                                                  icon: const Icon(Icons.download),
+                                                  icon: const Icon(
+                                                    Icons.download,
+                                                  ),
                                                   label: const Text('Download'),
                                                 ),
                                               ],
