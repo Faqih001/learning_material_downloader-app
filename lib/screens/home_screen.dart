@@ -12,6 +12,7 @@ import 'upload_screen.dart';
 import 'chatbot_screen.dart';
 import 'map_screen.dart';
 import 'profile_screen.dart';
+import '../widgets/app_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -78,61 +79,9 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _selectedIndex,
         children: List.generate(_pages.length, (i) => _buildSafePage(i)),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Colors.grey.shade300, width: 1.2),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: NavigationBar(
-          height: 68,
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: _onItemTapped,
-          backgroundColor: Colors.transparent,
-          indicatorColor: const Color(0xFF2563EB).withValues(alpha: 0.08),
-          elevation: 0,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.search_outlined),
-              selectedIcon: Icon(Icons.search),
-              label: 'Search',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.upload_file_outlined),
-              selectedIcon: Icon(Icons.upload_file),
-              label: 'Settings',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.smart_toy),
-              selectedIcon: Icon(Icons.smart_toy),
-              label: 'Explore',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.map_outlined),
-              selectedIcon: Icon(Icons.map),
-              label: 'Map',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-        ),
+      bottomNavigationBar: AppNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }
