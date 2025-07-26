@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/gemini_api_service.dart';
+import '../services/grok_api_service.dart';
 import '../services/auth_service.dart';
 
 class ChatbotScreen extends StatefulWidget {
@@ -13,7 +13,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
   bool _sending = false;
-  GeminiApiService? _geminiService;
+  GrokApiService? _grokService;
 
   Map<String, String?> _user = {};
   bool _loadingUser = true;
@@ -21,7 +21,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   void initState() {
     super.initState();
-    _geminiService = GeminiApiService();
+    _grokService = GrokApiService();
     _loadUser();
   }
 
@@ -55,7 +55,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       _sending = true;
     });
     try {
-      final aiResponse = await _geminiService!.sendMessage(text);
+      final aiResponse = await _grokService!.sendMessage(text);
       if (!mounted) return;
       setState(() {
         _messages.add({'role': 'ai', 'text': aiResponse});
