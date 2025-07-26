@@ -603,7 +603,7 @@ class _HomeTabState extends State<_HomeTab> {
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  mat.rating.toString(),
+                                                  mat.rating.toStringAsFixed(1),
                                                   style: TextStyle(
                                                     color: Colors.black54,
                                                   ),
@@ -797,7 +797,8 @@ class _HomeTabState extends State<_HomeTab> {
                                                     ),
                                                     const SizedBox(width: 4),
                                                     Text(
-                                                      mat.rating.toString(),
+                                                      mat.rating
+                                                          .toStringAsFixed(1),
                                                       style: TextStyle(
                                                         color: Colors.black54,
                                                       ),
@@ -834,102 +835,145 @@ class _HomeTabState extends State<_HomeTab> {
                                                             LaunchMode
                                                                 .externalApplication,
                                                       );
-                                                      int selectedRating = 0;
                                                       if (!context.mounted) {
                                                         return;
                                                       }
+                                                      int selectedRating = 0;
                                                       await showDialog(
                                                         context: context,
                                                         builder: (context) {
-                                                          return AlertDialog(
-                                                            title: const Text(
-                                                              'Rate this material',
-                                                            ),
-                                                            content: StatefulBuilder(
-                                                              builder: (
-                                                                context,
-                                                                setState,
-                                                              ) {
-                                                                return Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  children: List.generate(5, (
-                                                                    star,
-                                                                  ) {
-                                                                    return IconButton(
-                                                                      icon: Icon(
-                                                                        Icons
-                                                                            .star,
-                                                                        color:
-                                                                            star <
-                                                                                    selectedRating
-                                                                                ? Colors.amber
-                                                                                : Colors.grey[400],
-                                                                        size:
-                                                                            32,
-                                                                      ),
-                                                                      onPressed: () {
-                                                                        setState(() {
-                                                                          selectedRating =
-                                                                              star +
-                                                                              1;
-                                                                        });
-                                                                      },
-                                                                    );
-                                                                  }),
-                                                                );
-                                                              },
-                                                            ),
-                                                            actions: [
-                                                              TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                    context,
-                                                                  ).pop();
-                                                                },
-                                                                child:
-                                                                    const Text(
-                                                                      'Cancel',
+                                                          return StatefulBuilder(
+                                                            builder: (
+                                                              context,
+                                                              setState,
+                                                            ) {
+                                                              int hoverRating =
+                                                                  0;
+                                                              return AlertDialog(
+                                                                title: const Text(
+                                                                  'Rate this material',
+                                                                ),
+                                                                content: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: List.generate(5, (
+                                                                        star,
+                                                                      ) {
+                                                                        return MouseRegion(
+                                                                          onEnter: (
+                                                                            _,
+                                                                          ) {
+                                                                            setState(() {
+                                                                              hoverRating =
+                                                                                  star +
+                                                                                  1;
+                                                                            });
+                                                                          },
+                                                                          onExit: (
+                                                                            _,
+                                                                          ) {
+                                                                            setState(() {
+                                                                              hoverRating =
+                                                                                  0;
+                                                                            });
+                                                                          },
+                                                                          child: IconButton(
+                                                                            icon: Icon(
+                                                                              Icons.star,
+                                                                              color:
+                                                                                  (hoverRating >
+                                                                                              0
+                                                                                          ? star <
+                                                                                              hoverRating
+                                                                                          : star <
+                                                                                              selectedRating)
+                                                                                      ? Colors.amber
+                                                                                      : Colors.grey[400],
+                                                                              size:
+                                                                                  32,
+                                                                            ),
+                                                                            onPressed: () {
+                                                                              setState(
+                                                                                () {
+                                                                                  selectedRating =
+                                                                                      star +
+                                                                                      1;
+                                                                                },
+                                                                              );
+                                                                            },
+                                                                          ),
+                                                                        );
+                                                                      }),
                                                                     ),
-                                                              ),
-                                                              ElevatedButton(
-                                                                onPressed:
-                                                                    selectedRating >
-                                                                            0
-                                                                        ? () async {
-                                                                          await SupabaseCrudService(
-                                                                            Supabase.instance.client,
-                                                                          ).updateMaterialRating(
-                                                                            mat.id,
-                                                                            selectedRating.toDouble(),
-                                                                          );
-                                                                          if (!context
-                                                                              .mounted) {
-                                                                            return;
-                                                                          }
+                                                                  ],
+                                                                ),
+                                                                actions: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      TextButton(
+                                                                        onPressed: () {
                                                                           Navigator.of(
                                                                             context,
                                                                           ).pop();
-                                                                          ScaffoldMessenger.of(
-                                                                            context,
-                                                                          ).showSnackBar(
-                                                                            SnackBar(
-                                                                              content: Text(
-                                                                                'Thanks for rating $selectedRating star${selectedRating > 1 ? 's' : ''}!',
-                                                                              ),
-                                                                              backgroundColor:
-                                                                                  Colors.green,
-                                                                            ),
-                                                                          );
-                                                                        }
-                                                                        : null,
-                                                                child:
-                                                                    const Text(
-                                                                      'Submit',
-                                                                    ),
-                                                              ),
-                                                            ],
+                                                                        },
+                                                                        child: const Text(
+                                                                          'Cancel',
+                                                                        ),
+                                                                      ),
+                                                                      ElevatedButton(
+                                                                        onPressed:
+                                                                            selectedRating >
+                                                                                    0
+                                                                                ? () async {
+                                                                                  await SupabaseCrudService(
+                                                                                    Supabase.instance.client,
+                                                                                  ).updateMaterialRating(
+                                                                                    mat.id,
+                                                                                    selectedRating.toDouble(),
+                                                                                  );
+                                                                                  if (!context.mounted) {
+                                                                                    return;
+                                                                                  }
+                                                                                  Navigator.of(
+                                                                                    context,
+                                                                                  ).pop();
+                                                                                  ScaffoldMessenger.of(
+                                                                                    context,
+                                                                                  ).showSnackBar(
+                                                                                    SnackBar(
+                                                                                      content: Text(
+                                                                                        'Thanks for rating $selectedRating star${selectedRating > 1 ? 's' : ''}!',
+                                                                                      ),
+                                                                                      backgroundColor:
+                                                                                          Colors.green,
+                                                                                    ),
+                                                                                  );
+                                                                                  // Update the card's rating immediately
+                                                                                  setState(
+                                                                                    () {
+                                                                                      mat.rating = selectedRating.toDouble();
+                                                                                    },
+                                                                                  );
+                                                                                }
+                                                                                : null,
+                                                                        child: const Text(
+                                                                          'Submit',
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
                                                           );
                                                         },
                                                       );

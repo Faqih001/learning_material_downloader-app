@@ -4,7 +4,7 @@ class LearningMaterial {
   final String subject;
   final String description;
   final String fileUrl;
-  final double rating;
+  double rating;
   final int downloads;
   final int size;
   final String uploaderId;
