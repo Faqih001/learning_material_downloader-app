@@ -30,7 +30,11 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.school, size: isWide ? 160 : 100, color: Colors.white),
+                  Icon(
+                    Icons.school,
+                    size: isWide ? 160 : 100,
+                    color: Colors.white,
+                  ),
                   SizedBox(height: isWide ? 40 : 24),
                   Text(
                     'Learning Material Downloader',

@@ -22,11 +22,20 @@ class SubjectChip extends StatelessWidget {
             onTap: onTap,
             child: Chip(
               label: Text(label, style: TextStyle(fontSize: isWide ? 16 : 14)),
-              backgroundColor: selected ? const Color(0xFF2563EB) : Colors.grey[200],
-              labelStyle: TextStyle(color: selected ? Colors.white : Colors.black),
-              padding: EdgeInsets.symmetric(horizontal: isWide ? 18 : 12, vertical: isWide ? 8 : 4),
+              backgroundColor:
+                  selected ? const Color(0xFF2563EB) : Colors.grey[200],
+              labelStyle: TextStyle(
+                color: selected ? Colors.white : Colors.black,
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: isWide ? 18 : 12,
+                vertical: isWide ? 8 : 4,
+              ),
               elevation: isWide && selected ? 4 : 0,
-              side: selected ? BorderSide(color: const Color(0xFF2563EB), width: 1.5) : null,
+              side:
+                  selected
+                      ? BorderSide(color: const Color(0xFF2563EB), width: 1.5)
+                      : null,
             ),
           ),
         );
