@@ -77,8 +77,14 @@ class _AuthScreenState extends State<AuthScreen> {
         final prefs = await SharedPreferences.getInstance();
         if (_rememberMe && result == null) {
           await prefs.setBool('remember_me', true);
-          await prefs.setString('remembered_email', _emailController.text.trim());
-          await prefs.setString('remembered_password', _passwordController.text);
+          await prefs.setString(
+            'remembered_email',
+            _emailController.text.trim(),
+          );
+          await prefs.setString(
+            'remembered_password',
+            _passwordController.text,
+          );
         } else {
           await prefs.setBool('remember_me', false);
           await prefs.remove('remembered_email');
@@ -102,7 +108,9 @@ class _AuthScreenState extends State<AuthScreen> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Registration successful! Please check your email to verify and then login.'),
+              content: Text(
+                'Registration successful! Please check your email to verify and then login.',
+              ),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
               duration: Duration(seconds: 2),

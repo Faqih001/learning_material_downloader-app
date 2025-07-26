@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
 class AuthService {
   final SupabaseClient _client = Supabase.instance.client;
 
@@ -13,9 +12,7 @@ class AuthService {
         data: {'name': name},
       );
       if (response.user == null) {
-        return response.session == null
-            ? 'Registration failed.'
-            : null;
+        return response.session == null ? 'Registration failed.' : null;
       }
       return null;
     } catch (e) {
@@ -31,9 +28,7 @@ class AuthService {
         password: password,
       );
       if (response.user == null) {
-        return response.session == null
-            ? 'Login failed.'
-            : null;
+        return response.session == null ? 'Login failed.' : null;
       }
       return null;
     } catch (e) {
@@ -55,9 +50,6 @@ class AuthService {
   Future<Map<String, String?>> getCurrentUser() async {
     final user = _client.auth.currentUser;
     if (user == null) return {};
-    return {
-      'name': user.userMetadata?['name'] as String?,
-      'email': user.email,
-    };
+    return {'name': user.userMetadata?['name'] as String?, 'email': user.email};
   }
 }
