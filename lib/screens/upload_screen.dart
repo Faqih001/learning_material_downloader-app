@@ -93,8 +93,9 @@ class _UploadScreenState extends State<UploadScreen> {
             _pickedFile!.bytes!,
             fileOptions: const FileOptions(upsert: true),
           );
-      if (storageResponse.isEmpty)
+      if (storageResponse.isEmpty) {
         throw Exception('Failed to upload file to storage');
+      }
       final publicUrl = supabase.storage
           .from('materials')
           .getPublicUrl(storagePath);

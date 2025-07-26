@@ -866,6 +866,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                             .externalApplication,
                                                   );
                                                 } else {
+                                                  if (!context.mounted) return;
                                                   ScaffoldMessenger.of(
                                                     context,
                                                   ).showSnackBar(
