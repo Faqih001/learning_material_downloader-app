@@ -5,10 +5,10 @@ class ProfileProgressCard extends StatelessWidget {
   final double progress; // 0.0 - 1.0
 
   const ProfileProgressCard({
-    Key? key,
+    super.key,
     required this.userName,
     required this.progress,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +19,7 @@ class ProfileProgressCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              userName,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text(userName, style: Theme.of(context).textTheme.titleLarge),
             SizedBox(height: 8),
             Text('Progress'),
             SizedBox(height: 8),

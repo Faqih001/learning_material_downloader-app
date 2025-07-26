@@ -20,10 +20,10 @@ class StudyCenterCarousel extends StatelessWidget {
   final void Function(int) onTap;
 
   const StudyCenterCarousel({
-    Key? key,
+    super.key,
     required this.centers,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,32 +33,49 @@ class StudyCenterCarousel extends StatelessWidget {
         enlargeCenterPage: true,
         autoPlay: true,
       ),
-      items: centers.asMap().entries.map((entry) {
-        int idx = entry.key;
-        StudyCenter center = entry.value;
-        return GestureDetector(
-          onTap: () => onTap(idx),
-          child: Card(
-            color: Colors.green,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(center.name, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 4),
-                  Text(center.city, style: TextStyle(color: Colors.white70)),
-                  SizedBox(height: 4),
-                  Text(center.address, style: TextStyle(color: Colors.white70)),
-                  SizedBox(height: 4),
-                  Text(center.description, style: TextStyle(color: Colors.white)),
-                ],
+      items:
+          centers.asMap().entries.map((entry) {
+            int idx = entry.key;
+            StudyCenter center = entry.value;
+            return GestureDetector(
+              onTap: () => onTap(idx),
+              child: Card(
+                color: Colors.green,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        center.name,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        center.city,
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        center.address,
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        center.description,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 }

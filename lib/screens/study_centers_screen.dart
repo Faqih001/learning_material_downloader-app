@@ -36,6 +36,8 @@ final List<StudyCenter> studyCenters = [
 ];
 
 class StudyCentersScreen extends StatelessWidget {
+  const StudyCentersScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +50,9 @@ class StudyCentersScreen extends StatelessWidget {
             margin: EdgeInsets.all(8),
             child: ListTile(
               title: Text(center.name),
-              subtitle: Text('${center.city}\n${center.address}\n${center.description}'),
+              subtitle: Text(
+                '${center.city}\n${center.address}\n${center.description}',
+              ),
               isThreeLine: true,
             ),
           );

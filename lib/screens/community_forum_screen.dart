@@ -1,42 +1,65 @@
-import '../services/supabase_crud_service.dart';
-
-// Function to fetch comments from backend
-Future<List<String>> fetchComments() async {
-  // TODO: Implement backend fetch logic
-  return [];
-}
-
-// Function to post a comment to backend
-Future<void> postComment(String comment) async {
-  // TODO: Implement backend post logic
-  await SupabaseCrudService().insert('community_forum', {'comment': comment});
-}
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../models/community_comment.dart';
+
+final SupabaseClient _client = Supabase.instance.client;
+
+Future<List<CommunityComment>> fetchComments() async {
+  final response = await _client
+      .from('community_forum')
+      .select()
+      .order('created_at', ascending: false);
+  return (response as List)
+      .map((e) => CommunityComment.fromMap(e as Map<String, dynamic>))
+      .toList();
+}
+
+Future<void> postComment(String comment) async {
+  await _client.from('community_forum').insert({'comment': comment});
+}
 
 class CommunityForumScreen extends StatefulWidget {
+  const CommunityForumScreen({super.key});
+
   @override
-  _CommunityForumScreenState createState() => _CommunityForumScreenState();
+  State<CommunityForumScreen> createState() => CommunityForumScreenState();
 }
 
-class _CommunityForumScreenState extends State<CommunityForumScreen> {
+class CommunityForumScreenState extends State<CommunityForumScreen> {
   final TextEditingController _commentController = TextEditingController();
-  List<String> _comments = [];
+  final List<CommunityComment> _comments = [];
+  bool _loading = false;
 
-  void _addComment() async {
+  @override
+  void initState() {
+    super.initState();
+    _loadComments();
+  }
+
+  Future<void> _loadComments() async {
+    setState(() => _loading = true);
+    final comments = await fetchComments();
+    setState(() {
+      _comments.clear();
+      _comments.addAll(comments);
+      _loading = false;
+    });
+  }
+
+  Future<void> _addComment() async {
     final comment = _commentController.text.trim();
     if (comment.isNotEmpty) {
-      setState(() {
-        _comments.insert(0, comment);
-        _commentController.clear();
-      });
+      _commentController.clear();
       await postComment(comment);
+      await _loadComments();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Community Forum')),
+      appBar: AppBar(title: const Text('Community Forum')),
       body: Column(
         children: [
           Padding(
@@ -46,33 +69,43 @@ class _CommunityForumScreenState extends State<CommunityForumScreen> {
                 Expanded(
                   child: TextField(
                     controller: _commentController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Add a comment...',
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: _addComment,
-                  child: Text('Post'),
+                  onPressed: _loading ? null : _addComment,
+                  child: const Text('Post'),
                 ),
               ],
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              reverse: true,
-              itemCount: _comments.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: ListTile(
-                    title: Text(_comments[index]),
-                  ),
-                );
-              },
-            ),
+            child:
+                _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                      reverse: false,
+                      itemCount: _comments.length,
+                      itemBuilder: (context, index) {
+                        final comment = _comments[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          child: ListTile(
+                            title: Text(comment.comment),
+                            subtitle: Text(
+                              comment.createdAt.toLocal().toString(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
           ),
         ],
       ),

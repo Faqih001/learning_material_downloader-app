@@ -1,6 +1,8 @@
+import 'community_forum_screen.dart';
+import 'study_centers_screen.dart' as sc_screen;
+import '../widgets/study_center_carousel.dart' as sc_widget;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../models/material.dart';
 import '../services/supabase_crud_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   static final List<Widget> _pages = <Widget>[
-    _HomeTab(),
+    const _HomeTab(),
     const SearchScreen(),
     const UploadScreen(),
     const ChatbotScreen(),
@@ -137,7 +139,50 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _HomeTab extends StatelessWidget {
-  const _HomeTab();
+  static final List<Map<String, String>> forumItems = [
+    {
+      'title': 'How to prepare for KCSE?',
+      'description': 'Tips and strategies for KCSE preparation.',
+    },
+    {
+      'title': 'Best revision materials?',
+      'description': 'Discover top resources for effective revision.',
+    },
+    {
+      'title': 'Share your study tips!',
+      'description': 'Exchange study techniques with peers.',
+    },
+    {
+      'title': 'Exam stress management',
+      'description': 'Learn ways to cope with exam stress.',
+    },
+    {
+      'title': 'Subject recommendations',
+      'description': 'Get advice on choosing subjects.',
+    },
+  ];
+
+  static final List<sc_widget.StudyCenter> centers = [
+    sc_widget.StudyCenter(
+      name: 'Lagos Study Center',
+      city: 'Lagos',
+      address: '123 Allen Avenue, Ikeja',
+      description:
+          'A modern study center in Lagos with free WiFi and resources.',
+    ),
+    sc_widget.StudyCenter(
+      name: 'Abuja Study Center',
+      city: 'Abuja',
+      address: '456 Central Area, Abuja',
+      description: 'Spacious center with group study rooms and a library.',
+    ),
+    sc_widget.StudyCenter(
+      name: 'Kano Study Center',
+      city: 'Kano',
+      address: '789 Zaria Road, Kano',
+      description: 'Well-equipped center for collaborative learning.',
+    ),
+  ];
 
   static final List<LearningMaterial> featuredMaterials = [
     LearningMaterial(
@@ -213,6 +258,9 @@ class _HomeTab extends StatelessWidget {
       tags: ['English', 'Set Books'],
     ),
   ];
+
+  const _HomeTab();
+
   @override
   Widget build(BuildContext context) {
     final userName =
@@ -230,7 +278,6 @@ class _HomeTab extends StatelessWidget {
       'Business',
       'CRE',
     ];
-    // Removed unused selectedSubject
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -257,11 +304,11 @@ class _HomeTab extends StatelessWidget {
                   ),
                   child: CustomScrollView(
                     slivers: [
+                      // Header
                       SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Header
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -503,6 +550,7 @@ class _HomeTab extends StatelessWidget {
                                                 ),
                                               ),
                                               onPressed: () async {
+                                                if (!context.mounted) return;
                                                 final url = mat.fileUrl;
                                                 if (url.isNotEmpty &&
                                                     await canLaunchUrl(
@@ -577,7 +625,7 @@ class _HomeTab extends StatelessWidget {
                                   );
                                 }
                                 if (snapshot.hasError) {
-                                  return Center(
+                                  return const Center(
                                     child: Text(
                                       'Failed to load recent uploads.',
                                     ),
@@ -699,6 +747,9 @@ class _HomeTab extends StatelessWidget {
                                                     ),
                                                   ),
                                                   onPressed: () async {
+                                                    if (!context.mounted) {
+                                                      return;
+                                                    }
                                                     final url = mat.fileUrl;
                                                     if (url.isNotEmpty &&
                                                         await canLaunchUrl(
@@ -710,10 +761,10 @@ class _HomeTab extends StatelessWidget {
                                                             LaunchMode
                                                                 .externalApplication,
                                                       );
-                                                      // Show rating dialog after download
-                                                      if (!context.mounted)
-                                                        return;
                                                       int selectedRating = 0;
+                                                      if (!context.mounted) {
+                                                        return;
+                                                      }
                                                       await showDialog(
                                                         context: context,
                                                         builder: (context) {
@@ -780,6 +831,10 @@ class _HomeTab extends StatelessWidget {
                                                                             mat.id,
                                                                             selectedRating.toDouble(),
                                                                           );
+                                                                          if (!context
+                                                                              .mounted) {
+                                                                            return;
+                                                                          }
                                                                           Navigator.of(
                                                                             context,
                                                                           ).pop();
@@ -806,8 +861,9 @@ class _HomeTab extends StatelessWidget {
                                                         },
                                                       );
                                                     } else {
-                                                      if (!context.mounted)
+                                                      if (!context.mounted) {
                                                         return;
+                                                      }
                                                       ScaffoldMessenger.of(
                                                         context,
                                                       ).showSnackBar(
@@ -838,68 +894,230 @@ class _HomeTab extends StatelessWidget {
                           ],
                         ),
                       ),
-
-                      // --- New Features Section ---
+                      // Community Forum Cards
                       SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Explore More Features',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2563EB),
+                        child: Container(
+                          color: const Color(
+                            0xFFE3F2FD,
+                          ), // Light blue background for visibility
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Community Forum',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF2563EB),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 18),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                _FeatureCard(
-                                  icon: Icons.forum,
-                                  title: 'Community Forum',
-                                  description:
-                                      'Ask questions, share tips, and connect with other learners.',
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const ChatbotScreen(),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                height: isWide ? 200 : 150,
+                                child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: forumItems.length,
+                                  separatorBuilder:
+                                      (_, _) => const SizedBox(width: 12),
+                                  itemBuilder: (context, index) {
+                                    final forum = forumItems[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        if (!context.mounted) return;
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder:
+                                                (_) => CommunityForumScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        elevation: 4,
+                                        child: Container(
+                                          width: isWide ? 300 : 200,
+                                          padding: const EdgeInsets.all(16),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.forum,
+                                                    color: Color(0xFF2563EB),
+                                                    size: isWide ? 32 : 24,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Expanded(
+                                                    child: Text(
+                                                      forum['title']!,
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize:
+                                                            isWide ? 18 : 14,
+                                                        color: Color(
+                                                          0xFF2563EB,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                forum['description']!,
+                                                style: TextStyle(
+                                                  fontSize: isWide ? 14 : 12,
+                                                  color: Colors.black87,
+                                                ),
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     );
                                   },
                                 ),
-                                _FeatureCard(
-                                  icon: Icons.map,
-                                  title: 'Study Centers',
-                                  description:
-                                      'Find nearby study centers and libraries on the map.',
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const MapScreen(),
-                                      ),
-                                    );
-                                  },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Study Centers Section
+                      SliverToBoxAdapter(
+                        child: Container(
+                          color: const Color(
+                            0xFFE3F2FD,
+                          ), // Light blue background for visibility
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Study Centers',
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF2563EB),
                                 ),
-                                _FeatureCard(
-                                  icon: Icons.person,
-                                  title: 'Profile & Progress',
-                                  description:
-                                      'Track your downloads, ratings, and achievements.',
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const ProfileScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 32),
-                          ],
+                              ),
+                              const SizedBox(height: 12),
+                              Column(
+                                children:
+                                    centers.asMap().entries.map((entry) {
+                                      final center = entry.value;
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 12,
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            if (!context.mounted) return;
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (_) =>
+                                                        sc_screen.StudyCentersScreen(),
+                                              ),
+                                            );
+                                          },
+                                          child: Card(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            elevation: 4,
+                                            child: Container(
+                                              width: double.infinity,
+                                              height:
+                                                  isWide
+                                                      ? 220
+                                                      : 180, // Increased height
+                                              padding: const EdgeInsets.all(16),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.location_on,
+                                                        color: Color(
+                                                          0xFF2563EB,
+                                                        ),
+                                                        size: isWide ? 32 : 24,
+                                                      ),
+                                                      const SizedBox(width: 8),
+                                                      Expanded(
+                                                        child: Text(
+                                                          center.name,
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize:
+                                                                isWide
+                                                                    ? 20
+                                                                    : 16,
+                                                            color: Color(
+                                                              0xFF2563EB,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    center.city,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          isWide ? 16 : 14,
+                                                      color: Colors.black54,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    center.address,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          isWide ? 14 : 12,
+                                                      color: Colors.black54,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    center.description,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          isWide ? 14 : 12,
+                                                      color: Colors.black87,
+                                                    ),
+                                                    maxLines: 4,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -912,4 +1130,4 @@ class _HomeTab extends StatelessWidget {
       ),
     );
   }
-} // End of _HomeTab
+}

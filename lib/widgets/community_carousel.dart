@@ -6,10 +6,10 @@ class CommunityCarousel extends StatelessWidget {
   final void Function(int) onTap;
 
   const CommunityCarousel({
-    Key? key,
+    super.key,
     required this.forumTitles,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,26 +19,27 @@ class CommunityCarousel extends StatelessWidget {
         enlargeCenterPage: true,
         autoPlay: true,
       ),
-      items: forumTitles.asMap().entries.map((entry) {
-        int idx = entry.key;
-        String title = entry.value;
-        return GestureDetector(
-          onTap: () => onTap(idx),
-          child: Card(
-            color: Colors.blueAccent,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  title,
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                  textAlign: TextAlign.center,
+      items:
+          forumTitles.asMap().entries.map((entry) {
+            int idx = entry.key;
+            String title = entry.value;
+            return GestureDetector(
+              onTap: () => onTap(idx),
+              child: Card(
+                color: Colors.blueAccent,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      title,
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 }
