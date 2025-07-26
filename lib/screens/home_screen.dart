@@ -114,12 +114,12 @@ class _HomeScreenState extends State<HomeScreen> {
             NavigationDestination(
               icon: Icon(Icons.upload_file_outlined),
               selectedIcon: Icon(Icons.upload_file),
-              label: 'Upload',
+              label: 'Settings',
             ),
             NavigationDestination(
-              icon: Icon(Icons.smart_toy_outlined),
+              icon: Icon(Icons.smart_toy),
               selectedIcon: Icon(Icons.smart_toy),
-              label: 'Chatbot',
+              label: 'Explore',
             ),
             NavigationDestination(
               icon: Icon(Icons.map_outlined),
@@ -138,7 +138,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _HomeTab extends StatelessWidget {
+class _HomeTab extends StatefulWidget {
+  const _HomeTab();
+
+  @override
+  State<_HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<_HomeTab> {
   static final List<Map<String, String>> forumItems = [
     {
       'title': 'How to prepare for KCSE?',
@@ -199,7 +206,6 @@ class _HomeTab extends StatelessWidget {
       address: 'Commercial St, Thika',
       description: 'Kiambu county center for collaborative learning.',
     ),
-    // ...add one for each of the 47 counties in Kenya...
   ];
 
   static final List<LearningMaterial> featuredMaterials = [
@@ -277,7 +283,43 @@ class _HomeTab extends StatelessWidget {
     ),
   ];
 
-  const _HomeTab();
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, String>> _filteredForumItems = forumItems;
+  List<sc_widget.StudyCenter> _filteredCenters = centers;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_filterCards);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterCards() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredForumItems =
+          forumItems.where((forum) {
+            final title = forum['title']!.toLowerCase();
+            final description = forum['description']!.toLowerCase();
+            return title.contains(query) || description.contains(query);
+          }).toList();
+
+      _filteredCenters =
+          centers.where((center) {
+            final name = center.name.toLowerCase();
+            final city = center.city.toLowerCase();
+            final description = center.description.toLowerCase();
+            return name.contains(query) ||
+                city.contains(query) ||
+                description.contains(query);
+          }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -396,13 +438,26 @@ class _HomeTab extends StatelessWidget {
                                 ],
                               ),
                               child: TextField(
+                                controller: _searchController,
                                 decoration: InputDecoration(
-                                  hintText:
-                                      'Search for materials, topics, or authors...',
+                                  hintText: 'Search forums or study centers...',
                                   prefixIcon: const Icon(
                                     Icons.search,
                                     color: Color(0xFF2563EB),
                                   ),
+                                  suffixIcon:
+                                      _searchController.text.isNotEmpty
+                                          ? IconButton(
+                                            icon: const Icon(
+                                              Icons.clear,
+                                              color: Color(0xFF2563EB),
+                                            ),
+                                            onPressed: () {
+                                              _searchController.clear();
+                                              _filterCards();
+                                            },
+                                          )
+                                          : null,
                                   filled: true,
                                   fillColor: Colors.white,
                                   contentPadding: EdgeInsets.symmetric(
@@ -915,9 +970,7 @@ class _HomeTab extends StatelessWidget {
                       // Community Forum Cards
                       SliverToBoxAdapter(
                         child: Container(
-                          color: const Color(
-                            0xFFE3F2FD,
-                          ), // Light blue background for visibility
+                          color: const Color(0xFFE3F2FD),
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -932,81 +985,93 @@ class _HomeTab extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              SizedBox(
-                                height: isWide ? 200 : 150,
-                                child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: forumItems.length,
-                                  separatorBuilder:
-                                      (_, _) => const SizedBox(width: 12),
-                                  itemBuilder: (context, index) {
-                                    final forum = forumItems[index];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        if (!context.mounted) return;
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder:
-                                                (_) => CommunityForumScreen(),
-                                          ),
-                                        );
-                                      },
-                                      child: Card(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        elevation: 4,
-                                        child: Container(
-                                          width: isWide ? 300 : 200,
-                                          padding: const EdgeInsets.all(16),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
+                              _filteredForumItems.isEmpty
+                                  ? const Center(
+                                    child: Text('No forums match your search.'),
+                                  )
+                                  : SizedBox(
+                                    height: isWide ? 200 : 150,
+                                    child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: _filteredForumItems.length,
+                                      separatorBuilder:
+                                          (context, index) =>
+                                              const SizedBox(width: 12),
+                                      itemBuilder: (context, index) {
+                                        final forum =
+                                            _filteredForumItems[index];
+                                        return GestureDetector(
+                                          onTap: () {
+                                            if (!context.mounted) return;
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (_) =>
+                                                        CommunityForumScreen(),
+                                              ),
+                                            );
+                                          },
+                                          child: Card(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            elevation: 4,
+                                            child: Container(
+                                              width: isWide ? 300 : 200,
+                                              padding: const EdgeInsets.all(16),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Icon(
-                                                    Icons.forum,
-                                                    color: Color(0xFF2563EB),
-                                                    size: isWide ? 32 : 24,
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Expanded(
-                                                    child: Text(
-                                                      forum['title']!,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize:
-                                                            isWide ? 18 : 14,
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.forum,
                                                         color: Color(
                                                           0xFF2563EB,
                                                         ),
+                                                        size: isWide ? 32 : 24,
                                                       ),
+                                                      const SizedBox(width: 8),
+                                                      Expanded(
+                                                        child: Text(
+                                                          forum['title']!,
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize:
+                                                                isWide
+                                                                    ? 18
+                                                                    : 14,
+                                                            color: Color(
+                                                              0xFF2563EB,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    forum['description']!,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          isWide ? 14 : 12,
+                                                      color: Colors.black87,
                                                     ),
+                                                    maxLines: 3,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ],
                                               ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                forum['description']!,
-                                                style: TextStyle(
-                                                  fontSize: isWide ? 14 : 12,
-                                                  color: Colors.black87,
-                                                ),
-                                                maxLines: 3,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
+                                        );
+                                      },
+                                    ),
+                                  ),
                             ],
                           ),
                         ),
@@ -1014,9 +1079,7 @@ class _HomeTab extends StatelessWidget {
                       // Study Centers Section
                       SliverToBoxAdapter(
                         child: Container(
-                          color: const Color(
-                            0xFFE3F2FD,
-                          ), // Light blue background for visibility
+                          color: const Color(0xFFE3F2FD),
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1031,124 +1094,150 @@ class _HomeTab extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              Column(
-                                children: [
-                                  ...centers
-                                      .take(3)
-                                      .map(
-                                        (center) => Padding(
+                              _filteredCenters.isEmpty
+                                  ? const Center(
+                                    child: Text(
+                                      'No study centers match your search.',
+                                    ),
+                                  )
+                                  : Column(
+                                    children: [
+                                      ..._filteredCenters.take(3).map((center) {
+                                        return Padding(
                                           padding: const EdgeInsets.only(
                                             bottom: 12,
                                           ),
-                                          child: Card(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            elevation: 4,
-                                            child: Container(
-                                              width: double.infinity,
-                                              height: isWide ? 220 : 180,
-                                              padding: const EdgeInsets.all(16),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.location_on,
-                                                        color: Color(
-                                                          0xFF2563EB,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              if (!context.mounted) return;
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (_) =>
+                                                          sc_screen.StudyCentersScreen(),
+                                                ),
+                                              );
+                                            },
+                                            child: Card(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              elevation: 4,
+                                              child: Container(
+                                                width: double.infinity,
+                                                height: isWide ? 220 : 180,
+                                                padding: const EdgeInsets.all(
+                                                  16,
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.location_on,
+                                                          color: Color(
+                                                            0xFF2563EB,
+                                                          ),
+                                                          size:
+                                                              isWide ? 32 : 24,
                                                         ),
-                                                        size: isWide ? 32 : 24,
-                                                      ),
-                                                      const SizedBox(width: 8),
-                                                      Expanded(
-                                                        child: Text(
-                                                          center.name,
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize:
-                                                                isWide
-                                                                    ? 20
-                                                                    : 16,
-                                                            color: Color(
-                                                              0xFF2563EB,
+                                                        const SizedBox(
+                                                          width: 8,
+                                                        ),
+                                                        Expanded(
+                                                          child: Text(
+                                                            center.name,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize:
+                                                                  isWide
+                                                                      ? 20
+                                                                      : 16,
+                                                              color: Color(
+                                                                0xFF2563EB,
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                      center.city,
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            isWide ? 16 : 14,
+                                                        color: Colors.black54,
                                                       ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Text(
-                                                    center.city,
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          isWide ? 16 : 14,
-                                                      color: Colors.black54,
                                                     ),
-                                                  ),
-                                                  const SizedBox(height: 4),
-                                                  Text(
-                                                    center.address,
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          isWide ? 14 : 12,
-                                                      color: Colors.black54,
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      center.address,
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            isWide ? 14 : 12,
+                                                        color: Colors.black54,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Text(
-                                                    center.description,
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          isWide ? 14 : 12,
-                                                      color: Colors.black87,
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                      center.description,
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            isWide ? 14 : 12,
+                                                        color: Colors.black87,
+                                                      ),
+                                                      maxLines: 4,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                     ),
-                                                    maxLines: 4,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      ElevatedButton.icon(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(0xFF2563EB),
-                                          foregroundColor: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
+                                        );
+                                      }),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color(
+                                                0xFF2563EB,
+                                              ),
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              if (!context.mounted) return;
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (_) =>
+                                                          sc_screen.StudyCentersScreen(),
+                                                ),
+                                              );
+                                            },
+                                            icon: const Icon(Icons.list),
+                                            label: const Text(
+                                              'View All Study Centers',
                                             ),
                                           ),
-                                        ),
-                                        onPressed: () {
-                                          if (!context.mounted) return;
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (_) =>
-                                                      sc_screen.StudyCentersScreen(),
-                                            ),
-                                          );
-                                        },
-                                        icon: Icon(Icons.list),
-                                        label: Text('View All Study Centers'),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
                               const SizedBox(height: 24),
                             ],
                           ),
