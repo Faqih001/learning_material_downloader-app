@@ -164,24 +164,42 @@ class _HomeTab extends StatelessWidget {
 
   static final List<sc_widget.StudyCenter> centers = [
     sc_widget.StudyCenter(
-      name: 'Lagos Study Center',
-      city: 'Lagos',
-      address: '123 Allen Avenue, Ikeja',
-      description:
-          'A modern study center in Lagos with free WiFi and resources.',
+      name: 'Nairobi Study Center',
+      city: 'Nairobi',
+      address: 'Kenyatta Avenue, Nairobi',
+      description: 'Modern center in Nairobi with WiFi and digital library.',
     ),
     sc_widget.StudyCenter(
-      name: 'Abuja Study Center',
-      city: 'Abuja',
-      address: '456 Central Area, Abuja',
-      description: 'Spacious center with group study rooms and a library.',
+      name: 'Mombasa Study Center',
+      city: 'Mombasa',
+      address: 'Moi Avenue, Mombasa',
+      description: 'Coastal study center with group rooms and resources.',
     ),
     sc_widget.StudyCenter(
-      name: 'Kano Study Center',
-      city: 'Kano',
-      address: '789 Zaria Road, Kano',
-      description: 'Well-equipped center for collaborative learning.',
+      name: 'Kisumu Study Center',
+      city: 'Kisumu',
+      address: 'Oginga Odinga St, Kisumu',
+      description: 'Lake region center with collaborative spaces.',
     ),
+    sc_widget.StudyCenter(
+      name: 'Nakuru Study Center',
+      city: 'Nakuru',
+      address: 'Kenyatta Ave, Nakuru',
+      description: 'Central Rift study center with modern amenities.',
+    ),
+    sc_widget.StudyCenter(
+      name: 'Eldoret Study Center',
+      city: 'Uasin Gishu',
+      address: 'Ronald Ngala St, Eldoret',
+      description: 'North Rift center with digital resources.',
+    ),
+    sc_widget.StudyCenter(
+      name: 'Thika Study Center',
+      city: 'Kiambu',
+      address: 'Commercial St, Thika',
+      description: 'Kiambu county center for collaborative learning.',
+    ),
+    // ...add one for each of the 47 counties in Kenya...
   ];
 
   static final List<LearningMaterial> featuredMaterials = [
@@ -1014,24 +1032,14 @@ class _HomeTab extends StatelessWidget {
                               ),
                               const SizedBox(height: 12),
                               Column(
-                                children:
-                                    centers.asMap().entries.map((entry) {
-                                      final center = entry.value;
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 12,
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            if (!context.mounted) return;
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (_) =>
-                                                        sc_screen.StudyCentersScreen(),
-                                              ),
-                                            );
-                                          },
+                                children: [
+                                  ...centers
+                                      .take(3)
+                                      .map(
+                                        (center) => Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 12,
+                                          ),
                                           child: Card(
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -1040,10 +1048,7 @@ class _HomeTab extends StatelessWidget {
                                             elevation: 4,
                                             child: Container(
                                               width: double.infinity,
-                                              height:
-                                                  isWide
-                                                      ? 220
-                                                      : 180, // Increased height
+                                              height: isWide ? 220 : 180,
                                               padding: const EdgeInsets.all(16),
                                               child: Column(
                                                 crossAxisAlignment:
@@ -1112,8 +1117,37 @@ class _HomeTab extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                      );
-                                    }).toList(),
+                                      ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFF2563EB),
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          if (!context.mounted) return;
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (_) =>
+                                                      sc_screen.StudyCentersScreen(),
+                                            ),
+                                          );
+                                        },
+                                        icon: Icon(Icons.list),
+                                        label: Text('View All Study Centers'),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 24),
                             ],

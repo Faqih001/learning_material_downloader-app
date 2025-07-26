@@ -15,8 +15,12 @@ Future<List<CommunityComment>> fetchComments() async {
       .toList();
 }
 
-Future<void> postComment(String comment) async {
-  await _client.from('community_forum').insert({'comment': comment});
+Future<void> postComment(String comment, String name) async {
+  await _client.from('community_forum').insert({
+    'comment': comment,
+    'name': name,
+    'reactions': {},
+  });
 }
 
 class CommunityForumScreen extends StatefulWidget {
@@ -28,6 +32,7 @@ class CommunityForumScreen extends StatefulWidget {
 
 class CommunityForumScreenState extends State<CommunityForumScreen> {
   final TextEditingController _commentController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final List<CommunityComment> _comments = [];
   bool _loading = false;
 
@@ -49,11 +54,25 @@ class CommunityForumScreenState extends State<CommunityForumScreen> {
 
   Future<void> _addComment() async {
     final comment = _commentController.text.trim();
+    final name =
+        _nameController.text.trim().isEmpty
+            ? 'Anonymous'
+            : _nameController.text.trim();
     if (comment.isNotEmpty) {
       _commentController.clear();
-      await postComment(comment);
+      await postComment(comment, name);
       await _loadComments();
     }
+  }
+
+  Future<void> _addReaction(CommunityComment comment, String emoji) async {
+    final reactions = Map<String, int>.from(comment.reactions);
+    reactions[emoji] = (reactions[emoji] ?? 0) + 1;
+    await _client
+        .from('community_forum')
+        .update({'reactions': reactions})
+        .eq('id', comment.id);
+    await _loadComments();
   }
 
   @override
@@ -66,6 +85,17 @@ class CommunityForumScreenState extends State<CommunityForumScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                SizedBox(
+                  width: 120,
+                  child: TextField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      hintText: 'Your name',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     controller: _commentController,
@@ -99,8 +129,37 @@ class CommunityForumScreenState extends State<CommunityForumScreen> {
                           ),
                           child: ListTile(
                             title: Text(comment.comment),
-                            subtitle: Text(
-                              comment.createdAt.toLocal().toString(),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('By: ${comment.name}'),
+                                Text(comment.createdAt.toLocal().toString()),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    ...['👍', '❤️', '😂', '🎉'].map((emoji) {
+                                      final count =
+                                          comment.reactions[emoji] ?? 0;
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8.0,
+                                        ),
+                                        child: InkWell(
+                                          onTap: () async {
+                                            await _addReaction(comment, emoji);
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Text(emoji),
+                                              if (count > 0) Text(' $count'),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         );
