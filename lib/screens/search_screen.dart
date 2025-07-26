@@ -4,6 +4,8 @@ import '../models/material.dart';
 import '../widgets/material_card.dart';
 import '../services/auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/supabase_crud_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -13,6 +15,8 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  List<LearningMaterial> _uploadedMaterials = [];
+  bool _loadingUploaded = true;
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
   String _selectedSubject = 'All';
@@ -683,6 +687,27 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _loadUser();
+    _fetchUploadedMaterials();
+  }
+
+  Future<void> _fetchUploadedMaterials() async {
+    try {
+      final supabase = Supabase.instance.client;
+      final crud = SupabaseCrudService(supabase);
+      final materials = await crud.fetchMaterials();
+      if (!mounted) return;
+      setState(() {
+        _uploadedMaterials = materials;
+        _loadingUploaded = false;
+      });
+    } catch (e, st) {
+      debugPrint('Error fetching uploaded materials: $e\n$st');
+      if (!mounted) return;
+      setState(() {
+        _uploadedMaterials = [];
+        _loadingUploaded = false;
+      });
+    }
   }
 
   Future<void> _loadUser() async {
@@ -717,6 +742,17 @@ class _SearchScreenState extends State<SearchScreen> {
     }).toList();
   }
 
+  List<LearningMaterial> get _filteredUploadedMaterials {
+    return _uploadedMaterials.where((m) {
+      final matchesQuery =
+          _query.isEmpty ||
+          m.title.toLowerCase().contains(_query.toLowerCase());
+      final matchesSubject =
+          _selectedSubject == 'All' || m.subject == _selectedSubject;
+      return matchesQuery && matchesSubject;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -724,171 +760,200 @@ class _SearchScreenState extends State<SearchScreen> {
         title: const Text('Search Materials'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body:
-          _loadingUser
-              ? const Center(child: CircularProgressIndicator())
-              : LayoutBuilder(
-                builder: (context, constraints) {
-                  final isWide = constraints.maxWidth > 800;
-                  return Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: isWide ? 700 : double.infinity,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(isWide ? 32 : 16),
-                        child: Column(
-                          children: [
-                            if ((_user['name']?.isNotEmpty ?? false) ||
-                                (_user['email']?.isNotEmpty ?? false))
-                              Container(
-                                width: double.infinity,
-                                color: Colors.blue.shade50,
-                                padding: EdgeInsets.symmetric(
-                                  vertical: isWide ? 18 : 12,
-                                  horizontal: isWide ? 32 : 16,
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.account_circle,
-                                      color: Color(0xFF2563EB),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          if (_user['name'] != null &&
-                                              _user['name']!.isNotEmpty)
-                                            Text(
-                                              _user['name']!,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          if (_user['email'] != null &&
-                                              _user['email']!.isNotEmpty)
-                                            Text(
-                                              _user['email']!,
-                                              style: const TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.black54,
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+      body: _loadingUser || _loadingUploaded
+          ? const Center(child: CircularProgressIndicator())
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 800;
+                return Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isWide ? 700 : double.infinity,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(isWide ? 32 : 16),
+                      child: Column(
+                        children: [
+                          if ((_user['name']?.isNotEmpty ?? false) ||
+                              (_user['email']?.isNotEmpty ?? false))
+                            Container(
+                              width: double.infinity,
+                              color: Colors.blue.shade50,
+                              padding: EdgeInsets.symmetric(
+                                vertical: isWide ? 18 : 12,
+                                horizontal: isWide ? 32 : 16,
                               ),
-                            TextField(
-                              controller: _searchController,
-                              decoration: InputDecoration(
-                                hintText: 'Search for materials...',
-                                prefixIcon: const Icon(Icons.search),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    isWide ? 18 : 12,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.account_circle,
+                                    color: Color(0xFF2563EB),
                                   ),
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey[100],
-                                contentPadding: EdgeInsets.symmetric(
-                                  vertical: isWide ? 20 : 14,
-                                  horizontal: isWide ? 20 : 12,
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (_user['name'] != null &&
+                                            _user['name']!.isNotEmpty)
+                                          Text(
+                                            _user['name']!,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        if (_user['email'] != null &&
+                                            _user['email']!.isNotEmpty)
+                                          Text(
+                                            _user['email']!,
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Search for materials...',
+                              prefixIcon: const Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                  isWide ? 18 : 12,
                                 ),
                               ),
-                              style: TextStyle(fontSize: isWide ? 18 : 15),
-                              onChanged: (v) => setState(() => _query = v),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: isWide ? 20 : 14,
+                                horizontal: isWide ? 20 : 12,
+                              ),
                             ),
-                            SizedBox(height: isWide ? 20 : 12),
-                            SizedBox(
-                              height: isWide ? 44 : 36,
-                              child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _subjects.length,
-                                separatorBuilder:
-                                    (_, second) =>
-                                        SizedBox(width: isWide ? 14 : 8),
-                                itemBuilder:
-                                    (context, i) => MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: ChoiceChip(
-                                        label: Text(_subjects[i]),
-                                        selected:
-                                            _selectedSubject == _subjects[i],
-                                        onSelected: (selected) {
-                                          setState(
-                                            () =>
-                                                _selectedSubject = _subjects[i],
-                                          );
-                                        },
-                                        selectedColor: const Color(0xFF2563EB),
-                                        labelStyle: TextStyle(
-                                          color:
-                                              _selectedSubject == _subjects[i]
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                          fontSize: isWide ? 16 : 14,
-                                        ),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: isWide ? 18 : 10,
-                                          vertical: isWide ? 8 : 4,
-                                        ),
+                            style: TextStyle(fontSize: isWide ? 18 : 15),
+                            onChanged: (v) => setState(() => _query = v),
+                          ),
+                          SizedBox(height: isWide ? 20 : 12),
+                          SizedBox(
+                            height: isWide ? 44 : 36,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _subjects.length,
+                              separatorBuilder:
+                                  (_, second) =>
+                                      SizedBox(width: isWide ? 14 : 8),
+                              itemBuilder:
+                                  (context, i) => MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: ChoiceChip(
+                                      label: Text(_subjects[i]),
+                                      selected:
+                                          _selectedSubject == _subjects[i],
+                                      onSelected: (selected) {
+                                        setState(
+                                          () =>
+                                              _selectedSubject = _subjects[i],
+                                        );
+                                      },
+                                      selectedColor: const Color(0xFF2563EB),
+                                      labelStyle: TextStyle(
+                                        color:
+                                            _selectedSubject == _subjects[i]
+                                                ? Colors.white
+                                                : Colors.black,
+                                        fontSize: isWide ? 16 : 14,
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isWide ? 18 : 10,
+                                        vertical: isWide ? 8 : 4,
                                       ),
                                     ),
-                              ),
+                                  ),
                             ),
-                            SizedBox(height: isWide ? 24 : 16),
-                            Expanded(
-                              child:
-                                  _filteredMaterials.isEmpty
-                                      ? const Center(
-                                        child: Text('No materials found.'),
-                                      )
-                                      : ListView.builder(
-                                        itemCount: _filteredMaterials.length,
-                                        itemBuilder:
-                                            (context, i) => MaterialCard(
-                                              material: _filteredMaterials[i],
-                                              onDownload: () async {
-                                                final url =
-                                                    _filteredMaterials[i]
-                                                        .fileUrl;
-                                                if (await canLaunchUrl(
-                                                  Uri.parse(url),
-                                                )) {
-                                                  await launchUrl(
-                                                    Uri.parse(url),
-                                                    mode:
-                                                        LaunchMode
-                                                            .externalApplication,
-                                                  );
-                                                } else {
-                                                  if (!context.mounted) return;
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    SnackBar(
-                                                      content: Text(
-                                                        'Could not launch file URL.',
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            ),
+                          ),
+                          SizedBox(height: isWide ? 24 : 16),
+                          Expanded(
+                            child: ListView(
+                              children: [
+                                if (_filteredMaterials.isNotEmpty) ...[
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      'Demo Materials',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
                                       ),
+                                    ),
+                                  ),
+                                  ..._filteredMaterials.map((mat) => MaterialCard(
+                                        material: mat,
+                                        onDownload: () async {
+                                          final url = mat.fileUrl;
+                                          if (await canLaunchUrl(Uri.parse(url))) {
+                                            await launchUrl(
+                                              Uri.parse(url),
+                                              mode: LaunchMode.externalApplication,
+                                            );
+                                          } else {
+                                            if (!context.mounted) return;
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Could not launch file URL.'),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      )),
+                                ],
+                                if (_filteredUploadedMaterials.isNotEmpty) ...[
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      'Uploaded Materials',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ),
+                                  ..._filteredUploadedMaterials.map((mat) => MaterialCard(
+                                        material: mat,
+                                        onDownload: () async {
+                                          final url = mat.fileUrl;
+                                          if (await canLaunchUrl(Uri.parse(url))) {
+                                            await launchUrl(
+                                              Uri.parse(url),
+                                              mode: LaunchMode.externalApplication,
+                                            );
+                                          } else {
+                                            if (!context.mounted) return;
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text('Could not launch file URL.'),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      )),
+                                ],
+                                if (_filteredMaterials.isEmpty && _filteredUploadedMaterials.isEmpty)
+                                  const Center(child: Text('No materials found.')),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }
