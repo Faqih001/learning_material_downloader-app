@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/material.dart';
-import '../models/user.dart';
+import '../models/user.dart' as local_model;
 import '../models/library.dart';
 
 class SupabaseCrudService {
@@ -60,10 +60,10 @@ class SupabaseCrudService {
   }
 
   // User CRUD
-  Future<List<User>> fetchUsers() async {
+  Future<List<local_model.User>> fetchUsers() async {
     final response = await client.from('users').select();
     return (response as List)
-        .map((e) => User(
+        .map((e) => local_model.User(
               id: e['id'],
               name: e['name'],
               email: e['email'],
@@ -77,7 +77,7 @@ class SupabaseCrudService {
         .toList();
   }
 
-  Future<void> addUser(User user) async {
+  Future<void> addUser(local_model.User user) async {
     await client.from('users').insert({
       'id': user.id,
       'name': user.name,
@@ -91,7 +91,7 @@ class SupabaseCrudService {
     });
   }
 
-  Future<void> updateUser(User user) async {
+  Future<void> updateUser(local_model.User user) async {
     await client.from('users').update({
       'name': user.name,
       'email': user.email,
