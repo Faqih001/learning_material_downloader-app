@@ -278,7 +278,7 @@ class _HomeTab extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               itemCount: recent.length,
                               separatorBuilder:
-                                  (_, __) => SizedBox(width: isWide ? 24 : 12),
+                                  (_, i) => SizedBox(width: isWide ? 24 : 12),
                               itemBuilder:
                                   (context, i) => SizedBox(
                                     width: isWide ? 320 : 220,
@@ -305,6 +305,7 @@ class _HomeTab extends StatelessWidget {
                                   mode: LaunchMode.externalApplication,
                                 );
                               } else {
+                                if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('Could not launch file URL.'),
