@@ -838,6 +838,70 @@ class _HomeTab extends StatelessWidget {
                           ],
                         ),
                       ),
+
+                      // --- New Features Section ---
+                      SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Explore More Features',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2563EB),
+                              ),
+                            ),
+                            const SizedBox(height: 18),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                _FeatureCard(
+                                  icon: Icons.forum,
+                                  title: 'Community Forum',
+                                  description:
+                                      'Ask questions, share tips, and connect with other learners.',
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ChatbotScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                _FeatureCard(
+                                  icon: Icons.map,
+                                  title: 'Study Centers',
+                                  description:
+                                      'Find nearby study centers and libraries on the map.',
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const MapScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                _FeatureCard(
+                                  icon: Icons.person,
+                                  title: 'Profile & Progress',
+                                  description:
+                                      'Track your downloads, ratings, and achievements.',
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const ProfileScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 32),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
