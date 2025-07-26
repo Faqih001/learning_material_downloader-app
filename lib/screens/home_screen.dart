@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/material.dart';
 import '../services/supabase_crud_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../widgets/material_card.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'search_screen.dart';
 import 'upload_screen.dart';
@@ -138,8 +137,9 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _HomeTab extends StatelessWidget {
-  _HomeTab();
-  late final List<LearningMaterial> featuredMaterials = [
+  const _HomeTab();
+
+  static final List<LearningMaterial> featuredMaterials = [
     LearningMaterial(
       id: '1',
       title: 'KCSE 2024 Mathematics Paper 1',
@@ -213,32 +213,44 @@ class _HomeTab extends StatelessWidget {
       tags: ['English', 'Set Books'],
     ),
   ];
-
   @override
   Widget build(BuildContext context) {
-    Widget sectionTitle(String title) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Text(
-        title,
-        style: Theme.of(
-          context,
-        ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+    final userName =
+        Supabase.instance.client.auth.currentUser?.userMetadata?['name'] ??
+        'Learner';
+    final subjects = [
+      'Mathematics',
+      'English',
+      'Kiswahili',
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Geography',
+      'History',
+      'Business',
+      'CRE',
+    ];
+    // Removed unused selectedSubject
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2563EB), Color(0xFF60A5FA), Color(0xFFF1F5F9)],
+        ),
       ),
-    );
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isWide = constraints.maxWidth > 900;
-        final horizontalPadding = isWide ? 64.0 : 16.0;
-        final verticalPadding = isWide ? 40.0 : 16.0;
-        return Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: isWide ? 1400 : double.infinity,
-            ),
-            child: Stack(
-              children: [
-                SingleChildScrollView(
+      child: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 900;
+            final horizontalPadding = isWide ? 64.0 : 16.0;
+            final verticalPadding = isWide ? 40.0 : 16.0;
+            return Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isWide ? 1400 : double.infinity,
+                ),
+                child: SingleChildScrollView(
                   padding: EdgeInsets.symmetric(
                     horizontal: horizontalPadding,
                     vertical: verticalPadding,
@@ -246,8 +258,257 @@ class _HomeTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ...existing code...
-                      sectionTitle('Recently Added'),
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 28,
+                                backgroundColor: Colors.white,
+                                child: Icon(
+                                  Icons.school,
+                                  color: Color(0xFF2563EB),
+                                  size: 32,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Welcome back,',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.85),
+                                      fontSize: isWide ? 22 : 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    userName,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: isWide ? 28 : 22,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Color(0xFF2563EB),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 2,
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/upload');
+                            },
+                            icon: const Icon(Icons.upload),
+                            label: const Text('Upload'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 28),
+                      // Search bar
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.06),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText:
+                                'Search for materials, topics, or authors...',
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Color(0xFF2563EB),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 18,
+                              horizontal: 18,
+                            ),
+                          ),
+                          style: TextStyle(fontSize: isWide ? 18 : 15),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      // Subject chips
+                      SizedBox(
+                        height: 44,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: subjects.length,
+                          separatorBuilder: (_, i) => const SizedBox(width: 10),
+                          itemBuilder:
+                              (context, i) => ChoiceChip(
+                                label: Text(subjects[i]),
+                                selected: false,
+                                onSelected: (_) {},
+                                selectedColor: const Color(0xFF2563EB),
+                                labelStyle: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: isWide ? 16 : 14,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 18,
+                                  vertical: 8,
+                                ),
+                              ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      // Featured carousel
+                      Text(
+                        'Featured Materials',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF2563EB),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      CarouselSlider.builder(
+                        itemCount: featuredMaterials.length,
+                        itemBuilder: (context, i, _) {
+                          final mat = featuredMaterials[i];
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            elevation: 6,
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color(
+                                      0xFF60A5FA,
+                                    ).withAlpha((255 * 0.15).round()),
+                                    Colors.white,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    mat.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: isWide ? 22 : 18,
+                                      color: Color(0xFF2563EB),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    mat.description,
+                                    style: TextStyle(
+                                      fontSize: isWide ? 16 : 14,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.book,
+                                        color: Color(0xFF2563EB),
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        mat.subject,
+                                        style: TextStyle(color: Colors.black54),
+                                      ),
+                                      const SizedBox(width: 18),
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        mat.rating.toString(),
+                                        style: TextStyle(color: Colors.black54),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF2563EB),
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      final url = mat.fileUrl;
+                                      if (url.isNotEmpty &&
+                                          await canLaunchUrl(Uri.parse(url))) {
+                                        await launchUrl(
+                                          Uri.parse(url),
+                                          mode: LaunchMode.externalApplication,
+                                        );
+                                      } else {
+                                        if (!context.mounted) return;
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Could not launch file URL.',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(Icons.download),
+                                    label: const Text('Download'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        options: CarouselOptions(
+                          height: isWide ? 320 : 240,
+                          viewportFraction: isWide ? 0.3 : 0.8,
+                          enlargeCenterPage: true,
+                          autoPlay: true,
+                          autoPlayInterval: const Duration(seconds: 5),
+                        ),
+                      ),
+                      const SizedBox(height: 36),
+                      // Recent uploads
+                      Text(
+                        'Recently Added',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF2563EB),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       FutureBuilder<List<LearningMaterial>>(
                         future:
                             SupabaseCrudService(
@@ -279,85 +540,134 @@ class _HomeTab extends StatelessWidget {
                               itemCount: recent.length,
                               separatorBuilder:
                                   (_, i) => SizedBox(width: isWide ? 24 : 12),
-                              itemBuilder:
-                                  (context, i) => SizedBox(
+                              itemBuilder: (context, i) {
+                                final mat = recent[i];
+                                return Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  elevation: 4,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  child: Container(
                                     width: isWide ? 320 : 220,
-                                    child: MaterialCard(
-                                      material: recent[i],
-                                      onDownload: () {},
+                                    padding: const EdgeInsets.all(18),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(18),
+                                      color: Colors.white,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          mat.title,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: isWide ? 18 : 15,
+                                            color: Color(0xFF2563EB),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          mat.description,
+                                          style: TextStyle(
+                                            fontSize: isWide ? 15 : 13,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.book,
+                                              color: Color(0xFF2563EB),
+                                              size: 18,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              mat.subject,
+                                              style: TextStyle(
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                              size: 18,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              mat.rating.toString(),
+                                              style: TextStyle(
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF2563EB),
+                                            foregroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            final url = mat.fileUrl;
+                                            if (url.isNotEmpty &&
+                                                await canLaunchUrl(
+                                                  Uri.parse(url),
+                                                )) {
+                                              await launchUrl(
+                                                Uri.parse(url),
+                                                mode:
+                                                    LaunchMode
+                                                        .externalApplication,
+                                              );
+                                            } else {
+                                              if (!context.mounted) return;
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Could not launch file URL.',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          icon: const Icon(Icons.download),
+                                          label: const Text('Download'),
+                                        ),
+                                      ],
                                     ),
                                   ),
+                                );
+                              },
                             ),
                           );
                         },
                       ),
-                      sectionTitle('Featured Materials'),
-                      CarouselSlider.builder(
-                        itemCount: featuredMaterials.length,
-                        itemBuilder: (context, i, _) {
-                          return MaterialCard(
-                            material: featuredMaterials[i],
-                            onDownload: () async {
-                              final url = featuredMaterials[i].fileUrl;
-                              if (await canLaunchUrl(Uri.parse(url))) {
-                                await launchUrl(
-                                  Uri.parse(url),
-                                  mode: LaunchMode.externalApplication,
-                                );
-                              } else {
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Could not launch file URL.'),
-                                  ),
-                                );
-                              }
-                            },
-                          );
-                        },
-                        options: CarouselOptions(
-                          height: isWide ? 320 : 220,
-                          viewportFraction: isWide ? 0.3 : 0.8,
-                          enlargeCenterPage: true,
-                          autoPlay: true,
-                          autoPlayInterval: const Duration(seconds: 5),
-                        ),
-                      ),
+                      const SizedBox(height: 32),
                     ],
                   ),
                 ),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: horizontalPadding,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Welcome, ${Supabase.instance.client.auth.currentUser?.userMetadata?['name'] ?? 'User'}',
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/upload');
-                          },
-                          icon: Icon(Icons.upload),
-                          label: Text('Upload Material'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
-}
+} // End of _HomeTab
+
+// End of _HomeTab
