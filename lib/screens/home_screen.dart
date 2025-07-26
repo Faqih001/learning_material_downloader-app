@@ -321,11 +321,11 @@ class _HomeTab extends StatelessWidget {
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(32),
+                                borderRadius: BorderRadius.circular(50),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withValues(alpha: 0.06),
-                                    blurRadius: 8,
+                                    blurRadius: 12,
                                     offset: const Offset(0, 2),
                                   ),
                                 ],
@@ -338,10 +338,22 @@ class _HomeTab extends StatelessWidget {
                                     Icons.search,
                                     color: Color(0xFF2563EB),
                                   ),
-                                  border: InputBorder.none,
+                                  filled: true,
+                                  fillColor: Colors.white,
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 18,
                                     horizontal: 18,
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50),
+                                    borderSide: BorderSide(
+                                      color: Color(0xFF2563EB),
+                                      width: 1.5,
+                                    ),
                                   ),
                                 ),
                                 style: TextStyle(fontSize: isWide ? 18 : 15),
