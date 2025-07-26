@@ -278,7 +278,8 @@ class _HomeTab extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 24),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'Welcome back,',
@@ -357,21 +358,23 @@ class _HomeTab extends StatelessWidget {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: subjects.length,
-                            separatorBuilder: (_, i) => const SizedBox(width: 10),
-                            itemBuilder: (context, i) => ChoiceChip(
-                              label: Text(subjects[i]),
-                              selected: false,
-                              onSelected: (_) {},
-                              selectedColor: const Color(0xFF2563EB),
-                              labelStyle: TextStyle(
-                                color: Colors.black,
-                                fontSize: isWide ? 16 : 14,
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 18,
-                                vertical: 8,
-                              ),
-                            ),
+                            separatorBuilder:
+                                (_, i) => const SizedBox(width: 10),
+                            itemBuilder:
+                                (context, i) => ChoiceChip(
+                                  label: Text(subjects[i]),
+                                  selected: false,
+                                  onSelected: (_) {},
+                                  selectedColor: const Color(0xFF2563EB),
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: isWide ? 16 : 14,
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 8,
+                                  ),
+                                ),
                           ),
                         ),
                       ),
@@ -383,7 +386,9 @@ class _HomeTab extends StatelessWidget {
                           children: [
                             Text(
                               'Featured Materials',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFF2563EB),
                               ),
@@ -410,7 +415,9 @@ class _HomeTab extends StatelessWidget {
                                         borderRadius: BorderRadius.circular(20),
                                         gradient: LinearGradient(
                                           colors: [
-                                            Color(0xFF60A5FA).withAlpha((255 * 0.15).round()),
+                                            Color(
+                                              0xFF60A5FA,
+                                            ).withAlpha((255 * 0.15).round()),
                                             Colors.white,
                                           ],
                                           begin: Alignment.topLeft,
@@ -420,8 +427,10 @@ class _HomeTab extends StatelessWidget {
                                       child: SingleChildScrollView(
                                         physics: NeverScrollableScrollPhysics(),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Text(
                                               mat.title,
@@ -472,24 +481,36 @@ class _HomeTab extends StatelessWidget {
                                             const SizedBox(height: 16),
                                             ElevatedButton.icon(
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor: Color(0xFF2563EB),
+                                                backgroundColor: Color(
+                                                  0xFF2563EB,
+                                                ),
                                                 foregroundColor: Colors.white,
                                                 shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(12),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                 ),
                                               ),
                                               onPressed: () async {
                                                 final url = mat.fileUrl;
-                                                if (url.isNotEmpty && await canLaunchUrl(Uri.parse(url))) {
+                                                if (url.isNotEmpty &&
+                                                    await canLaunchUrl(
+                                                      Uri.parse(url),
+                                                    )) {
                                                   await launchUrl(
                                                     Uri.parse(url),
-                                                    mode: LaunchMode.externalApplication,
+                                                    mode:
+                                                        LaunchMode
+                                                            .externalApplication,
                                                   );
                                                 } else {
                                                   if (!context.mounted) return;
-                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
                                                     SnackBar(
-                                                      content: Text('Could not launch file URL.'),
+                                                      content: Text(
+                                                        'Could not launch file URL.',
+                                                      ),
                                                     ),
                                                   );
                                                 }
@@ -523,25 +544,31 @@ class _HomeTab extends StatelessWidget {
                           children: [
                             Text(
                               'Recently Added',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              style: Theme.of(
+                                context,
+                              ).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFF2563EB),
                               ),
                             ),
                             const SizedBox(height: 16),
                             FutureBuilder<List<LearningMaterial>>(
-                              future: SupabaseCrudService(
-                                Supabase.instance.client,
-                              ).fetchMaterials(),
+                              future:
+                                  SupabaseCrudService(
+                                    Supabase.instance.client,
+                                  ).fetchMaterials(),
                               builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
                                   return const Center(
                                     child: CircularProgressIndicator(),
                                   );
                                 }
                                 if (snapshot.hasError) {
                                   return Center(
-                                    child: Text('Failed to load recent uploads.'),
+                                    child: Text(
+                                      'Failed to load recent uploads.',
+                                    ),
                                   );
                                 }
                                 final materials = snapshot.data ?? [];
@@ -550,7 +577,8 @@ class _HomeTab extends StatelessWidget {
                                     child: Text('No recent uploads.'),
                                   );
                                 }
-                                final recent = materials.reversed.take(10).toList();
+                                final recent =
+                                    materials.reversed.take(10).toList();
                                 return Align(
                                   alignment: Alignment.centerLeft,
                                   child: SizedBox(
@@ -558,12 +586,16 @@ class _HomeTab extends StatelessWidget {
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
                                       itemCount: recent.length,
-                                      separatorBuilder: (_, i) => SizedBox(width: isWide ? 24 : 12),
+                                      separatorBuilder:
+                                          (_, i) =>
+                                              SizedBox(width: isWide ? 24 : 12),
                                       itemBuilder: (context, i) {
                                         final mat = recent[i];
                                         return Card(
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(18),
+                                            borderRadius: BorderRadius.circular(
+                                              18,
+                                            ),
                                           ),
                                           elevation: 4,
                                           margin: const EdgeInsets.symmetric(
@@ -574,12 +606,15 @@ class _HomeTab extends StatelessWidget {
                                             width: isWide ? 320 : 220,
                                             padding: const EdgeInsets.all(18),
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(18),
+                                              borderRadius:
+                                                  BorderRadius.circular(18),
                                               color: Colors.white,
                                             ),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Text(
                                                   mat.title,
@@ -630,29 +665,47 @@ class _HomeTab extends StatelessWidget {
                                                 const SizedBox(height: 12),
                                                 ElevatedButton.icon(
                                                   style: ElevatedButton.styleFrom(
-                                                    backgroundColor: Color(0xFF2563EB),
-                                                    foregroundColor: Colors.white,
+                                                    backgroundColor: Color(
+                                                      0xFF2563EB,
+                                                    ),
+                                                    foregroundColor:
+                                                        Colors.white,
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(10),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            10,
+                                                          ),
                                                     ),
                                                   ),
                                                   onPressed: () async {
                                                     final url = mat.fileUrl;
-                                                    if (url.isNotEmpty && await canLaunchUrl(Uri.parse(url))) {
+                                                    if (url.isNotEmpty &&
+                                                        await canLaunchUrl(
+                                                          Uri.parse(url),
+                                                        )) {
                                                       await launchUrl(
                                                         Uri.parse(url),
-                                                        mode: LaunchMode.externalApplication,
+                                                        mode:
+                                                            LaunchMode
+                                                                .externalApplication,
                                                       );
                                                     } else {
-                                                      if (!context.mounted) return;
-                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                      if (!context.mounted)
+                                                        return;
+                                                      ScaffoldMessenger.of(
+                                                        context,
+                                                      ).showSnackBar(
                                                         SnackBar(
-                                                          content: Text('Could not launch file URL.'),
+                                                          content: Text(
+                                                            'Could not launch file URL.',
+                                                          ),
                                                         ),
                                                       );
                                                     }
                                                   },
-                                                  icon: const Icon(Icons.download),
+                                                  icon: const Icon(
+                                                    Icons.download,
+                                                  ),
                                                   label: const Text('Download'),
                                                 ),
                                               ],
