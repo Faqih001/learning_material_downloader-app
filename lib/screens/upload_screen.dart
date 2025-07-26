@@ -83,15 +83,21 @@ class _UploadScreenState extends State<UploadScreen> {
     });
     try {
       final supabase = Supabase.instance.client;
-      final storagePath = 'materials/${DateTime.now().millisecondsSinceEpoch}_${_pickedFile!.name}';
+      final storagePath =
+          'materials/${DateTime.now().millisecondsSinceEpoch}_${_pickedFile!.name}';
       // Upload file to Supabase Storage
-      final storageResponse = await supabase.storage.from('materials').uploadBinary(
-        storagePath,
-        _pickedFile!.bytes!,
-        fileOptions: const FileOptions(upsert: true),
-      );
-      if (storageResponse.isEmpty) throw Exception('Failed to upload file to storage');
-      final publicUrl = supabase.storage.from('materials').getPublicUrl(storagePath);
+      final storageResponse = await supabase.storage
+          .from('materials')
+          .uploadBinary(
+            storagePath,
+            _pickedFile!.bytes!,
+            fileOptions: const FileOptions(upsert: true),
+          );
+      if (storageResponse.isEmpty)
+        throw Exception('Failed to upload file to storage');
+      final publicUrl = supabase.storage
+          .from('materials')
+          .getPublicUrl(storagePath);
 
       // Save metadata to DB
       final material = LearningMaterial(

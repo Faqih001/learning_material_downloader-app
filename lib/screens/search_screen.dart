@@ -36,7 +36,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'KCSE 2024 Mathematics Paper 1',
       subject: 'Mathematics',
       description: 'Latest KCSE Paper 1 with marking scheme.',
-      fileUrl: 'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85917&section=1',
+      fileUrl:
+          'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85917&section=1',
       rating: 4.8,
       downloads: 1200,
       size: 512,
@@ -48,7 +49,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 1 Mathematics Notes',
       subject: 'Mathematics',
       description: 'Comprehensive notes for Form 1 Mathematics.',
-      fileUrl: 'https://www.open.edu/openlearn/ocw/pluginfile.php/629607/mod_resource/content/1/mathematics_book.pdf',
+      fileUrl:
+          'https://www.open.edu/openlearn/ocw/pluginfile.php/629607/mod_resource/content/1/mathematics_book.pdf',
       rating: 4.7,
       downloads: 950,
       size: 400,
@@ -72,7 +74,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 2 Mathematics Past Papers',
       subject: 'Mathematics',
       description: 'Past papers for Form 2 Mathematics.',
-      fileUrl: 'https://www.kcse-online.info/Mathematics/Mathematics%20Paper%201%202019.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Mathematics/Mathematics%20Paper%201%202019.pdf',
       rating: 4.5,
       downloads: 800,
       size: 300,
@@ -121,7 +124,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 1 English Notes',
       subject: 'English',
       description: 'Comprehensive notes for Form 1 English.',
-      fileUrl: 'https://www.saylor.org/site/textbooks/English%20Composition.pdf',
+      fileUrl:
+          'https://www.saylor.org/site/textbooks/English%20Composition.pdf',
       rating: 4.5,
       downloads: 850,
       size: 380,
@@ -133,7 +137,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'English Grammar Workbook',
       subject: 'English',
       description: 'Workbook for English grammar practice.',
-      fileUrl: 'https://www.englishpractice.com/wp-content/uploads/2010/07/Grammar-Practice.pdf',
+      fileUrl:
+          'https://www.englishpractice.com/wp-content/uploads/2010/07/Grammar-Practice.pdf',
       rating: 4.4,
       downloads: 800,
       size: 320,
@@ -145,7 +150,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'English Composition Samples',
       subject: 'English',
       description: 'Sample compositions for KCSE preparation.',
-      fileUrl: 'https://www.saylor.org/site/wp-content/uploads/2012/09/ENGL000-2.1.2-Examples-of-Student-Essays.pdf',
+      fileUrl:
+          'https://www.saylor.org/site/wp-content/uploads/2012/09/ENGL000-2.1.2-Examples-of-Student-Essays.pdf',
       rating: 4.3,
       downloads: 780,
       size: 300,
@@ -158,7 +164,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'KCSE 2024 Kiswahili Paper 1',
       subject: 'Kiswahili',
       description: 'Latest KCSE Kiswahili Paper 1 with marking scheme.',
-      fileUrl: 'https://www.kicd.ac.ke/wp-content/uploads/2022/04/Kiswahili-Kidato-cha-Kwanza.pdf',
+      fileUrl:
+          'https://www.kicd.ac.ke/wp-content/uploads/2022/04/Kiswahili-Kidato-cha-Kwanza.pdf',
       rating: 4.8,
       downloads: 1050,
       size: 480,
@@ -170,7 +177,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Kiswahili Insha Samples',
       subject: 'Kiswahili',
       description: 'Best Insha samples for KCSE preparation.',
-      fileUrl: 'https://www.kcse-online.info/Kiswahili/Kiswahili%20Insha%20Samples.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Kiswahili/Kiswahili%20Insha%20Samples.pdf',
       rating: 4.7,
       downloads: 900,
       size: 350,
@@ -182,7 +190,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 1 Kiswahili Notes',
       subject: 'Kiswahili',
       description: 'Comprehensive notes for Form 1 Kiswahili.',
-      fileUrl: 'https://www.kcse-online.info/Kiswahili/Kiswahili%20Notes%20Form%201.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Kiswahili/Kiswahili%20Notes%20Form%201.pdf',
       rating: 4.6,
       downloads: 850,
       size: 320,
@@ -206,7 +215,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Kiswahili Past Papers',
       subject: 'Kiswahili',
       description: 'Past papers for Kiswahili.',
-      fileUrl: 'https://www.kcse-online.info/Kiswahili/Kiswahili%20Past%20Papers.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Kiswahili/Kiswahili%20Past%20Papers.pdf',
       rating: 4.4,
       downloads: 750,
       size: 270,
@@ -219,7 +229,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'KCSE 2024 Physics Paper 1',
       subject: 'Physics',
       description: 'Latest KCSE Physics Paper 1 with marking scheme.',
-      fileUrl: 'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85919&section=1',
+      fileUrl:
+          'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85919&section=1',
       rating: 4.7,
       downloads: 1000,
       size: 470,
@@ -231,7 +242,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 1 Physics Notes',
       subject: 'Physics',
       description: 'Comprehensive notes for Form 1 Physics.',
-      fileUrl: 'https://www.kcse-online.info/Physics/Physics%20Notes%20Form%201.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Physics/Physics%20Notes%20Form%201.pdf',
       rating: 4.6,
       downloads: 900,
       size: 420,
@@ -255,7 +267,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Physics Past Papers',
       subject: 'Physics',
       description: 'Past papers for Physics.',
-      fileUrl: 'https://www.kcse-online.info/Physics/Physics%20Past%20Papers.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Physics/Physics%20Past%20Papers.pdf',
       rating: 4.4,
       downloads: 800,
       size: 340,
@@ -267,7 +280,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Physics Formulas Handbook',
       subject: 'Physics',
       description: 'Handbook of essential physics formulas.',
-      fileUrl: 'https://www.physicsclassroom.com/class/math/Lesson-1/Physics-Equations',
+      fileUrl:
+          'https://www.physicsclassroom.com/class/math/Lesson-1/Physics-Equations',
       rating: 4.3,
       downloads: 780,
       size: 300,
@@ -280,7 +294,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'KCSE 2024 Chemistry Paper 1',
       subject: 'Chemistry',
       description: 'Latest KCSE Chemistry Paper 1 with marking scheme.',
-      fileUrl: 'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85920&section=1',
+      fileUrl:
+          'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85920&section=1',
       rating: 4.8,
       downloads: 1100,
       size: 500,
@@ -292,7 +307,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 2 Chemistry Notes',
       subject: 'Chemistry',
       description: 'Comprehensive notes for Form 2 Chemistry.',
-      fileUrl: 'https://www.kcse-online.info/Chemistry/Chemistry%20Notes%20Form%202.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Chemistry/Chemistry%20Notes%20Form%202.pdf',
       rating: 4.7,
       downloads: 950,
       size: 420,
@@ -304,7 +320,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Chemistry Revision Kit',
       subject: 'Chemistry',
       description: 'A complete revision kit for Chemistry.',
-      fileUrl: 'https://www.saylor.org/site/textbooks/General%20Chemistry%20Principles%2C%20Patterns%2C%20and%20Applications.pdf',
+      fileUrl:
+          'https://www.saylor.org/site/textbooks/General%20Chemistry%20Principles%2C%20Patterns%2C%20and%20Applications.pdf',
       rating: 4.6,
       downloads: 900,
       size: 380,
@@ -316,7 +333,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Chemistry Past Papers',
       subject: 'Chemistry',
       description: 'Past papers for Chemistry.',
-      fileUrl: 'https://www.kcse-online.info/Chemistry/Chemistry%20Past%20Papers.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Chemistry/Chemistry%20Past%20Papers.pdf',
       rating: 4.5,
       downloads: 850,
       size: 340,
@@ -328,7 +346,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Chemistry Formulas Handbook',
       subject: 'Chemistry',
       description: 'Handbook of essential chemistry formulas.',
-      fileUrl: 'https://chem.libretexts.org/Bookshelves/Physical_and_Theoretical_Chemistry_Textbook_Maps/Supplemental_Modules_(Physical_and_Theoretical_Chemistry)/Physical_Properties_of_Matter/Atomic_and_Molecular_Properties/Atomic_Theory/Chemistry_Formula_Sheet',
+      fileUrl:
+          'https://chem.libretexts.org/Bookshelves/Physical_and_Theoretical_Chemistry_Textbook_Maps/Supplemental_Modules_(Physical_and_Theoretical_Chemistry)/Physical_Properties_of_Matter/Atomic_and_Molecular_Properties/Atomic_Theory/Chemistry_Formula_Sheet',
       rating: 4.4,
       downloads: 800,
       size: 300,
@@ -341,7 +360,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'KCSE 2024 Biology Paper 1',
       subject: 'Biology',
       description: 'Latest KCSE Biology Paper 1 with marking scheme.',
-      fileUrl: 'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85918&section=1',
+      fileUrl:
+          'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85918&section=1',
       rating: 4.7,
       downloads: 1000,
       size: 470,
@@ -353,7 +373,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 1 Biology Notes',
       subject: 'Biology',
       description: 'Comprehensive notes for Form 1 Biology.',
-      fileUrl: 'https://www.kcse-online.info/Biology/Biology%20Notes%20Form%201.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Biology/Biology%20Notes%20Form%201.pdf',
       rating: 4.6,
       downloads: 900,
       size: 420,
@@ -365,7 +386,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Biology Revision Kit',
       subject: 'Biology',
       description: 'A complete revision kit for Biology.',
-      fileUrl: 'https://www.saylor.org/site/textbooks/Concepts%20of%20Biology.pdf',
+      fileUrl:
+          'https://www.saylor.org/site/textbooks/Concepts%20of%20Biology.pdf',
       rating: 4.5,
       downloads: 850,
       size: 380,
@@ -377,7 +399,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Biology Past Papers',
       subject: 'Biology',
       description: 'Past papers for Biology.',
-      fileUrl: 'https://www.kcse-online.info/Biology/Biology%20Past%20Papers.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Biology/Biology%20Past%20Papers.pdf',
       rating: 4.4,
       downloads: 800,
       size: 340,
@@ -402,7 +425,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'KCSE 2024 Geography Paper 1',
       subject: 'Geography',
       description: 'Latest KCSE Geography Paper 1 with marking scheme.',
-      fileUrl: 'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85921&section=1',
+      fileUrl:
+          'https://www.open.edu/openlearn/ocw/mod/oucontent/view.php?id=85921&section=1',
       rating: 4.8,
       downloads: 950,
       size: 460,
@@ -414,7 +438,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 1 Geography Notes',
       subject: 'Geography',
       description: 'Comprehensive notes for Form 1 Geography.',
-      fileUrl: 'https://www.kcse-online.info/Geography/Geography%20Notes%20Form%201.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Geography/Geography%20Notes%20Form%201.pdf',
       rating: 4.7,
       downloads: 900,
       size: 420,
@@ -426,7 +451,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Geography Revision Kit',
       subject: 'Geography',
       description: 'A complete revision kit for Geography.',
-      fileUrl: 'https://www.saylor.org/site/textbooks/World%20Regional%20Geography.pdf',
+      fileUrl:
+          'https://www.saylor.org/site/textbooks/World%20Regional%20Geography.pdf',
       rating: 4.6,
       downloads: 850,
       size: 380,
@@ -438,7 +464,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Geography Past Papers',
       subject: 'Geography',
       description: 'Past papers for Geography.',
-      fileUrl: 'https://www.kcse-online.info/Geography/Geography%20Past%20Papers.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Geography/Geography%20Past%20Papers.pdf',
       rating: 4.5,
       downloads: 800,
       size: 340,
@@ -475,7 +502,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 1 History Notes',
       subject: 'History',
       description: 'Comprehensive notes for Form 1 History.',
-      fileUrl: 'https://www.kcse-online.info/History/History%20Notes%20Form%201.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/History/History%20Notes%20Form%201.pdf',
       rating: 4.6,
       downloads: 850,
       size: 400,
@@ -499,7 +527,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'History Past Papers',
       subject: 'History',
       description: 'Past papers for History.',
-      fileUrl: 'https://www.kcse-online.info/History/History%20Past%20Papers.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/History/History%20Past%20Papers.pdf',
       rating: 4.4,
       downloads: 750,
       size: 320,
@@ -511,7 +540,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'History Timelines Guide',
       subject: 'History',
       description: 'Guide to important history timelines.',
-      fileUrl: 'https://www.kcse-online.info/History/History%20Timelines%20Guide.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/History/History%20Timelines%20Guide.pdf',
       rating: 4.3,
       downloads: 700,
       size: 280,
@@ -524,7 +554,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'KCSE 2024 Business Paper 1',
       subject: 'Business',
       description: 'Latest KCSE Business Paper 1 with marking scheme.',
-      fileUrl: 'https://www.saylor.org/site/textbooks/Introduction%20to%20Business.pdf',
+      fileUrl:
+          'https://www.saylor.org/site/textbooks/Introduction%20to%20Business.pdf',
       rating: 4.8,
       downloads: 850,
       size: 440,
@@ -536,7 +567,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Form 1 Business Notes',
       subject: 'Business',
       description: 'Comprehensive notes for Form 1 Business.',
-      fileUrl: 'https://www.kcse-online.info/Business/Business%20Notes%20Form%201.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Business/Business%20Notes%20Form%201.pdf',
       rating: 4.7,
       downloads: 800,
       size: 400,
@@ -560,7 +592,8 @@ class _SearchScreenState extends State<SearchScreen> {
       title: 'Business Past Papers',
       subject: 'Business',
       description: 'Past papers for Business.',
-      fileUrl: 'https://www.kcse-online.info/Business/Business%20Past%20Papers.pdf',
+      fileUrl:
+          'https://www.kcse-online.info/Business/Business%20Past%20Papers.pdf',
       rating: 4.5,
       downloads: 700,
       size: 320,
@@ -820,15 +853,27 @@ class _SearchScreenState extends State<SearchScreen> {
                                             (context, i) => MaterialCard(
                                               material: _filteredMaterials[i],
                                               onDownload: () async {
-                                                final url = _filteredMaterials[i].fileUrl;
-                                                if (await canLaunchUrl(Uri.parse(url))) {
+                                                final url =
+                                                    _filteredMaterials[i]
+                                                        .fileUrl;
+                                                if (await canLaunchUrl(
+                                                  Uri.parse(url),
+                                                )) {
                                                   await launchUrl(
                                                     Uri.parse(url),
-                                                    mode: LaunchMode.externalApplication,
+                                                    mode:
+                                                        LaunchMode
+                                                            .externalApplication,
                                                   );
                                                 } else {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Could not launch file URL.')),
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Could not launch file URL.',
+                                                      ),
+                                                    ),
                                                   );
                                                 }
                                               },
