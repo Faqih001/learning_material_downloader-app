@@ -4,6 +4,12 @@ import '../models/user.dart' as local_model;
 import '../models/library.dart';
 
 class SupabaseCrudService {
+  Future<void> updateMaterialRating(String materialId, double rating) async {
+    await client
+        .from('learning_materials')
+        .update({'rating': rating})
+        .eq('id', materialId);
+  }
   final SupabaseClient client;
   SupabaseCrudService(this.client);
 

@@ -728,8 +728,9 @@ class _HomeTab extends StatelessWidget {
                                                               ),
                                                               ElevatedButton(
                                                                 onPressed: selectedRating > 0
-                                                                    ? () {
-                                                                        // TODO: Save rating to backend if needed
+                                                                    ? () async {
+                                                                        await SupabaseCrudService(Supabase.instance.client)
+                                                                            .updateMaterialRating(mat.id, selectedRating.toDouble());
                                                                         Navigator.of(context).pop();
                                                                         ScaffoldMessenger.of(context).showSnackBar(
                                                                           SnackBar(
