@@ -83,29 +83,30 @@ class CommunityForumScreenState extends State<CommunityForumScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                  width: 120,
-                  child: TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      hintText: 'Your name',
-                      border: OutlineInputBorder(),
-                    ),
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Your name',
+                    border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 80,
                   child: TextField(
                     controller: _commentController,
+                    maxLines: null,
+                    expands: true,
                     decoration: const InputDecoration(
                       hintText: 'Add a comment...',
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: _loading ? null : _addComment,
                   child: const Text('Post'),
@@ -156,7 +157,7 @@ class CommunityForumScreenState extends State<CommunityForumScreen> {
                                           ),
                                         ),
                                       );
-                                    }).toList(),
+                                    }),
                                   ],
                                 ),
                               ],

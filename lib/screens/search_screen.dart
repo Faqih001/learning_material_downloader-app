@@ -3,8 +3,6 @@ import '../models/material.dart';
 
 import '../widgets/material_card.dart';
 import '../services/auth_service.dart';
-import '../services/supabase_crud_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SearchScreen extends StatefulWidget {
