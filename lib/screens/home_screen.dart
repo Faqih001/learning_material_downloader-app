@@ -268,15 +268,15 @@ class _HomeTab extends StatelessWidget {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      radius: 28,
+                                      radius: isWide ? 48 : 38,
                                       backgroundColor: Colors.white,
                                       child: Icon(
                                         Icons.school,
                                         color: Color(0xFF2563EB),
-                                        size: 32,
+                                        size: isWide ? 60 : 44,
                                       ),
                                     ),
-                                    const SizedBox(width: 16),
+                                    const SizedBox(width: 24),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -286,7 +286,8 @@ class _HomeTab extends StatelessWidget {
                                             color: Colors.white.withValues(
                                               alpha: 0.85,
                                             ),
-                                            fontSize: isWide ? 22 : 18,
+                                            fontSize: isWide ? 36 : 26,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                         Text(
@@ -296,27 +297,21 @@ class _HomeTab extends StatelessWidget {
                                               alpha: 1.0,
                                             ),
                                             fontWeight: FontWeight.bold,
-                                            fontSize: isWide ? 28 : 22,
+                                            fontSize: isWide ? 48 : 32,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
-                                ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    foregroundColor: Color(0xFF2563EB),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text(
+                                    '😊',
+                                    style: TextStyle(
+                                      fontSize: isWide ? 64 : 44,
                                     ),
-                                    elevation: 2,
                                   ),
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/upload');
-                                  },
-                                  icon: const Icon(Icons.upload),
-                                  label: const Text('Upload'),
                                 ),
                               ],
                             ),
@@ -325,7 +320,7 @@ class _HomeTab extends StatelessWidget {
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(32),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withValues(alpha: 0.06),
