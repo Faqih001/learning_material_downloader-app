@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models/material.dart';
+import '../services/supabase_crud_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/material_card.dart';
 import '../widgets/custom_button.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -152,80 +154,6 @@ class _HomeTab extends StatelessWidget {
       'Business',
       'CRE',
     ];
-    final List<LearningMaterial> featuredMaterials = [
-      LearningMaterial(
-        id: '1',
-        title: 'KCSE 2024 Mathematics Paper 1',
-        subject: 'Mathematics',
-        description: 'Latest KCSE Paper 1 with marking scheme.',
-        fileUrl: '',
-        rating: 4.8,
-        downloads: 1200,
-        size: 512,
-        uploaderId: 'user1',
-        tags: ['KCSE', '2024', 'Math'],
-      ),
-      LearningMaterial(
-        id: '2',
-        title: 'Form 2 Chemistry Notes',
-        subject: 'Chemistry',
-        description: 'Comprehensive notes for Form 2 Chemistry.',
-        fileUrl: '',
-        rating: 4.6,
-        downloads: 900,
-        size: 420,
-        uploaderId: 'user2',
-        tags: ['Notes', 'Chemistry'],
-      ),
-      LearningMaterial(
-        id: '3',
-        title: 'Kiswahili Insha Samples',
-        subject: 'Kiswahili',
-        description: 'Best Insha samples for KCSE preparation.',
-        fileUrl: '',
-        rating: 4.7,
-        downloads: 800,
-        size: 300,
-        uploaderId: 'user3',
-        tags: ['Insha', 'Kiswahili'],
-      ),
-      LearningMaterial(
-        id: '4',
-        title: 'Geography Revision Kit',
-        subject: 'Geography',
-        description: 'A complete revision kit for Geography.',
-        fileUrl: '',
-        rating: 4.5,
-        downloads: 700,
-        size: 350,
-        uploaderId: 'user4',
-        tags: ['Geography', 'Revision'],
-      ),
-      LearningMaterial(
-        id: '5',
-        title: 'Form 1 Physics Notes',
-        subject: 'Physics',
-        description: 'Comprehensive notes for Form 1 Physics.',
-        fileUrl: '',
-        rating: 4.4,
-        downloads: 600,
-        size: 280,
-        uploaderId: 'user5',
-        tags: ['Physics', 'Notes'],
-      ),
-      LearningMaterial(
-        id: '6',
-        title: 'English Set Books Guide',
-        subject: 'English',
-        description: 'Guide to KCSE English set books.',
-        fileUrl: '',
-        rating: 4.3,
-        downloads: 500,
-        size: 200,
-        uploaderId: 'user6',
-        tags: ['English', 'Set Books'],
-      ),
-    ];
 
     Widget sectionTitle(String title) => Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -239,6 +167,58 @@ class _HomeTab extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final isWide = constraints.maxWidth > 900;
+        final horizontalPadding = isWide ? 64.0 : 16.0;
+        final verticalPadding = isWide ? 40.0 : 16.0;
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: isWide ? 1400 : double.infinity,
+            ),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: verticalPadding,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ...existing code...
+                      sectionTitle('Recently Added'),
+                      FutureBuilder<List<LearningMaterial>>(
+                        future: SupabaseCrudService(Supabase.instance.client).fetchMaterials(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return Center(child: Text('Failed to load recent uploads.'));
+                          }
+                          final materials = snapshot.data ?? [];
+                          if (materials.isEmpty) {
+                            return const Center(child: Text('No recent uploads.'));
+                          }
+                          final recent = materials.reversed.take(10).toList();
+                          return SizedBox(
+                            height: isWide ? 220 : 160,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: recent.length,
+                              separatorBuilder: (_, __) => SizedBox(width: isWide ? 24 : 12),
+                              itemBuilder: (context, i) => SizedBox(
+                                width: isWide ? 320 : 220,
+                                child: MaterialCard(
+                                  material: recent[i],
+                                  onDownload: () {},
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      // ...existing code...
         final isWide = constraints.maxWidth > 900;
         // gridCount is not used, so removed.
         final horizontalPadding = isWide ? 64.0 : 16.0;
@@ -433,23 +413,36 @@ class _HomeTab extends StatelessWidget {
                       ),
                       const SizedBox(height: 32),
                       sectionTitle('Recently Added'),
-                      SizedBox(
-                        height: isWide ? 220 : 160,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: featuredMaterials.length,
-                          separatorBuilder:
-                              (_, index2) => SizedBox(width: isWide ? 24 : 12),
-                          itemBuilder:
-                              (context, i) => SizedBox(
+                      FutureBuilder<List<LearningMaterial>>(
+                        future: SupabaseCrudService(Supabase.instance.client).fetchMaterials(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return Center(child: Text('Failed to load recent uploads.'));
+                          }
+                          final materials = snapshot.data ?? [];
+                          if (materials.isEmpty) {
+                            return const Center(child: Text('No recent uploads.'));
+                          }
+                          final recent = materials.reversed.take(10).toList();
+                          return SizedBox(
+                            height: isWide ? 220 : 160,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: recent.length,
+                              separatorBuilder: (_, __) => SizedBox(width: isWide ? 24 : 12),
+                              itemBuilder: (context, i) => SizedBox(
                                 width: isWide ? 320 : 220,
                                 child: MaterialCard(
-                                  material:
-                                      featuredMaterials.reversed.toList()[i],
+                                  material: recent[i],
                                   onDownload: () {},
                                 ),
                               ),
-                        ),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 32),
                       sectionTitle('Most Downloaded'),
