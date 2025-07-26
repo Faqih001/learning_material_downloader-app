@@ -594,123 +594,170 @@ class _HomeTab extends StatelessWidget {
                                 return Align(
                                   alignment: Alignment.centerLeft,
                                   child: SizedBox(
-                                    height: isWide ? 220 : 160,
+                                    height: isWide ? 320 : 240,
                                     child: ListView.separated(
                                       scrollDirection: Axis.horizontal,
                                       itemCount: recent.length,
-                                      separatorBuilder:
-                                          (_, i) =>
-                                              SizedBox(width: isWide ? 24 : 12),
+                                      separatorBuilder: (_, i) => SizedBox(width: isWide ? 24 : 12),
                                       itemBuilder: (context, i) {
                                         final mat = recent[i];
-                                        return SizedBox(
-                                          height: isWide ? 320 : 240,
-                                          child: Card(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(18),
-                                            ),
-                                            elevation: 4,
-                                            margin: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            child: Container(
-                                              width: isWide ? 320 : 220,
-                                              padding: const EdgeInsets.all(20),
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(18),
-                                                color: Colors.white,
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
-                                                        Text(
-                                                          mat.title,
-                                                          style: TextStyle(
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: isWide ? 18 : 15,
-                                                            color: Color(0xFF2563EB),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 6),
-                                                        Text(
-                                                          mat.description,
-                                                          style: TextStyle(
-                                                            fontSize: isWide ? 15 : 13,
-                                                            color: Colors.black87,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 10),
-                                                        Row(
-                                                          children: [
-                                                            Icon(
-                                                              Icons.book,
-                                                              color: Color(0xFF2563EB),
-                                                              size: 18,
-                                                            ),
-                                                            const SizedBox(width: 6),
-                                                            Text(
-                                                              mat.subject,
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                              ),
-                                                            ),
-                                                            const SizedBox(width: 12),
-                                                            Icon(
-                                                              Icons.star,
-                                                              color: Colors.amber,
-                                                              size: 18,
-                                                            ),
-                                                            const SizedBox(width: 4),
-                                                            Text(
-                                                              mat.rating.toString(),
-                                                              style: TextStyle(
-                                                                color: Colors.black54,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 12),
-                                                  Align(
-                                                    alignment: Alignment.bottomLeft,
-                                                    child: ElevatedButton.icon(
-                                                      style: ElevatedButton.styleFrom(
-                                                        backgroundColor: Color(0xFF2563EB),
-                                                        foregroundColor: Colors.white,
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(10),
-                                                        ),
-                                                      ),
-                                                      onPressed: () async {
-                                                        final url = mat.fileUrl;
-                                                        if (url.isNotEmpty && await canLaunchUrl(Uri.parse(url))) {
-                                                          await launchUrl(
-                                                            Uri.parse(url),
-                                                            mode: LaunchMode.externalApplication,
-                                                          );
-                                                        } else {
-                                                          if (!context.mounted) return;
-                                                          ScaffoldMessenger.of(context).showSnackBar(
-                                                            SnackBar(
-                                                              content: Text('Could not launch file URL.'),
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: const Icon(Icons.download),
-                                                      label: const Text('Download'),
-                                                    ),
-                                                  ),
+                                        return Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          elevation: 6,
+                                          margin: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          child: Container(
+                                            width: isWide ? 320 : 220,
+                                            padding: const EdgeInsets.all(20),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20),
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  Color(0xFF60A5FA).withAlpha((255 * 0.15).round()),
+                                                  Colors.white,
                                                 ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
                                               ),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  mat.title,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: isWide ? 22 : 18,
+                                                    color: Color(0xFF2563EB),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 9),
+                                                Text(
+                                                  mat.description,
+                                                  style: TextStyle(
+                                                    fontSize: isWide ? 16 : 14,
+                                                    color: Colors.black87,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 12),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.book,
+                                                      color: Color(0xFF2563EB),
+                                                      size: 20,
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Text(
+                                                      mat.subject,
+                                                      style: TextStyle(
+                                                        color: Colors.black54,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 18),
+                                                    Icon(
+                                                      Icons.star,
+                                                      color: Colors.amber,
+                                                      size: 20,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      mat.rating.toString(),
+                                                      style: TextStyle(
+                                                        color: Colors.black54,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 16),
+                                                ElevatedButton.icon(
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Color(0xFF2563EB),
+                                                    foregroundColor: Colors.white,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                  ),
+                                                  onPressed: () async {
+                                                    final url = mat.fileUrl;
+                                                    if (url.isNotEmpty && await canLaunchUrl(Uri.parse(url))) {
+                                                      await launchUrl(
+                                                        Uri.parse(url),
+                                                        mode: LaunchMode.externalApplication,
+                                                      );
+                                                      // Show rating dialog after download
+                                                      if (!context.mounted) return;
+                                                      int selectedRating = 0;
+                                                      await showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return AlertDialog(
+                                                            title: const Text('Rate this material'),
+                                                            content: StatefulBuilder(
+                                                              builder: (context, setState) {
+                                                                return Row(
+                                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                                  children: List.generate(5, (star) {
+                                                                    return IconButton(
+                                                                      icon: Icon(
+                                                                        Icons.star,
+                                                                        color: star < selectedRating ? Colors.amber : Colors.grey[400],
+                                                                        size: 32,
+                                                                      ),
+                                                                      onPressed: () {
+                                                                        setState(() {
+                                                                          selectedRating = star + 1;
+                                                                        });
+                                                                      },
+                                                                    );
+                                                                  }),
+                                                                );
+                                                              },
+                                                            ),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                },
+                                                                child: const Text('Cancel'),
+                                                              ),
+                                                              ElevatedButton(
+                                                                onPressed: selectedRating > 0
+                                                                    ? () {
+                                                                        // TODO: Save rating to backend if needed
+                                                                        Navigator.of(context).pop();
+                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                          SnackBar(
+                                                                            content: Text('Thanks for rating $selectedRating star${selectedRating > 1 ? 's' : ''}!'),
+                                                                            backgroundColor: Colors.green,
+                                                                          ),
+                                                                        );
+                                                                      }
+                                                                    : null,
+                                                                child: const Text('Submit'),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    } else {
+                                                      if (!context.mounted) return;
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(
+                                                          content: Text('Could not launch file URL.'),
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                  icon: const Icon(Icons.download),
+                                                  label: const Text('Download'),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         );
