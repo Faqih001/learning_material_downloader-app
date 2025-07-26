@@ -140,7 +140,7 @@ class _MapScreenState extends State<MapScreen> {
                                 horizontal: horizontalPadding,
                               ),
                               itemCount: libraries.length,
-                              separatorBuilder: (_, __) => const Divider(),
+                              separatorBuilder: (_, index) => const Divider(),
                               itemBuilder:
                                   (context, i) => ListTile(
                                     leading: const Icon(

@@ -190,7 +190,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: _subjects.length,
                                 separatorBuilder:
-                                    (_, __) => SizedBox(width: isWide ? 14 : 8),
+                                    (_, second) =>
+                                        SizedBox(width: isWide ? 14 : 8),
                                 itemBuilder:
                                     (context, i) => MouseRegion(
                                       cursor: SystemMouseCursors.click,

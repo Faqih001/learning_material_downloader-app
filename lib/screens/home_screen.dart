@@ -239,10 +239,10 @@ class _HomeTab extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isWide = constraints.maxWidth > 900;
-        final gridCount = isWide ? 4 : 2;
-        final horizontalPadding = isWide ? 64.0 : 16.0;
-        final verticalPadding = isWide ? 40.0 : 16.0;
+      final isWide = constraints.maxWidth > 900;
+      // gridCount is not used, so removed.
+      final horizontalPadding = isWide ? 64.0 : 16.0;
+      final verticalPadding = isWide ? 40.0 : 16.0;
         return Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -334,12 +334,8 @@ class _HomeTab extends StatelessWidget {
                                           ),
                                           gradient: LinearGradient(
                                             colors: [
-                                              Color(
-                                                0xFF2563EB,
-                                              ).withOpacity(0.9),
-                                              Color(
-                                                0xFF60A5FA,
-                                              ).withOpacity(0.7),
+                                              const Color(0xFF2563EB).withValues(alpha: 0.9),
+                                              const Color(0xFF60A5FA).withValues(alpha: 0.7),
                                             ],
                                             begin: Alignment.topLeft,
                                             end: Alignment.bottomRight,
@@ -388,8 +384,8 @@ class _HomeTab extends StatelessWidget {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: topSubjects.length,
-                          separatorBuilder:
-                              (_, __) => SizedBox(width: isWide ? 24 : 12),
+              separatorBuilder:
+                (_, _2) => SizedBox(width: isWide ? 24 : 12),
                           itemBuilder:
                               (context, i) => AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
@@ -438,8 +434,8 @@ class _HomeTab extends StatelessWidget {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: featuredMaterials.length,
-                          separatorBuilder:
-                              (_, __) => SizedBox(width: isWide ? 24 : 12),
+              separatorBuilder:
+                (_, _2) => SizedBox(width: isWide ? 24 : 12),
                           itemBuilder:
                               (context, i) => SizedBox(
                                 width: isWide ? 320 : 220,
@@ -461,8 +457,8 @@ class _HomeTab extends StatelessWidget {
                               featuredMaterials
                                   .where((m) => m.downloads > 700)
                                   .length,
-                          separatorBuilder:
-                              (_, __) => SizedBox(width: isWide ? 24 : 12),
+              separatorBuilder:
+                (_, _2) => SizedBox(width: isWide ? 24 : 12),
                           itemBuilder: (context, i) {
                             final mats =
                                 featuredMaterials
@@ -488,8 +484,8 @@ class _HomeTab extends StatelessWidget {
                               featuredMaterials
                                   .where((m) => m.rating > 4.5)
                                   .length,
-                          separatorBuilder:
-                              (_, __) => SizedBox(width: isWide ? 24 : 12),
+              separatorBuilder:
+                (_, _2) => SizedBox(width: isWide ? 24 : 12),
                           itemBuilder: (context, i) {
                             final mats =
                                 featuredMaterials
