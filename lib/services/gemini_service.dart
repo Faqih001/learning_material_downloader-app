@@ -4,7 +4,7 @@ class GeminiService {
   final GenerativeModel _model;
 
   GeminiService(String apiKey)
-    : _model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
+    : _model = GenerativeModel(model: 'gemini-2.0-flash', apiKey: apiKey);
 
   Future<String> sendMessage(String message) async {
     final response = await _model.generateContent([Content.text(message)]);

@@ -6,7 +6,7 @@ import 'dart:convert';
 class GeminiApiService {
   final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
   final String _baseUrl =
-      'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
   Future<String> sendMessage(String message) async {
     if (_apiKey.isEmpty) {
