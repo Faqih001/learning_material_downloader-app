@@ -146,15 +146,36 @@ class _ChatPageState extends State<ChatPage> {
   late final GeminiService _geminiService;
   late final ChatbotCrudService _chatService;
   List<DbChatMessage> _messages = [];
+  final ScrollController _scrollController = ScrollController();
   bool _isLoading = true;
   String? _errorMessage;
   final TextEditingController _controller = TextEditingController();
   bool _sending = false;
+  final List<String> _defaultPrompts = [
+    'I want to download specific learning materials. Here is the topic or URL: [paste here]. Can you help me find them online?',
+    'What is the best way to download learning materials?',
+    'How can I use this app to find resources?',
+    'Can you recommend study tips?',
+    'How do I contact support?',
+    'Tell me about LMD Chatbot.'
+  ];
 
   @override
   void initState() {
     super.initState();
     _initializeServices();
+    // Add welcome message
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _messages.insert(0, DbChatMessage(
+          id: UniqueKey().toString(),
+          userId: null,
+          role: 'assistant',
+          content: '👋 Welcome to LMD Chatbot!\n\nI am here to help you download learning materials, answer your questions, and provide support.\n\nFor further assistance, contact: fakiiahmad001@gmail.com or 0741140250.',
+          createdAt: DateTime.now(),
+        ));
+      });
+    });
   }
 
   Future<void> _initializeServices() async {
@@ -212,21 +233,35 @@ class _ChatPageState extends State<ChatPage> {
         ),
       );
       _controller.clear();
+      // Scroll to bottom after user sends
+      Future.delayed(const Duration(milliseconds: 100), _scrollToBottom);
     });
     try {
+      // Show 'thinking...' bubble
+      setState(() {
+        _messages.add(DbChatMessage(
+          id: UniqueKey().toString(),
+          userId: null,
+          role: 'assistant',
+          content: 'Thinking...',
+          createdAt: DateTime.now(),
+        ));
+      });
+      _scrollToBottom();
       final aiResponse = await _geminiService.sendMessage(text);
       setState(() {
-        _messages.add(
-          DbChatMessage(
-            id: UniqueKey().toString(),
-            userId: Supabase.instance.client.auth.currentUser?.id,
-            role: 'assistant',
-            content: aiResponse,
-            createdAt: DateTime.now(),
-          ),
-        );
+        // Remove 'Thinking...' bubble
+        _messages.removeWhere((m) => m.role == 'assistant' && m.content == 'Thinking...');
+        _messages.add(DbChatMessage(
+          id: UniqueKey().toString(),
+          userId: null,
+          role: 'assistant',
+          content: aiResponse,
+          createdAt: DateTime.now(),
+        ));
         _sending = false;
       });
+      _scrollToBottom();
     } catch (e, st) {
       debugPrint('Error sending message: $e\n$st');
       setState(() {
@@ -240,90 +275,181 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Example: Google Gemini AI with Supabase'),
+        title: const Text('LMD Chatbot'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _errorMessage != null
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
               ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    _errorMessage!,
-                    style: const TextStyle(color: Colors.red, fontSize: 16),
-                    textAlign: TextAlign.center,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              )
+                )
               : Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _messages.length,
-                      itemBuilder: (context, i) {
-                        final msg = _messages[i];
-                        final isUser = msg.role == 'user';
-                        return Align(
-                          alignment:
-                              isUser
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 4,
-                              horizontal: 8,
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color:
-                                  isUser ? Colors.blue[100] : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(msg.content),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  if (_sending)
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 8),
-                      child: CircularProgressIndicator(),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _controller,
-                            decoration: const InputDecoration(
-                              hintText:
-                                  'Ask a question... (English or Swahili)',
-                              border: OutlineInputBorder(),
-                            ),
-                            onSubmitted: (_) => _sendMessage(),
-                          ),
+                  children: [
+                    // Default prompt chips
+                    if (_messages.length <= 1)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Wrap(
+                          spacing: 8,
+                          children: _defaultPrompts.map((prompt) => ActionChip(
+                                label: Text(prompt),
+                                onPressed: _sending
+                                    ? null
+                                    : () {
+                                        _controller.text = prompt;
+                                        _sendMessage();
+                                      },
+                              )).toList(),
                         ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.send,
-                            color: Color(0xFF2563EB),
-                          ),
-                          onPressed: _sending ? null : _sendMessage,
-                        ),
-                      ],
+                      ),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: _messages.length,
+                        itemBuilder: (context, i) {
+                          final msg = _messages[i];
+                          final isUser = msg.role == 'user';
+                          final isThinking = msg.role == 'assistant' && msg.content == 'Thinking...';
+                          return Align(
+                            alignment: isUser
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 8,
+                              ),
+                              padding: const EdgeInsets.all(0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  if (!isUser)
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 6.0),
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.blue[700],
+                                        child: const Text('L', style: TextStyle(color: Colors.white)),
+                                      ),
+                                    ),
+                                  Flexible(
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                                      decoration: BoxDecoration(
+                                        color: isUser
+                                            ? Colors.blue[100]
+                                            : isThinking
+                                                ? Colors.grey[300]
+                                                : Colors.grey[200],
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: const Radius.circular(16),
+                                          topRight: const Radius.circular(16),
+                                          bottomLeft: Radius.circular(isUser ? 16 : 4),
+                                          bottomRight: Radius.circular(isUser ? 4 : 16),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.04),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: isThinking
+                                          ? Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const SizedBox(
+                                                  width: 18,
+                                                  height: 18,
+                                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                const Text('Thinking...'),
+                                              ],
+                                            )
+                                          : Text(
+                                              msg.content,
+                                              style: TextStyle(
+                                                color: isUser ? Colors.black87 : Colors.black87,
+                                                fontWeight: isUser ? FontWeight.w500 : FontWeight.normal,
+                                              ),
+                                            ),
+                                    ),
+                                  ),
+                                  if (isUser)
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 6.0),
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.grey[600],
+                                        child: const Icon(Icons.person, color: Colors.white),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    if (_sending)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: CircularProgressIndicator(),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _controller,
+                              decoration: const InputDecoration(
+                                hintText: 'Ask a question... (English or Swahili)',
+                                border: OutlineInputBorder(),
+                              ),
+                              onSubmitted: (_) => _sendMessage(),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.send,
+                              color: Color(0xFF2563EB),
+                            ),
+                            onPressed: _sending ? null : _sendMessage,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
     );
   }
 }
