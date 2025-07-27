@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:http/http.dart' as http;
-import 'dart:ui' as ui;
+import 'package:url_launcher/url_launcher.dart';
+import '../widgets/google_map_widget.dart';
 import '../services/auth_service.dart';
 import '../utils/map_utils.dart';
 
@@ -30,104 +30,574 @@ class _MapScreenState extends State<MapScreen> {
 
   Map<String, String?> _user = {};
   bool _loadingUser = true;
-  ui.Image? _staticMapImage;
   final List<Map<String, dynamic>> _allLibraries = [
-    // Nairobi County
-    {'name': 'Nairobi National Library', 'lat': -1.286389, 'lng': 36.817223, 'county': 'Nairobi', 'type': 'National'},
-    {'name': 'McMillan Memorial Library', 'lat': -1.2833, 'lng': 36.8167, 'county': 'Nairobi', 'type': 'Public'},
-    {'name': 'Kayole Library', 'lat': -1.3083, 'lng': 36.9483, 'county': 'Nairobi', 'type': 'Public'},
-    {'name': 'Makadara Library', 'lat': -1.3078, 'lng': 36.8736, 'county': 'Nairobi', 'type': 'Public'},
-    {'name': 'Dagoretti Library', 'lat': -1.2986, 'lng': 36.7475, 'county': 'Nairobi', 'type': 'Public'},
-    {'name': 'Buruburu Library', 'lat': -1.2944, 'lng': 36.8875, 'county': 'Nairobi', 'type': 'Public'},
-    // Mombasa County
-    {'name': 'Seif Bin Salim Public Library', 'lat': -4.0435, 'lng': 39.6682, 'county': 'Mombasa', 'type': 'Public'},
-    // Nakuru County
-    {'name': 'Nakuru Library', 'lat': -0.303099, 'lng': 36.080025, 'county': 'Nakuru', 'type': 'Public'},
-    // Kisumu County
-    {'name': 'Kisumu Public Library', 'lat': -0.102206, 'lng': 34.761711, 'county': 'Kisumu', 'type': 'Public'},
-    // Baringo County
-    {'name': 'Marigat Library', 'lat': 0.4900, 'lng': 35.9875, 'county': 'Baringo', 'type': 'Public'},
-    {'name': 'Eldama Ravine Library', 'lat': 0.0500, 'lng': 35.7250, 'county': 'Baringo', 'type': 'Public'},
-    {'name': 'Kabartonjo Library', 'lat': 0.4833, 'lng': 35.7667, 'county': 'Baringo', 'type': 'Public'},
-    // Bomet County
-    {'name': 'Silibwet Library', 'lat': -0.7500, 'lng': 35.3833, 'county': 'Bomet', 'type': 'Public'},
-    // Bungoma County
-    {'name': 'Kimilili Library', 'lat': 0.7833, 'lng': 34.7500, 'county': 'Bungoma', 'type': 'Public'},
-    {'name': 'Lagam Library', 'lat': 0.7000, 'lng': 34.7000, 'county': 'Bungoma', 'type': 'Public'},
-    // Embu County
-    {'name': 'Embu Library', 'lat': -0.5333, 'lng': 37.4500, 'county': 'Embu', 'type': 'Public'},
-    // Garissa County
-    {'name': 'Garissa Library', 'lat': -0.4533, 'lng': 39.6500, 'county': 'Garissa', 'type': 'Public'},
-    // Isiolo County
-    {'name': 'Isiolo Library', 'lat': 0.3500, 'lng': 37.5833, 'county': 'Isiolo', 'type': 'Public'},
-    // Kajiado County
-    {'name': 'Kajiado Library', 'lat': -2.0000, 'lng': 36.7833, 'county': 'Kajiado', 'type': 'Public'},
-    // Kakamega County
-    {'name': 'Kakamega Library', 'lat': 0.2833, 'lng': 34.7500, 'county': 'Kakamega', 'type': 'Public'},
-    // Kericho County
-    {'name': 'Kericho Library', 'lat': -0.3667, 'lng': 35.2833, 'county': 'Kericho', 'type': 'Public'},
-    // Kiambu County
-    {'name': 'Kiambu Library', 'lat': -1.1667, 'lng': 36.8167, 'county': 'Kiambu', 'type': 'Public'},
-    // Kilifi County
-    {'name': 'Kilifi Library', 'lat': -3.6333, 'lng': 39.8500, 'county': 'Kilifi', 'type': 'Public'},
-    // Kirinyaga County
-    {'name': 'Kerugoya Library', 'lat': -0.5000, 'lng': 37.3667, 'county': 'Kirinyaga', 'type': 'Public'},
-    // Kitui County
-    {'name': 'Kitui Library', 'lat': -1.3667, 'lng': 38.0167, 'county': 'Kitui', 'type': 'Public'},
-    // Kwale County
-    {'name': 'Kwale Library', 'lat': -4.1667, 'lng': 39.4500, 'county': 'Kwale', 'type': 'Public'},
-    // Laikipia County
-    {'name': 'Nanyuki Library', 'lat': 0.0167, 'lng': 37.0833, 'county': 'Laikipia', 'type': 'Public'},
-    // Lamu County
-    {'name': 'Lamu Library', 'lat': -2.2667, 'lng': 40.9000, 'county': 'Lamu', 'type': 'Public'},
-    // Machakos County
-    {'name': 'Machakos Library', 'lat': -1.5167, 'lng': 37.2667, 'county': 'Machakos', 'type': 'Public'},
-    // Makueni County
-    {'name': 'Wote Library', 'lat': -2.1000, 'lng': 37.6167, 'county': 'Makueni', 'type': 'Public'},
-    // Mandera County
-    {'name': 'Mandera Library', 'lat': 3.9333, 'lng': 41.8500, 'county': 'Mandera', 'type': 'Public'},
-    // Marsabit County
-    {'name': 'Marsabit Library', 'lat': 2.3333, 'lng': 37.9833, 'county': 'Marsabit', 'type': 'Public'},
-    // Meru County
-    {'name': 'Meru Library', 'lat': 0.0500, 'lng': 37.6500, 'county': 'Meru', 'type': 'Public'},
-    {'name': 'Nkubu Library', 'lat': 0.2167, 'lng': 37.6167, 'county': 'Meru', 'type': 'Public'},
-    // Migori County
-    {'name': 'Migori Library', 'lat': -1.0667, 'lng': 34.4667, 'county': 'Migori', 'type': 'Public'},
-    // Murang'a County
-    {'name': 'Murang’a Library', 'lat': -0.7167, 'lng': 37.1500, 'county': 'Murang’a', 'type': 'Public'},
-    // Nyamira County
-    {'name': 'Nyamira Library', 'lat': -0.5667, 'lng': 34.9333, 'county': 'Nyamira', 'type': 'Public'},
-    // Nyeri County
-    {'name': 'Nyeri Library', 'lat': -0.4167, 'lng': 36.9500, 'county': 'Nyeri', 'type': 'Public'},
-    // Samburu County
-    {'name': 'Maralal Library', 'lat': 1.1000, 'lng': 36.7000, 'county': 'Samburu', 'type': 'Public'},
-    // Siaya County
-    {'name': 'Siaya Library', 'lat': 0.0667, 'lng': 34.2833, 'county': 'Siaya', 'type': 'Public'},
-    // Taita-Taveta County
-    {'name': 'Voi Library', 'lat': -3.4000, 'lng': 38.5500, 'county': 'Taita-Taveta', 'type': 'Public'},
-    // Tana River County
-    {'name': 'Hola Library', 'lat': -1.7167, 'lng': 40.0167, 'county': 'Tana River', 'type': 'Public'},
-    // Tharaka-Nithi County
-    {'name': 'Chuka Library', 'lat': -0.3167, 'lng': 37.9833, 'county': 'Tharaka-Nithi', 'type': 'Public'},
-    // Trans Nzoia County
-    {'name': 'Kitale Library', 'lat': 1.0167, 'lng': 35.0000, 'county': 'Trans Nzoia', 'type': 'Public'},
-    // Turkana County
-    {'name': 'Lodwar Library', 'lat': 3.1167, 'lng': 35.6000, 'county': 'Turkana', 'type': 'Public'},
-    // Uasin Gishu County
-    {'name': 'Eldoret Library', 'lat': 0.5167, 'lng': 35.2667, 'county': 'Uasin Gishu', 'type': 'Public'},
-    // Vihiga County
-    {'name': 'Vihiga Library', 'lat': 0.0500, 'lng': 34.7000, 'county': 'Vihiga', 'type': 'Public'},
-    // Wajir County
-    {'name': 'Wajir Library', 'lat': 1.7500, 'lng': 40.0500, 'county': 'Wajir', 'type': 'Public'},
-    // West Pokot County
-    {'name': 'Kapenguria Library', 'lat': 1.2333, 'lng': 35.0833, 'county': 'West Pokot', 'type': 'Public'},
-    // Additional Community/Academic Libraries
-    {'name': 'Mathare Youth Sports Association Library', 'lat': -1.2667, 'lng': 36.8667, 'county': 'Nairobi', 'type': 'Community'},
-    {'name': 'Micato-Amshare Library', 'lat': -1.3167, 'lng': 36.8500, 'county': 'Nairobi', 'type': 'Community'},
-    {'name': 'Hosanna B&K Library', 'lat': -0.7000, 'lng': 36.9500, 'county': 'Murang’a', 'type': 'Community'},
-    {'name': 'University of Nairobi Library', 'lat': -1.2819, 'lng': 36.8192, 'county': 'Nairobi', 'type': 'Academic'},
-    {'name': 'Kenyatta University Library', 'lat': -1.180019, 'lng': 36.927532, 'county': 'Nairobi', 'type': 'Academic'},
-    // Add all other libraries as needed...
+    {
+      'name': 'Nairobi National Library',
+      'lat': -1.286389,
+      'lng': 36.817223,
+      'county': 'Nairobi',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenyatta University Library',
+      'lat': -1.180019,
+      'lng': 36.927532,
+      'county': 'Nairobi',
+      'type': 'University',
+    },
+    {
+      'name': 'Mombasa Library',
+      'lat': -4.043477,
+      'lng': 39.668206,
+      'county': 'Mombasa',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kisumu Public Library',
+      'lat': -0.102206,
+      'lng': 34.761711,
+      'county': 'Kisumu',
+      'type': 'Public',
+    },
+    {
+      'name': 'Nakuru Library',
+      'lat': -0.303099,
+      'lng': 36.080025,
+      'county': 'Nakuru',
+      'type': 'Public',
+    },
+    {
+      'name': 'Eldoret Library',
+      'lat': 0.520360,
+      'lng': 35.269779,
+      'county': 'Uasin Gishu',
+      'type': 'Public',
+    },
+    {
+      'name': 'Thika Library',
+      'lat': -1.033260,
+      'lng': 37.069330,
+      'county': 'Kiambu',
+      'type': 'Public',
+    },
+    {
+      'name': 'Nyeri Library',
+      'lat': -0.420130,
+      'lng': 36.947600,
+      'county': 'Nyeri',
+      'type': 'Public',
+    },
+    {
+      'name': 'Meru Library',
+      'lat': 0.047035,
+      'lng': 37.649803,
+      'county': 'Meru',
+      'type': 'Public',
+    },
+    {
+      'name': 'Machakos Library',
+      'lat': -1.517683,
+      'lng': 37.263414,
+      'county': 'Machakos',
+      'type': 'Public',
+    },
+    {
+      'name': 'Embu Library',
+      'lat': -0.537846,
+      'lng': 37.457431,
+      'county': 'Embu',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kakamega Library',
+      'lat': 0.282730,
+      'lng': 34.751863,
+      'county': 'Kakamega',
+      'type': 'Public',
+    },
+    {
+      'name': 'Garissa Library',
+      'lat': -0.453229,
+      'lng': 39.646098,
+      'county': 'Garissa',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kitale Library',
+      'lat': 1.015720,
+      'lng': 35.006220,
+      'county': 'Trans Nzoia',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kericho Library',
+      'lat': -0.367100,
+      'lng': 35.283100,
+      'county': 'Kericho',
+      'type': 'Public',
+    },
+    {
+      'name': 'Bungoma Library',
+      'lat': 0.563500,
+      'lng': 34.560600,
+      'county': 'Bungoma',
+      'type': 'Public',
+    },
+    {
+      'name': 'Vihiga Library',
+      'lat': 0.070000,
+      'lng': 34.720000,
+      'county': 'Vihiga',
+      'type': 'Public',
+    },
+    {
+      'name': 'Narok Library',
+      'lat': -1.078100,
+      'lng': 35.860000,
+      'county': 'Narok',
+      'type': 'Public',
+    },
+    {
+      'name': 'Isiolo Library',
+      'lat': 0.354620,
+      'lng': 37.582184,
+      'county': 'Isiolo',
+      'type': 'Public',
+    },
+    {
+      'name': 'Marsabit Library',
+      'lat': 2.334800,
+      'lng': 37.990600,
+      'county': 'Marsabit',
+      'type': 'Public',
+    },
+    {
+      'name': 'Wajir Library',
+      'lat': 1.747100,
+      'lng': 40.057300,
+      'county': 'Wajir',
+      'type': 'Public',
+    },
+    {
+      'name': 'Mandera Library',
+      'lat': 3.937260,
+      'lng': 41.856900,
+      'county': 'Mandera',
+      'type': 'Public',
+    },
+    {
+      'name': 'Lamu Library',
+      'lat': -2.271690,
+      'lng': 40.902000,
+      'county': 'Lamu',
+      'type': 'Public',
+    },
+    {
+      'name': 'Taita Taveta Library',
+      'lat': -3.389600,
+      'lng': 38.492700,
+      'county': 'Taita Taveta',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kwale Library',
+      'lat': -4.173000,
+      'lng': 39.452100,
+      'county': 'Kwale',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kilifi Library',
+      'lat': -3.633300,
+      'lng': 39.850000,
+      'county': 'Kilifi',
+      'type': 'Public',
+    },
+    {
+      'name': 'Malindi Library',
+      'lat': -3.217600,
+      'lng': 40.116900,
+      'county': 'Kilifi',
+      'type': 'Public',
+    },
+    {
+      'name': 'Homa Bay Library',
+      'lat': -0.527300,
+      'lng': 34.457100,
+      'county': 'Homa Bay',
+      'type': 'Public',
+    },
+    {
+      'name': 'Migori Library',
+      'lat': -1.063400,
+      'lng': 34.473100,
+      'county': 'Migori',
+      'type': 'Public',
+    },
+    {
+      'name': 'Siaya Library',
+      'lat': 0.061200,
+      'lng': 34.288100,
+      'county': 'Siaya',
+      'type': 'Public',
+    },
+    {
+      'name': 'Bomet Library',
+      'lat': -0.782200,
+      'lng': 35.342800,
+      'county': 'Bomet',
+      'type': 'Public',
+    },
+    {
+      'name': 'Nandi Library',
+      'lat': 0.120000,
+      'lng': 35.200000,
+      'county': 'Nandi',
+      'type': 'Public',
+    },
+    {
+      'name': 'Turkana Library',
+      'lat': 3.121900,
+      'lng': 35.597300,
+      'county': 'Turkana',
+      'type': 'Public',
+    },
+    {
+      'name': 'West Pokot Library',
+      'lat': 1.238100,
+      'lng': 35.112800,
+      'county': 'West Pokot',
+      'type': 'Public',
+    },
+    {
+      'name': 'Samburu Library',
+      'lat': 0.515000,
+      'lng': 37.528100,
+      'county': 'Samburu',
+      'type': 'Public',
+    },
+    {
+      'name': 'Laikipia Library',
+      'lat': 0.292100,
+      'lng': 36.225100,
+      'county': 'Laikipia',
+      'type': 'Public',
+    },
+    {
+      'name': 'Nyandarua Library',
+      'lat': -0.183300,
+      'lng': 36.366700,
+      'county': 'Nyandarua',
+      'type': 'Public',
+    },
+    {
+      'name': 'Murang’a Library',
+      'lat': -0.718600,
+      'lng': 37.150000,
+      'county': 'Murang’a',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kiambu Library',
+      'lat': -1.170000,
+      'lng': 36.830000,
+      'county': 'Kiambu',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kajiado Library',
+      'lat': -1.853100,
+      'lng': 36.776800,
+      'county': 'Kajiado',
+      'type': 'Public',
+    },
+    {
+      'name': 'Makueni Library',
+      'lat': -1.803400,
+      'lng': 37.620000,
+      'county': 'Makueni',
+      'type': 'Public',
+    },
+    {
+      'name': 'Kitui Library',
+      'lat': -1.375000,
+      'lng': 38.010000,
+      'county': 'Kitui',
+      'type': 'Public',
+    },
+    {
+      'name': 'Tana River Library',
+      'lat': -1.833300,
+      'lng': 40.083300,
+      'county': 'Tana River',
+      'type': 'Public',
+    },
+    {
+      'name': 'Busia Library',
+      'lat': 0.460000,
+      'lng': 34.120000,
+      'county': 'Busia',
+      'type': 'Public',
+    },
+    {
+      'name': 'Uasin Gishu Library',
+      'lat': 0.340000,
+      'lng': 35.550000,
+      'county': 'Uasin Gishu',
+      'type': 'Public',
+    },
+    {
+      'name': 'Trans Nzoia Library',
+      'lat': 1.020000,
+      'lng': 34.990000,
+      'county': 'Trans Nzoia',
+      'type': 'Public',
+    },
+    {
+      'name': 'Baringo Library',
+      'lat': 0.470000,
+      'lng': 36.090000,
+      'county': 'Baringo',
+      'type': 'Public',
+    },
+    {
+      'name': 'Elgeyo Marakwet Library',
+      'lat': 0.980000,
+      'lng': 35.480000,
+      'county': 'Elgeyo Marakwet',
+      'type': 'Public',
+    },
+    {
+      'name': 'Embu University Library',
+      'lat': -0.531700,
+      'lng': 37.457500,
+      'county': 'Embu',
+      'type': 'University',
+    },
+    {
+      'name': 'Jomo Kenyatta Memorial Library (UoN)',
+      'lat': -1.279750,
+      'lng': 36.816223,
+      'county': 'Nairobi',
+      'type': 'University',
+    },
+    {
+      'name': 'Moi University Library',
+      'lat': 0.283333,
+      'lng': 35.350000,
+      'county': 'Uasin Gishu',
+      'type': 'University',
+    },
+    {
+      'name': 'Egerton University Library',
+      'lat': -0.377400,
+      'lng': 35.942800,
+      'county': 'Nakuru',
+      'type': 'University',
+    },
+    {
+      'name': 'Maseno University Library',
+      'lat': -0.009167,
+      'lng': 34.606111,
+      'county': 'Siaya',
+      'type': 'University',
+    },
+    {
+      'name': 'Masinde Muliro University Library',
+      'lat': 0.282730,
+      'lng': 34.751863,
+      'county': 'Kakamega',
+      'type': 'University',
+    },
+    {
+      'name': 'Pwani University Library',
+      'lat': -3.633300,
+      'lng': 39.850000,
+      'county': 'Kilifi',
+      'type': 'University',
+    },
+    {
+      'name': 'Technical University of Kenya Library',
+      'lat': -1.302200,
+      'lng': 36.826800,
+      'county': 'Nairobi',
+      'type': 'University',
+    },
+    {
+      'name': 'Kenyatta University Postmodern Library',
+      'lat': -1.180019,
+      'lng': 36.927532,
+      'county': 'Nairobi',
+      'type': 'University',
+    },
+    {
+      'name': 'Catholic University of Eastern Africa Library',
+      'lat': -1.317500,
+      'lng': 36.815000,
+      'county': 'Nairobi',
+      'type': 'University',
+    },
+    {
+      'name': 'Strathmore University Library',
+      'lat': -1.309000,
+      'lng': 36.814000,
+      'county': 'Nairobi',
+      'type': 'University',
+    },
+    {
+      'name': 'Daystar University Library',
+      'lat': -1.393600,
+      'lng': 36.821900,
+      'county': 'Nairobi',
+      'type': 'University',
+    },
+    {
+      'name': 'USIU-Africa Library',
+      'lat': -1.219000,
+      'lng': 36.882000,
+      'county': 'Nairobi',
+      'type': 'University',
+    },
+    {
+      'name': 'Mount Kenya University Library',
+      'lat': -0.365700,
+      'lng': 36.958600,
+      'county': 'Nyeri',
+      'type': 'University',
+    },
+    {
+      'name': 'Chuka University Library',
+      'lat': -0.333333,
+      'lng': 37.633333,
+      'county': 'Chuka',
+      'type': 'University',
+    },
+    {
+      'name': 'Kabarak University Library',
+      'lat': -0.283333,
+      'lng': 36.100000,
+      'county': 'Nakuru',
+      'type': 'University',
+    },
+    {
+      'name': 'Kisii University Library',
+      'lat': -0.681389,
+      'lng': 34.766667,
+      'county': 'Kisii',
+      'type': 'University',
+    },
+    {
+      'name': 'Jaramogi Oginga Odinga University Library',
+      'lat': -0.091700,
+      'lng': 34.196400,
+      'county': 'Homa Bay',
+      'type': 'University',
+    },
+    {
+      'name': 'South Eastern Kenya University Library',
+      'lat': -2.399000,
+      'lng': 38.010000,
+      'county': 'Kitui',
+      'type': 'University',
+    },
+    {
+      'name': 'Garissa University Library',
+      'lat': -0.453229,
+      'lng': 39.646098,
+      'county': 'Garissa',
+      'type': 'University',
+    },
+    {
+      'name': 'Taita Taveta University Library',
+      'lat': -3.389600,
+      'lng': 38.492700,
+      'county': 'Taita Taveta',
+      'type': 'University',
+    },
+    {
+      'name': 'Kisumu National Polytechnic Library',
+      'lat': -0.102206,
+      'lng': 34.761711,
+      'county': 'Kisumu',
+      'type': 'Polytechnic',
+    },
+    {
+      'name': 'Kenya National Library Service - Buruburu',
+      'lat': -1.284100,
+      'lng': 36.886700,
+      'county': 'Nairobi',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Upper Hill',
+      'lat': -1.299400,
+      'lng': 36.806900,
+      'county': 'Nairobi',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Kisii',
+      'lat': -0.681389,
+      'lng': 34.766667,
+      'county': 'Kisii',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Meru',
+      'lat': 0.047035,
+      'lng': 37.649803,
+      'county': 'Meru',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Nakuru',
+      'lat': -0.303099,
+      'lng': 36.080025,
+      'county': 'Nakuru',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Mombasa',
+      'lat': -4.043477,
+      'lng': 39.668206,
+      'county': 'Mombasa',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Thika',
+      'lat': -1.033260,
+      'lng': 37.069330,
+      'county': 'Kiambu',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Kakamega',
+      'lat': 0.282730,
+      'lng': 34.751863,
+      'county': 'Kakamega',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Kisumu',
+      'lat': -0.102206,
+      'lng': 34.761711,
+      'county': 'Kisumu',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Nyeri',
+      'lat': -0.420130,
+      'lng': 36.947600,
+      'county': 'Nyeri',
+      'type': 'National',
+    },
+    {
+      'name': 'Kenya National Library Service - Machakos',
+      'lat': -1.517683,
+      'lng': 37.263414,
+      'county': 'Machakos',
+      'type': 'National',
+    },
   ];
 
   String _searchQuery = '';
@@ -170,7 +640,6 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _loadUser();
-    _loadStaticMap();
   }
 
   Future<void> _loadUser() async {
@@ -194,26 +663,6 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Future<void> _loadStaticMap() async {
-    try {
-      // Use OpenStreetMap static map API centered on Kenya
-      final response = await http.get(Uri.parse(
-          'https://staticmap.openstreetmap.de/staticmap.php?center=-0.0236,37.9062&zoom=6&size=600x400'));
-      if (response.statusCode == 200) {
-        final codec = await ui.instantiateImageCodec(response.bodyBytes);
-        final frame = await codec.getNextFrame();
-        if (!mounted) return;
-        setState(() {
-          _staticMapImage = frame.image;
-        });
-      } else {
-        throw Exception('Failed to load static map');
-      }
-    } catch (e) {
-      debugPrint('Error loading static map: $e');
-    }
-  }
-
   void _openGoogleMaps({required double lat, required double lng, required String label}) async {
     final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng&query_place_id=$label';
     debugPrint('Opening Google Maps: $url');
@@ -222,16 +671,18 @@ class _MapScreenState extends State<MapScreen> {
   void _openDirections({required double lat, required double lng}) async {
     final url = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng';
     debugPrint('Opening directions: $url');
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open directions.')),
+      );
+    }
   }
 
   Widget _buildMapWidget(BuildContext context) {
-    if (_staticMapImage == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    return CustomPaint(
-      painter: _StaticMapPainter(libraries: _filteredLibraries, mapImage: _staticMapImage!),
-      child: Container(),
-    );
+    return GoogleMapWidget(libraries: _filteredLibraries);
   }
 
   void _showStaticMapDialog(Map<String, dynamic> lib) {
@@ -251,14 +702,36 @@ class _MapScreenState extends State<MapScreen> {
             errorBuilder: (context, error, stackTrace) => const Text('Map preview unavailable.'),
           ),
         ),
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-          TextButton(
-            onPressed: () => _openDirections(lat: lat, lng: lng),
-            child: const Text('Get Directions'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade300,
+                    foregroundColor: Colors.black87,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text('Close'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => _openDirections(lat: lat, lng: lng),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2563EB),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text('Get Directions'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -278,7 +751,6 @@ class _MapScreenState extends State<MapScreen> {
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth > 800;
                 final double horizontalPadding = isWide ? 48.0 : 16.0;
-                final double mapHeight = isWide ? 320.0 : 220.0;
                 return Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 900),
@@ -319,12 +791,6 @@ class _MapScreenState extends State<MapScreen> {
                               ],
                             ),
                           ),
-                        Container(
-                          height: mapHeight,
-                          width: double.infinity,
-                          margin: EdgeInsets.all(isWide ? 32 : 16),
-                          child: _buildMapWidget(context),
-                        ),
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: horizontalPadding,
@@ -454,53 +920,4 @@ class _MapScreenState extends State<MapScreen> {
             ),
     );
   }
-}
-
-class _StaticMapPainter extends CustomPainter {
-  final List<Map<String, dynamic>> libraries;
-  final ui.Image mapImage;
-
-  _StaticMapPainter({required this.libraries, required this.mapImage});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Draw the static map image
-    final paint = Paint();
-    canvas.drawImageRect(
-      mapImage,
-      Rect.fromLTWH(0, 0, mapImage.width.toDouble(), mapImage.height.toDouble()),
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      paint,
-    );
-
-    // Define Kenya's approximate bounds for scaling
-    const double minLat = -4.5; // Southernmost latitude
-    const double maxLat = 5.0;  // Northernmost latitude
-    const double minLng = 33.5; // Westernmost longitude
-    const double maxLng = 42.0; // Easternmost longitude
-
-    // Scale coordinates to fit the canvas
-    for (var lib in libraries) {
-      double lat = lib['lat'] as double;
-      double lng = lib['lng'] as double;
-
-      // Normalize latitude and longitude to [0,1]
-      double x = (lng - minLng) / (maxLng - minLng);
-      double y = 1.0 - (lat - minLat) / (maxLat - minLat); // Invert y for top-left origin
-
-      // Convert to canvas coordinates
-      double px = x * size.width;
-      double py = y * size.height;
-
-      // Draw a dot for each library
-      canvas.drawCircle(
-        Offset(px, py),
-        5.0, // Dot radius
-        Paint()..color = Colors.red,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
