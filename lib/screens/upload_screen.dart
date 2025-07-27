@@ -327,19 +327,20 @@ class _UploadScreenState extends State<UploadScreen> {
                             SizedBox(height: isWide ? 18 : 12),
                             DropdownButtonFormField<String>(
                               value: _subject,
-                              items:
-                                  _subjects
-                                      .map(
-                                        (s) => DropdownMenuItem(
-                                          value: s,
-                                          child: Text(s),
-                                        ),
-                                      )
-                                      .toList(),
-                              onChanged:
-                                  _uploading
-                                      ? null
-                                      : (v) => setState(() => _subject = v),
+                              items: _subjects
+                                  .map(
+                                    (s) => DropdownMenuItem(
+                                      value: s,
+                                      child: Text(
+                                        s,
+                                        style: const TextStyle(color: Color(0xFF2563EB)),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: _uploading
+                                  ? null
+                                  : (v) => setState(() => _subject = v),
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(
@@ -351,7 +352,10 @@ class _UploadScreenState extends State<UploadScreen> {
                                   vertical: isWide ? 14 : 8,
                                 ),
                               ),
-                              style: TextStyle(fontSize: isWide ? 17 : 15),
+                              style: const TextStyle(
+                                fontSize: 17,
+                                color: Color(0xFF2563EB),
+                              ),
                             ),
                             SizedBox(height: isWide ? 40 : 32),
                             SizedBox(
