@@ -1,18 +1,19 @@
-import 'community_forum_screen.dart';
-import 'study_centers_screen.dart' as sc_screen;
-import '../widgets/study_center_carousel.dart' as sc_widget;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import '../models/material.dart';
 import '../services/supabase_crud_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'community_forum_screen.dart';
 import 'search_screen.dart';
 import 'upload_screen.dart';
 import 'chat_page.dart';
 import 'map_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/app_nav_bar.dart';
+import 'study_centers_screen.dart' as sc_screen;
+import '../widgets/study_center_carousel.dart' as sc_widget;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -156,14 +157,15 @@ class _HomeTabState extends State<_HomeTab> {
       description: 'Kiambu county center for collaborative learning.',
     ),
   ];
-
+  
   static final List<LearningMaterial> featuredMaterials = [
     LearningMaterial(
       id: '1',
       title: 'KCSE 2024 Mathematics Paper 1',
       subject: 'Mathematics',
       description: 'Latest KCSE Paper 1 with marking scheme.',
-      fileUrl: '',
+      fileUrl:
+          'https://educationnewshub.co.ke/wp-content/uploads/2024/03/Mathematics-Paper-1-KCSE-2023.pdf', // Example from educationnewshub.co.ke
       rating: 4.8,
       downloads: 1200,
       size: 512,
@@ -175,7 +177,8 @@ class _HomeTabState extends State<_HomeTab> {
       title: 'Form 2 Chemistry Notes',
       subject: 'Chemistry',
       description: 'Comprehensive notes for Form 2 Chemistry.',
-      fileUrl: '',
+      fileUrl:
+          'https://teacher.co.ke/wp-content/uploads/2020/03/Chemistry-Form-2-Notes.pdf', // Example from teacher.co.ke
       rating: 4.6,
       downloads: 900,
       size: 420,
@@ -187,7 +190,8 @@ class _HomeTabState extends State<_HomeTab> {
       title: 'Kiswahili Insha Samples',
       subject: 'Kiswahili',
       description: 'Best Insha samples for KCSE preparation.',
-      fileUrl: '',
+      fileUrl:
+          'https://educationnewshub.co.ke/wp-content/uploads/2023/05/Kiswahili-Insha-KCSE-2022.pdf', // Example from educationnewshub.co.ke
       rating: 4.7,
       downloads: 800,
       size: 300,
@@ -199,7 +203,8 @@ class _HomeTabState extends State<_HomeTab> {
       title: 'Geography Revision Kit',
       subject: 'Geography',
       description: 'A complete revision kit for Geography.',
-      fileUrl: '',
+      fileUrl:
+          'https://educationnewshub.co.ke/wp-content/uploads/2024/02/Geography-Revision-Kit-KCSE.pdf', // Example from educationnewshub.co.ke
       rating: 4.5,
       downloads: 700,
       size: 350,
@@ -211,7 +216,8 @@ class _HomeTabState extends State<_HomeTab> {
       title: 'Form 1 Physics Notes',
       subject: 'Physics',
       description: 'Comprehensive notes for Form 1 Physics.',
-      fileUrl: '',
+      fileUrl:
+          'https://teacher.co.ke/wp-content/uploads/2020/03/Physics-Form-1-Notes.pdf', // Example from teacher.co.ke
       rating: 4.4,
       downloads: 600,
       size: 280,
@@ -223,7 +229,8 @@ class _HomeTabState extends State<_HomeTab> {
       title: 'English Set Books Guide',
       subject: 'English',
       description: 'Guide to KCSE English set books.',
-      fileUrl: '',
+      fileUrl:
+          'https://educationnewshub.co.ke/wp-content/uploads/2023/06/English-Set-Books-Guide-KCSE.pdf', // Example from educationnewshub.co.ke
       rating: 4.3,
       downloads: 500,
       size: 200,
@@ -270,6 +277,45 @@ class _HomeTabState extends State<_HomeTab> {
     });
   }
 
+  Future<void> _downloadMaterial(LearningMaterial mat) async {
+    if (!mounted) return;
+    final url = mat.fileUrl;
+    if (url.isNotEmpty) {
+      try {
+        final taskId = await FlutterDownloader.enqueue(
+          url: url,
+          savedDir: '/storage/emulated/0/Download',
+          fileName: '${mat.title.replaceAll(' ', '_')}.pdf',
+          showNotification: true,
+          openFileFromNotification: true,
+        );
+        if (taskId == null) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to start download.')),
+          );
+        } else {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Download started. Check notifications.'),
+            ),
+          );
+        }
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Download error: $e')));
+      }
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No file URL provided.')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userName =
@@ -313,7 +359,6 @@ class _HomeTabState extends State<_HomeTab> {
                   ),
                   child: CustomScrollView(
                     slivers: [
-                      // Header
                       SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,7 +373,7 @@ class _HomeTabState extends State<_HomeTab> {
                                       backgroundColor: Colors.white,
                                       child: Icon(
                                         Icons.school,
-                                        color: Color(0xFF2563EB),
+                                        color: const Color(0xFF2563EB),
                                         size: isWide ? 60 : 44,
                                       ),
                                     ),
@@ -340,8 +385,8 @@ class _HomeTabState extends State<_HomeTab> {
                                         Text(
                                           'Welcome back,',
                                           style: TextStyle(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.85,
+                                            color: Colors.white.withOpacity(
+                                              0.85,
                                             ),
                                             fontSize: isWide ? 36 : 26,
                                             fontWeight: FontWeight.w500,
@@ -350,9 +395,7 @@ class _HomeTabState extends State<_HomeTab> {
                                         Text(
                                           userName,
                                           style: TextStyle(
-                                            color: Colors.white.withValues(
-                                              alpha: 1.0,
-                                            ),
+                                            color: Colors.white,
                                             fontWeight: FontWeight.bold,
                                             fontSize: isWide ? 48 : 32,
                                           ),
@@ -373,14 +416,13 @@ class _HomeTabState extends State<_HomeTab> {
                               ],
                             ),
                             const SizedBox(height: 28),
-                            // Search bar
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(50),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.06),
+                                    color: Colors.black.withOpacity(0.06),
                                     blurRadius: 12,
                                     offset: const Offset(0, 2),
                                   ),
@@ -409,7 +451,7 @@ class _HomeTabState extends State<_HomeTab> {
                                           : null,
                                   filled: true,
                                   fillColor: Colors.white,
-                                  contentPadding: EdgeInsets.symmetric(
+                                  contentPadding: const EdgeInsets.symmetric(
                                     vertical: 18,
                                     horizontal: 18,
                                   ),
@@ -419,7 +461,7 @@ class _HomeTabState extends State<_HomeTab> {
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(50),
-                                    borderSide: BorderSide(
+                                    borderSide: const BorderSide(
                                       color: Color(0xFF2563EB),
                                       width: 1.5,
                                     ),
@@ -432,7 +474,6 @@ class _HomeTabState extends State<_HomeTab> {
                           ],
                         ),
                       ),
-                      // Subject chips
                       SliverToBoxAdapter(
                         child: SizedBox(
                           height: 44,
@@ -451,7 +492,7 @@ class _HomeTabState extends State<_HomeTab> {
                                     color: Colors.black,
                                     fontSize: isWide ? 16 : 14,
                                   ),
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 18,
                                     vertical: 8,
                                   ),
@@ -460,7 +501,6 @@ class _HomeTabState extends State<_HomeTab> {
                         ),
                       ),
                       SliverToBoxAdapter(child: const SizedBox(height: 32)),
-                      // Featured carousel
                       SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -496,9 +536,9 @@ class _HomeTabState extends State<_HomeTab> {
                                         borderRadius: BorderRadius.circular(20),
                                         gradient: LinearGradient(
                                           colors: [
-                                            Color(
+                                            const Color(
                                               0xFF60A5FA,
-                                            ).withAlpha((255 * 0.15).round()),
+                                            ).withOpacity(0.15),
                                             Colors.white,
                                           ],
                                           begin: Alignment.topLeft,
@@ -506,7 +546,8 @@ class _HomeTabState extends State<_HomeTab> {
                                         ),
                                       ),
                                       child: SingleChildScrollView(
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -518,7 +559,7 @@ class _HomeTabState extends State<_HomeTab> {
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: isWide ? 22 : 18,
-                                                color: Color(0xFF2563EB),
+                                                color: const Color(0xFF2563EB),
                                               ),
                                             ),
                                             const SizedBox(height: 9),
@@ -532,7 +573,7 @@ class _HomeTabState extends State<_HomeTab> {
                                             const SizedBox(height: 12),
                                             Row(
                                               children: [
-                                                Icon(
+                                                const Icon(
                                                   Icons.book,
                                                   color: Color(0xFF2563EB),
                                                   size: 20,
@@ -540,12 +581,12 @@ class _HomeTabState extends State<_HomeTab> {
                                                 const SizedBox(width: 6),
                                                 Text(
                                                   mat.subject,
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     color: Colors.black54,
                                                   ),
                                                 ),
                                                 const SizedBox(width: 18),
-                                                Icon(
+                                                const Icon(
                                                   Icons.star,
                                                   color: Colors.amber,
                                                   size: 20,
@@ -553,7 +594,7 @@ class _HomeTabState extends State<_HomeTab> {
                                                 const SizedBox(width: 4),
                                                 Text(
                                                   mat.rating.toStringAsFixed(1),
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     color: Colors.black54,
                                                   ),
                                                 ),
@@ -562,7 +603,7 @@ class _HomeTabState extends State<_HomeTab> {
                                             const SizedBox(height: 16),
                                             ElevatedButton.icon(
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor: Color(
+                                                backgroundColor: const Color(
                                                   0xFF2563EB,
                                                 ),
                                                 foregroundColor: Colors.white,
@@ -571,32 +612,8 @@ class _HomeTabState extends State<_HomeTab> {
                                                       BorderRadius.circular(12),
                                                 ),
                                               ),
-                                              onPressed: () async {
-                                                if (!context.mounted) return;
-                                                final url = mat.fileUrl;
-                                                if (url.isNotEmpty &&
-                                                    await canLaunchUrl(
-                                                      Uri.parse(url),
-                                                    )) {
-                                                  await launchUrl(
-                                                    Uri.parse(url),
-                                                    mode:
-                                                        LaunchMode
-                                                            .externalApplication,
-                                                  );
-                                                } else {
-                                                  if (!context.mounted) return;
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    SnackBar(
-                                                      content: Text(
-                                                        'Could not launch file URL.',
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
+                                              onPressed:
+                                                  () => _downloadMaterial(mat),
                                               icon: const Icon(Icons.download),
                                               label: const Text('Download'),
                                             ),
@@ -619,7 +636,6 @@ class _HomeTabState extends State<_HomeTab> {
                           ],
                         ),
                       ),
-                      // Recent uploads
                       SliverToBoxAdapter(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -673,35 +689,37 @@ class _HomeTabState extends State<_HomeTab> {
                                               SizedBox(width: isWide ? 24 : 12),
                                       itemBuilder: (context, i) {
                                         final mat = recent[i];
-                                        return Card(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          elevation: 6,
-                                          margin: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
-                                          ),
-                                          child: Container(
-                                            width: isWide ? 320 : 220,
-                                            padding: const EdgeInsets.all(20),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Color(0xFF60A5FA).withAlpha(
-                                                    (255 * 0.15).round(),
-                                                  ),
-                                                  Colors.white,
-                                                ],
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
+                                        return GestureDetector(
+                                          onTap: () => _downloadMaterial(mat),
+                                          child: Card(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(
+                                                20,
                                               ),
                                             ),
-                                            child: Column(
+                                            elevation: 6,
+                                            margin: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            child: Container(
+                                              width: isWide ? 320 : 220,
+                                              padding: const EdgeInsets.all(20),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    const Color(
+                                                      0xFF60A5FA,
+                                                    ).withOpacity(0.15),
+                                                    Colors.white,
+                                                  ],
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                ),
+                                              ),
+                                              child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               mainAxisAlignment:
@@ -712,7 +730,9 @@ class _HomeTabState extends State<_HomeTab> {
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: isWide ? 22 : 18,
-                                                    color: Color(0xFF2563EB),
+                                                    color: const Color(
+                                                      0xFF2563EB,
+                                                    ),
                                                   ),
                                                 ),
                                                 const SizedBox(height: 9),
@@ -726,7 +746,7 @@ class _HomeTabState extends State<_HomeTab> {
                                                 const SizedBox(height: 12),
                                                 Row(
                                                   children: [
-                                                    Icon(
+                                                    const Icon(
                                                       Icons.book,
                                                       color: Color(0xFF2563EB),
                                                       size: 20,
@@ -734,12 +754,12 @@ class _HomeTabState extends State<_HomeTab> {
                                                     const SizedBox(width: 6),
                                                     Text(
                                                       mat.subject,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         color: Colors.black54,
                                                       ),
                                                     ),
                                                     const SizedBox(width: 18),
-                                                    Icon(
+                                                    const Icon(
                                                       Icons.star,
                                                       color: Colors.amber,
                                                       size: 20,
@@ -748,7 +768,7 @@ class _HomeTabState extends State<_HomeTab> {
                                                     Text(
                                                       mat.rating
                                                           .toStringAsFixed(1),
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         color: Colors.black54,
                                                       ),
                                                     ),
@@ -757,9 +777,8 @@ class _HomeTabState extends State<_HomeTab> {
                                                 const SizedBox(height: 16),
                                                 ElevatedButton.icon(
                                                   style: ElevatedButton.styleFrom(
-                                                    backgroundColor: Color(
-                                                      0xFF2563EB,
-                                                    ),
+                                                    backgroundColor:
+                                                        const Color(0xFF2563EB),
                                                     foregroundColor:
                                                         Colors.white,
                                                     shape: RoundedRectangleBorder(
@@ -770,176 +789,145 @@ class _HomeTabState extends State<_HomeTab> {
                                                     ),
                                                   ),
                                                   onPressed: () async {
-                                                    if (!context.mounted) {
-                                                      return;
-                                                    }
-                                                    final url = mat.fileUrl;
-                                                    if (url.isNotEmpty &&
-                                                        await canLaunchUrl(
-                                                          Uri.parse(url),
-                                                        )) {
-                                                      await launchUrl(
-                                                        Uri.parse(url),
-                                                        mode:
-                                                            LaunchMode
-                                                                .externalApplication,
-                                                      );
-                                                      if (!context.mounted) {
-                                                        return;
-                                                      }
-                                                      int selectedRating = 0;
-                                                      await showDialog(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return StatefulBuilder(
-                                                            builder: (
-                                                              context,
-                                                              setState,
-                                                            ) {
-                                                              int hoverRating =
-                                                                  0;
-                                                              return AlertDialog(
-                                                                title: const Text(
-                                                                  'Rate this material',
-                                                                ),
-                                                                content: Column(
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .min,
-                                                                  children: [
-                                                                    Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .center,
-                                                                      children: List.generate(5, (
-                                                                        star,
-                                                                      ) {
-                                                                        return MouseRegion(
-                                                                          onEnter: (
-                                                                            _,
-                                                                          ) {
+                                                    await _downloadMaterial(
+                                                      mat,
+                                                    );
+                                                    if (!mounted) return;
+                                                    int selectedRating = 0;
+                                                    final dialogContext =
+                                                        context;
+                                                    await showDialog(
+                                                      context: dialogContext,
+                                                      builder: (context) {
+                                                        return StatefulBuilder(
+                                                          builder: (
+                                                            context,
+                                                            setState,
+                                                          ) {
+                                                            int hoverRating = 0;
+                                                            return AlertDialog(
+                                                              title: const Text(
+                                                                'Rate this material',
+                                                              ),
+                                                              content: Column(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: List.generate(5, (
+                                                                      star,
+                                                                    ) {
+                                                                      return MouseRegion(
+                                                                        onEnter: (
+                                                                          _,
+                                                                        ) {
+                                                                          setState(() {
+                                                                            hoverRating =
+                                                                                star +
+                                                                                1;
+                                                                          });
+                                                                        },
+                                                                        onExit: (
+                                                                          _,
+                                                                        ) {
+                                                                          setState(() {
+                                                                            hoverRating =
+                                                                                0;
+                                                                          });
+                                                                        },
+                                                                        child: IconButton(
+                                                                          icon: Icon(
+                                                                            Icons.star,
+                                                                            color:
+                                                                                (hoverRating >
+                                                                                            0
+                                                                                        ? star <
+                                                                                            hoverRating
+                                                                                        : star <
+                                                                                            selectedRating)
+                                                                                    ? Colors.amber
+                                                                                    : Colors.grey[400],
+                                                                            size:
+                                                                                32,
+                                                                          ),
+                                                                          onPressed: () {
                                                                             setState(() {
-                                                                              hoverRating =
+                                                                              selectedRating =
                                                                                   star +
                                                                                   1;
                                                                             });
                                                                           },
-                                                                          onExit: (
-                                                                            _,
-                                                                          ) {
-                                                                            setState(() {
-                                                                              hoverRating =
-                                                                                  0;
-                                                                            });
-                                                                          },
-                                                                          child: IconButton(
-                                                                            icon: Icon(
-                                                                              Icons.star,
-                                                                              color:
-                                                                                  (hoverRating >
-                                                                                              0
-                                                                                          ? star <
-                                                                                              hoverRating
-                                                                                          : star <
-                                                                                              selectedRating)
-                                                                                      ? Colors.amber
-                                                                                      : Colors.grey[400],
-                                                                              size:
-                                                                                  32,
-                                                                            ),
-                                                                            onPressed: () {
-                                                                              setState(
-                                                                                () {
-                                                                                  selectedRating =
-                                                                                      star +
-                                                                                      1;
-                                                                                },
-                                                                              );
-                                                                            },
-                                                                          ),
-                                                                        );
-                                                                      }),
+                                                                        ),
+                                                                      );
+                                                                    }),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              actions: [
+                                                                Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    TextButton(
+                                                                      onPressed: () {
+                                                                        Navigator.of(
+                                                                          context,
+                                                                        ).pop();
+                                                                      },
+                                                                      child: const Text(
+                                                                        'Cancel',
+                                                                      ),
+                                                                    ),
+                                                                    ElevatedButton(
+                                                                      onPressed:
+                                                                          selectedRating >
+                                                                                  0
+                                                                              ? () async {
+                                                                                await SupabaseCrudService(
+                                                                                  Supabase.instance.client,
+                                                                                ).updateMaterialRating(
+                                                                                  mat.id,
+                                                                                  selectedRating.toDouble(),
+                                                                                );
+                                                                                if (!mounted) return;
+                                                                                Navigator.of(
+                                                                                  context,
+                                                                                ).pop();
+                                                                                ScaffoldMessenger.of(
+                                                                                  context,
+                                                                                ).showSnackBar(
+                                                                                  SnackBar(
+                                                                                    content: Text(
+                                                                                      'Thanks for rating $selectedRating star${selectedRating > 1 ? 's' : ''}!',
+                                                                                    ),
+                                                                                    backgroundColor:
+                                                                                        Colors.green,
+                                                                                  ),
+                                                                                );
+                                                                                setState(
+                                                                                  () {
+                                                                                    mat.rating = selectedRating.toDouble();
+                                                                                  },
+                                                                                );
+                                                                              }
+                                                                              : null,
+                                                                      child: const Text(
+                                                                        'Submit',
+                                                                      ),
                                                                     ),
                                                                   ],
                                                                 ),
-                                                                actions: [
-                                                                  Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .spaceBetween,
-                                                                    children: [
-                                                                      TextButton(
-                                                                        onPressed: () {
-                                                                          Navigator.of(
-                                                                            context,
-                                                                          ).pop();
-                                                                        },
-                                                                        child: const Text(
-                                                                          'Cancel',
-                                                                        ),
-                                                                      ),
-                                                                      ElevatedButton(
-                                                                        onPressed:
-                                                                            selectedRating >
-                                                                                    0
-                                                                                ? () async {
-                                                                                  await SupabaseCrudService(
-                                                                                    Supabase.instance.client,
-                                                                                  ).updateMaterialRating(
-                                                                                    mat.id,
-                                                                                    selectedRating.toDouble(),
-                                                                                  );
-                                                                                  if (!context.mounted) {
-                                                                                    return;
-                                                                                  }
-                                                                                  Navigator.of(
-                                                                                    context,
-                                                                                  ).pop();
-                                                                                  ScaffoldMessenger.of(
-                                                                                    context,
-                                                                                  ).showSnackBar(
-                                                                                    SnackBar(
-                                                                                      content: Text(
-                                                                                        'Thanks for rating $selectedRating star${selectedRating > 1 ? 's' : ''}!',
-                                                                                      ),
-                                                                                      backgroundColor:
-                                                                                          Colors.green,
-                                                                                    ),
-                                                                                  );
-                                                                                  // Update the card's rating immediately
-                                                                                  setState(
-                                                                                    () {
-                                                                                      mat.rating = selectedRating.toDouble();
-                                                                                    },
-                                                                                  );
-                                                                                }
-                                                                                : null,
-                                                                        child: const Text(
-                                                                          'Submit',
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ],
-                                                              );
-                                                            },
-                                                          );
-                                                        },
-                                                      );
-                                                    } else {
-                                                      if (!context.mounted) {
-                                                        return;
-                                                      }
-                                                      ScaffoldMessenger.of(
-                                                        context,
-                                                      ).showSnackBar(
-                                                        SnackBar(
-                                                          content: Text(
-                                                            'Could not launch file URL.',
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                    );
                                                   },
                                                   icon: const Icon(
                                                     Icons.download,
@@ -960,7 +948,6 @@ class _HomeTabState extends State<_HomeTab> {
                           ],
                         ),
                       ),
-                      // Community Forum Cards
                       SliverToBoxAdapter(
                         child: Container(
                           color: const Color(0xFFE3F2FD),
@@ -995,7 +982,7 @@ class _HomeTabState extends State<_HomeTab> {
                                             _filteredForumItems[index];
                                         return GestureDetector(
                                           onTap: () {
-                                            if (!context.mounted) return;
+                                            if (!mounted) return;
                                             Navigator.of(context).push(
                                               MaterialPageRoute(
                                                 builder:
@@ -1019,12 +1006,12 @@ class _HomeTabState extends State<_HomeTab> {
                                                 children: [
                                                   Row(
                                                     children: [
-                                                      Icon(
+                                                      const Icon(
                                                         Icons.forum,
                                                         color: Color(
                                                           0xFF2563EB,
                                                         ),
-                                                        size: isWide ? 32 : 24,
+                                                        size: 24,
                                                       ),
                                                       const SizedBox(width: 8),
                                                       Expanded(
@@ -1037,7 +1024,7 @@ class _HomeTabState extends State<_HomeTab> {
                                                                 isWide
                                                                     ? 18
                                                                     : 14,
-                                                            color: Color(
+                                                            color: const Color(
                                                               0xFF2563EB,
                                                             ),
                                                           ),
@@ -1069,7 +1056,6 @@ class _HomeTabState extends State<_HomeTab> {
                           ),
                         ),
                       ),
-                      // Study Centers Section
                       SliverToBoxAdapter(
                         child: Container(
                           color: const Color(0xFFE3F2FD),
@@ -1102,7 +1088,7 @@ class _HomeTabState extends State<_HomeTab> {
                                           ),
                                           child: GestureDetector(
                                             onTap: () {
-                                              if (!context.mounted) return;
+                                              if (!mounted) return;
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder:
@@ -1129,13 +1115,12 @@ class _HomeTabState extends State<_HomeTab> {
                                                   children: [
                                                     Row(
                                                       children: [
-                                                        Icon(
+                                                        const Icon(
                                                           Icons.location_on,
                                                           color: Color(
                                                             0xFF2563EB,
                                                           ),
-                                                          size:
-                                                              isWide ? 32 : 24,
+                                                          size: 24,
                                                         ),
                                                         const SizedBox(
                                                           width: 8,
@@ -1151,9 +1136,10 @@ class _HomeTabState extends State<_HomeTab> {
                                                                   isWide
                                                                       ? 20
                                                                       : 16,
-                                                              color: Color(
-                                                                0xFF2563EB,
-                                                              ),
+                                                              color:
+                                                                  const Color(
+                                                                    0xFF2563EB,
+                                                                  ),
                                                             ),
                                                           ),
                                                         ),
@@ -1203,7 +1189,7 @@ class _HomeTabState extends State<_HomeTab> {
                                         children: [
                                           ElevatedButton.icon(
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: Color(
+                                              backgroundColor: const Color(
                                                 0xFF2563EB,
                                               ),
                                               foregroundColor: Colors.white,
@@ -1213,7 +1199,7 @@ class _HomeTabState extends State<_HomeTab> {
                                               ),
                                             ),
                                             onPressed: () {
-                                              if (!context.mounted) return;
+                                              if (!mounted) return;
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder:
