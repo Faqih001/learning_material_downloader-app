@@ -5,7 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 //import 'package:flutter_ai_toolkit/flutter_ai_toolkit.dart' as ai;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 class DbChatMessage {
   final String id;
