@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import '../widgets/google_map_widget.dart';
 import '../services/auth_service.dart';
 import '../utils/map_utils.dart';
@@ -869,7 +870,7 @@ class _MapScreenState extends State<MapScreen> {
                                   ),
                                 );
                               },
-                            )),
+                            ),
                           ),
                         ],
                       ),
