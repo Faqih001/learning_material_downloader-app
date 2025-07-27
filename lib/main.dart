@@ -7,7 +7,8 @@ import 'screens/auth_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/search_screen.dart';
 import 'screens/upload_screen.dart';
-import 'screens/chatbot_screen.dart';
+// import 'screens/chatbot_screen.dart';
+import 'screens/chat_page.dart';
 import 'screens/map_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/splash_screen.dart';
@@ -39,9 +40,10 @@ class LearningDownloaderApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/search': (context) => const SearchScreen(),
         '/upload': (context) => const UploadScreen(),
-        '/chatbot': (context) => const ChatbotScreen(),
-        '/map': (context) => const MapScreen(),
-        '/profile': (context) => const ProfileScreen(),
+  // '/chatbot': (context) => const ChatbotScreen(),
+  '/map': (context) => const MapScreen(),
+  '/profile': (context) => const ProfileScreen(),
+  '/chat': (context) => const ChatPage(),
       },
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/grok_api_service.dart';
+// import '../services/grok_api_service.dart';
 import '../services/auth_service.dart';
+import '../services/gemini_api_service.dart';
 import '../services/chatbot_crud_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/chat_bubble.dart';
@@ -16,16 +17,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<ChatMessage> _messages = [];
   bool _sending = false;
-  GrokApiService? _grokService;
   ChatbotCrudService? _chatCrud;
   Map<String, String?> _user = {};
   bool _loadingUser = true;
   bool _loadingHistory = true;
+  final GeminiApiService _geminiService = GeminiApiService();
 
   @override
   void initState() {
     super.initState();
-    _grokService = GrokApiService();
+  // _grokService = GrokApiService();
     _chatCrud = ChatbotCrudService(Supabase.instance.client);
     _loadUser();
     _fetchHistory();
@@ -92,22 +93,37 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
     try {
       await _chatCrud?.addMessage(role: 'user', content: text, userId: userId);
-      final aiResponse = await _grokService!.sendMessage(text);
+      // Streaming Gemini response
       final aiMsg = ChatMessage(
         id: UniqueKey().toString(),
         userId: userId,
         role: 'ai',
-        content: aiResponse,
+        content: '',
         createdAt: DateTime.now(),
       );
+      setState(() {
+        _messages.add(aiMsg);
+      });
+      int aiMsgIndex = _messages.length - 1;
+      await for (final partial in _geminiService.streamResponse(text)) {
+        if (!mounted) return;
+        setState(() {
+          _messages[aiMsgIndex] = ChatMessage(
+            id: aiMsg.id,
+            userId: aiMsg.userId,
+            role: aiMsg.role,
+            content: partial,
+            createdAt: aiMsg.createdAt,
+          );
+        });
+      }
       await _chatCrud?.addMessage(
         role: 'ai',
-        content: aiResponse,
+        content: _messages[aiMsgIndex].content,
         userId: userId,
       );
       if (!mounted) return;
       setState(() {
-        _messages.add(aiMsg);
         _sending = false;
       });
     } catch (e, st) {

@@ -1,3 +1,4 @@
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -5,7 +6,7 @@ import 'dart:convert';
 class GeminiApiService {
   final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
   final String _baseUrl =
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+      'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
 
   Future<String> sendMessage(String message) async {
     if (_apiKey.isEmpty) {
@@ -33,6 +34,23 @@ class GeminiApiService {
       }
     } catch (e) {
       return 'Failed to connect to Gemini API.';
+    }
+  }
+
+  /// Simulates streaming by splitting the response into chunks and yielding them.
+  Stream<String> streamResponse(String message, {Duration chunkDelay = const Duration(milliseconds: 40)}) async* {
+    final fullResponse = await sendMessage(message);
+    // Split by word for a more natural effect
+    final words = fullResponse.split(' ');
+    var current = '';
+    for (final word in words) {
+      if (current.isEmpty) {
+        current = word;
+      } else {
+        current += ' $word';
+      }
+      yield current;
+      await Future.delayed(chunkDelay);
     }
   }
 }
