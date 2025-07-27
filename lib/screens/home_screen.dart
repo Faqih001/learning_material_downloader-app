@@ -9,7 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'search_screen.dart';
 import 'upload_screen.dart';
-import 'chatbot_screen.dart';
+import 'chat_page.dart';
 import 'map_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/app_nav_bar.dart';
@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const _HomeTab(),
     const SearchScreen(),
     const UploadScreen(),
-    const ChatbotScreen(),
+    const ChatPage(),
     const MapScreen(),
     const ProfileScreen(),
   ];

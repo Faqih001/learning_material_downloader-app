@@ -157,7 +157,7 @@ class _ChatPageState extends State<ChatPage> {
     'How can I use this app to find resources?',
     'Can you recommend study tips?',
     'How do I contact support?',
-    'Tell me about LMD Chatbot.'
+    'Tell me about LMD Chatbot.',
   ];
 
   @override
@@ -167,13 +167,17 @@ class _ChatPageState extends State<ChatPage> {
     // Add welcome message
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _messages.insert(0, DbChatMessage(
-          id: UniqueKey().toString(),
-          userId: null,
-          role: 'assistant',
-          content: '👋 Welcome to LMD Chatbot!\n\nI am here to help you download learning materials, answer your questions, and provide support.\n\nFor further assistance, contact: fakiiahmad001@gmail.com or 0741140250.',
-          createdAt: DateTime.now(),
-        ));
+        _messages.insert(
+          0,
+          DbChatMessage(
+            id: UniqueKey().toString(),
+            userId: null,
+            role: 'assistant',
+            content:
+                '👋 Welcome to LMD Chatbot!\n\nI am here to help you download learning materials, answer your questions, and provide support.\n\nFor further assistance, contact: fakiiahmad001@gmail.com or 0741140250.',
+            createdAt: DateTime.now(),
+          ),
+        );
       });
     });
   }
@@ -239,26 +243,32 @@ class _ChatPageState extends State<ChatPage> {
     try {
       // Show 'thinking...' bubble
       setState(() {
-        _messages.add(DbChatMessage(
-          id: UniqueKey().toString(),
-          userId: null,
-          role: 'assistant',
-          content: 'Thinking...',
-          createdAt: DateTime.now(),
-        ));
+        _messages.add(
+          DbChatMessage(
+            id: UniqueKey().toString(),
+            userId: null,
+            role: 'assistant',
+            content: 'Thinking...',
+            createdAt: DateTime.now(),
+          ),
+        );
       });
       _scrollToBottom();
       final aiResponse = await _geminiService.sendMessage(text);
       setState(() {
         // Remove 'Thinking...' bubble
-        _messages.removeWhere((m) => m.role == 'assistant' && m.content == 'Thinking...');
-        _messages.add(DbChatMessage(
-          id: UniqueKey().toString(),
-          userId: null,
-          role: 'assistant',
-          content: aiResponse,
-          createdAt: DateTime.now(),
-        ));
+        _messages.removeWhere(
+          (m) => m.role == 'assistant' && m.content == 'Thinking...',
+        );
+        _messages.add(
+          DbChatMessage(
+            id: UniqueKey().toString(),
+            userId: null,
+            role: 'assistant',
+            content: aiResponse,
+            createdAt: DateTime.now(),
+          ),
+        );
         _sending = false;
       });
       _scrollToBottom();
@@ -292,164 +302,201 @@ class _ChatPageState extends State<ChatPage> {
         title: const Text('LMD Chatbot'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _errorMessage != null
               ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(color: Colors.red, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
-                )
+                ),
+              )
               : Column(
-                  children: [
-                    // Default prompt chips
-                    if (_messages.length <= 1)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Wrap(
-                          spacing: 8,
-                          children: _defaultPrompts.map((prompt) => ActionChip(
-                                label: Text(prompt),
-                                onPressed: _sending
-                                    ? null
-                                    : () {
-                                        _controller.text = prompt;
-                                        _sendMessage();
-                                      },
-                              )).toList(),
-                        ),
+                children: [
+                  // Default prompt chips
+                  if (_messages.length <= 1)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Wrap(
+                        spacing: 8,
+                        children:
+                            _defaultPrompts
+                                .map(
+                                  (prompt) => ActionChip(
+                                    label: Text(prompt),
+                                    onPressed:
+                                        _sending
+                                            ? null
+                                            : () {
+                                              _controller.text = prompt;
+                                              _sendMessage();
+                                            },
+                                  ),
+                                )
+                                .toList(),
                       ),
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: _messages.length,
-                        itemBuilder: (context, i) {
-                          final msg = _messages[i];
-                          final isUser = msg.role == 'user';
-                          final isThinking = msg.role == 'assistant' && msg.content == 'Thinking...';
-                          return Align(
-                            alignment: isUser
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                              margin: const EdgeInsets.symmetric(
-                                vertical: 4,
-                                horizontal: 8,
-                              ),
-                              padding: const EdgeInsets.all(0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  if (!isUser)
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 6.0),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.blue[700],
-                                        child: const Text('L', style: TextStyle(color: Colors.white)),
+                    ),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: _messages.length,
+                      itemBuilder: (context, i) {
+                        final msg = _messages[i];
+                        final isUser = msg.role == 'user';
+                        final isThinking =
+                            msg.role == 'assistant' &&
+                            msg.content == 'Thinking...';
+                        return Align(
+                          alignment:
+                              isUser
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 4,
+                              horizontal: 8,
+                            ),
+                            padding: const EdgeInsets.all(0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                if (!isUser)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 6.0),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.blue[700],
+                                      child: const Text(
+                                        'L',
+                                        style: TextStyle(color: Colors.white),
                                       ),
                                     ),
-                                  Flexible(
-                                    child: AnimatedContainer(
-                                      duration: const Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
-                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-                                      decoration: BoxDecoration(
-                                        color: isUser
-                                            ? Colors.blue[100]
-                                            : isThinking
-                                                ? Colors.grey[300]
-                                                : Colors.grey[200],
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: const Radius.circular(16),
-                                          topRight: const Radius.circular(16),
-                                          bottomLeft: Radius.circular(isUser ? 16 : 4),
-                                          bottomRight: Radius.circular(isUser ? 4 : 16),
+                                  ),
+                                Flexible(
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          isUser
+                                              ? Colors.blue[100]
+                                              : isThinking
+                                              ? Colors.grey[300]
+                                              : Colors.grey[200],
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: const Radius.circular(16),
+                                        topRight: const Radius.circular(16),
+                                        bottomLeft: Radius.circular(
+                                          isUser ? 16 : 4,
                                         ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.04),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
+                                        bottomRight: Radius.circular(
+                                          isUser ? 4 : 16,
+                                        ),
                                       ),
-                                      child: isThinking
-                                          ? Row(
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withAlpha(
+                                            (0.04 * 255).round(),
+                                          ),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child:
+                                        isThinking
+                                            ? Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 const SizedBox(
                                                   width: 18,
                                                   height: 18,
-                                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                      ),
                                                 ),
                                                 const SizedBox(width: 8),
                                                 const Text('Thinking...'),
                                               ],
                                             )
-                                          : Text(
+                                            : Text(
                                               msg.content,
                                               style: TextStyle(
-                                                color: isUser ? Colors.black87 : Colors.black87,
-                                                fontWeight: isUser ? FontWeight.w500 : FontWeight.normal,
+                                                color:
+                                                    isUser
+                                                        ? Colors.black87
+                                                        : Colors.black87,
+                                                fontWeight:
+                                                    isUser
+                                                        ? FontWeight.w500
+                                                        : FontWeight.normal,
                                               ),
                                             ),
-                                    ),
                                   ),
-                                  if (isUser)
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 6.0),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.grey[600],
-                                        child: const Icon(Icons.person, color: Colors.white),
+                                ),
+                                if (isUser)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 6.0),
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.grey[600],
+                                      child: const Icon(
+                                        Icons.person,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    if (_sending)
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 8),
-                        child: CircularProgressIndicator(),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _controller,
-                              decoration: const InputDecoration(
-                                hintText: 'Ask a question... (English or Swahili)',
-                                border: OutlineInputBorder(),
-                              ),
-                              onSubmitted: (_) => _sendMessage(),
+                                  ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.send,
-                              color: Color(0xFF2563EB),
-                            ),
-                            onPressed: _sending ? null : _sendMessage,
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                  if (_sending)
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 8),
+                      child: CircularProgressIndicator(),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _controller,
+                            decoration: const InputDecoration(
+                              hintText:
+                                  'Ask a question... (English or Swahili)',
+                              border: OutlineInputBorder(),
+                            ),
+                            onSubmitted: (_) => _sendMessage(),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.send,
+                            color: Color(0xFF2563EB),
+                          ),
+                          onPressed: _sending ? null : _sendMessage,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
     );
   }
 }
