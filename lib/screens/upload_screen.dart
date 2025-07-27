@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../models/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'dart:typed_data';
+import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/supabase_crud_service.dart';
 import 'dart:math';
@@ -15,8 +17,9 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   String? _fileName;
-  String? _editedFileName;
-  String? _description;
+  final TextEditingController _editedFileNameController =
+      TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   String? _subject;
   final List<String> _subjects = [
     'Mathematics',
@@ -32,9 +35,9 @@ class _UploadScreenState extends State<UploadScreen> {
   ];
   bool _uploading = false;
   String? _uploadStatus;
-
   Map<String, String?> _user = {};
   bool _loadingUser = true;
+  PlatformFile? _pickedFile;
 
   @override
   void initState() {
@@ -63,25 +66,58 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  PlatformFile? _pickedFile;
   void _pickFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
     if (result != null && result.files.isNotEmpty) {
       setState(() {
         _pickedFile = result.files.first;
         _fileName = _pickedFile!.name;
-        _editedFileName = _pickedFile!.name;
+        _editedFileNameController.text = _pickedFile!.name;
       });
     }
   }
 
   void _upload() async {
-    if (_pickedFile == null ||
-        _subject == null ||
-        (_editedFileName == null || _editedFileName!.isEmpty)) {
-      setState(
-        () =>
-            _uploadStatus = 'Please select a file, subject, and enter a name.',
+    final editedFileName = _editedFileNameController.text;
+    final description = _descriptionController.text;
+    if (_pickedFile == null || _subject == null || editedFileName.isEmpty) {
+      setState(() {
+        _uploadStatus = 'Please select a file, subject, and enter a name.';
+      });
+      return;
+    }
+    Uint8List? fileBytes = _pickedFile!.bytes;
+    if (fileBytes == null && _pickedFile!.path != null) {
+      try {
+        fileBytes = await File(_pickedFile!.path!).readAsBytes();
+      } catch (e) {
+        setState(() {
+          _uploadStatus =
+              'Could not read file bytes. Please pick a different file.';
+        });
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Could not read file bytes. Please pick a different file.',
+            ),
+          ),
+        );
+        return;
+      }
+    }
+    if (fileBytes == null) {
+      setState(() {
+        _uploadStatus =
+            'Selected file has no bytes. Please pick a different file.';
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Selected file has no bytes. Please pick a different file.',
+          ),
+        ),
       );
       return;
     }
@@ -91,31 +127,33 @@ class _UploadScreenState extends State<UploadScreen> {
     });
     try {
       final supabase = Supabase.instance.client;
-      final storagePath =
-          'materials/${DateTime.now().millisecondsSinceEpoch}_${_pickedFile!.name}';
-      // Upload file to Supabase Storage
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${_pickedFile!.name}';
+      final storagePath = 'materials/$fileName';
       final storageResponse = await supabase.storage
           .from('materials')
           .uploadBinary(
             storagePath,
-            _pickedFile!.bytes!,
+            fileBytes,
             fileOptions: const FileOptions(upsert: true),
           );
       if (storageResponse.isEmpty) {
         throw Exception('Failed to upload file to storage');
       }
+      // Use the same storagePath for publicUrl to match the folder structure
       final publicUrl = supabase.storage
           .from('materials')
           .getPublicUrl(storagePath);
-
-      // Save metadata to DB
+      debugPrint(
+        'DEBUG: publicUrl after upload: \u001b[32m$publicUrl\u001b[0m',
+      );
       final material = LearningMaterial(
         id: '${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(10000)}',
-        title: _editedFileName!,
+        title: editedFileName,
         subject: _subject!,
         description:
-            _description?.isNotEmpty == true
-                ? _description!
+            description.isNotEmpty
+                ? description
                 : 'Uploaded by ${_user['name'] ?? 'Unknown'}',
         fileUrl: publicUrl,
         rating: 0.0,
@@ -126,14 +164,13 @@ class _UploadScreenState extends State<UploadScreen> {
       );
       final crud = SupabaseCrudService(supabase);
       await crud.addMaterial(material);
-
       if (!mounted) return;
       setState(() {
         _uploading = false;
         _uploadStatus = 'Upload successful!';
         _fileName = null;
-        _editedFileName = null;
-        _description = null;
+        _editedFileNameController.clear();
+        _descriptionController.clear();
         _pickedFile = null;
         _subject = null;
       });
@@ -151,6 +188,13 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   @override
+  void dispose() {
+    _editedFileNameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -163,13 +207,13 @@ class _UploadScreenState extends State<UploadScreen> {
               : LayoutBuilder(
                 builder: (context, constraints) {
                   final isWide = constraints.maxWidth > 700;
-                  return Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: isWide ? 500 : double.infinity,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(isWide ? 40 : 24),
+                  return ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isWide ? 500 : double.infinity,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(isWide ? 40 : 24),
+                      child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -217,12 +261,12 @@ class _UploadScreenState extends State<UploadScreen> {
                                   ],
                                 ),
                               ),
-                            Text(
+                            const SizedBox(height: 16),
+                            const Text(
                               'Select File',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontSize: isWide ? 22 : null),
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            SizedBox(height: isWide ? 18 : 12),
+                            const SizedBox(height: 12),
                             Row(
                               children: [
                                 Expanded(
@@ -269,19 +313,12 @@ class _UploadScreenState extends State<UploadScreen> {
                                 ),
                               ],
                             ),
-
                             if (_pickedFile != null) ...[
                               SizedBox(height: isWide ? 18 : 12),
                               TextField(
                                 enabled: !_uploading,
-                                controller: TextEditingController(
-                                    text: _editedFileName,
-                                  )
-                                  ..selection = TextSelection.collapsed(
-                                    offset: _editedFileName?.length ?? 0,
-                                  ),
-                                onChanged:
-                                    (v) => setState(() => _editedFileName = v),
+                                controller: _editedFileNameController,
+                                onChanged: (v) {},
                                 decoration: InputDecoration(
                                   labelText: 'Material Name',
                                   border: OutlineInputBorder(
@@ -301,8 +338,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                 enabled: !_uploading,
                                 minLines: 2,
                                 maxLines: 4,
-                                onChanged:
-                                    (v) => setState(() => _description = v),
+                                controller: _descriptionController,
+                                onChanged: (v) {},
                                 decoration: InputDecoration(
                                   labelText: 'Description',
                                   border: OutlineInputBorder(
@@ -327,20 +364,24 @@ class _UploadScreenState extends State<UploadScreen> {
                             SizedBox(height: isWide ? 18 : 12),
                             DropdownButtonFormField<String>(
                               value: _subject,
-                              items: _subjects
-                                  .map(
-                                    (s) => DropdownMenuItem(
-                                      value: s,
-                                      child: Text(
-                                        s,
-                                        style: const TextStyle(color: Color(0xFF2563EB)),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: _uploading
-                                  ? null
-                                  : (v) => setState(() => _subject = v),
+                              items:
+                                  _subjects
+                                      .map(
+                                        (s) => DropdownMenuItem(
+                                          value: s,
+                                          child: Text(
+                                            s,
+                                            style: const TextStyle(
+                                              color: Color(0xFF2563EB),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged:
+                                  _uploading
+                                      ? null
+                                      : (v) => setState(() => _subject = v),
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(

@@ -3,7 +3,7 @@ import '../models/material.dart';
 
 import '../widgets/material_card.dart';
 import '../services/auth_service.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/supabase_crud_service.dart';
 
@@ -899,25 +899,21 @@ class _SearchScreenState extends State<SearchScreen> {
                                         material: mat,
                                         onDownload: () async {
                                           final url = mat.fileUrl;
-                                          if (await canLaunchUrl(
-                                            Uri.parse(url),
-                                          )) {
-                                            await launchUrl(
-                                              Uri.parse(url),
-                                              mode:
-                                                  LaunchMode
-                                                      .externalApplication,
+                                          final taskId = await FlutterDownloader.enqueue(
+                                            url: url,
+                                            savedDir: '/storage/emulated/0/Download',
+                                            fileName: '${mat.title.replaceAll(' ', '_')}.pdf',
+                                            showNotification: true,
+                                            openFileFromNotification: true,
+                                          );
+                                          if (!context.mounted) return;
+                                          if (taskId == null) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Failed to start download.')),
                                             );
                                           } else {
-                                            if (!context.mounted) return;
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  'Could not launch file URL.',
-                                                ),
-                                              ),
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Download started. Check notifications.')),
                                             );
                                           }
                                         },
@@ -943,25 +939,21 @@ class _SearchScreenState extends State<SearchScreen> {
                                         material: mat,
                                         onDownload: () async {
                                           final url = mat.fileUrl;
-                                          if (await canLaunchUrl(
-                                            Uri.parse(url),
-                                          )) {
-                                            await launchUrl(
-                                              Uri.parse(url),
-                                              mode:
-                                                  LaunchMode
-                                                      .externalApplication,
+                                          final taskId = await FlutterDownloader.enqueue(
+                                            url: url,
+                                            savedDir: '/storage/emulated/0/Download',
+                                            fileName: '${mat.title.replaceAll(' ', '_')}.pdf',
+                                            showNotification: true,
+                                            openFileFromNotification: true,
+                                          );
+                                          if (!context.mounted) return;
+                                          if (taskId == null) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Failed to start download.')),
                                             );
                                           } else {
-                                            if (!context.mounted) return;
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
-                                                  'Could not launch file URL.',
-                                                ),
-                                              ),
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Download started. Check notifications.')),
                                             );
                                           }
                                         },

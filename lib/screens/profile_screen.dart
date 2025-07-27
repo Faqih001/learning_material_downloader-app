@@ -61,19 +61,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('Profile'),
         backgroundColor: const Color(0xFF2563EB),
       ),
-      body:
-          _loading
-              ? const Center(child: CircularProgressIndicator())
-              : LayoutBuilder(
-                builder: (context, constraints) {
-                  final isWide = constraints.maxWidth > 700;
-                  return Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: isWide ? 500 : double.infinity,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(isWide ? 40 : 24),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth > 700;
+                return Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: isWide ? 500 : double.infinity,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(isWide ? 40 : 24),
+                      child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -132,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 _statCard('Favorites', '3', isWide),
                               ],
                             ),
-                            const Spacer(),
+                            SizedBox(height: isWide ? 48 : 32),
                             SizedBox(
                               width: double.infinity,
                               child: MouseRegion(
@@ -160,9 +160,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
+            ),
     );
   }
 

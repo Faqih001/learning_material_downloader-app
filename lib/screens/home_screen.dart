@@ -2,7 +2,7 @@ import 'community_forum_screen.dart';
 import 'study_centers_screen.dart' as sc_screen;
 import '../widgets/study_center_carousel.dart' as sc_widget;
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import '../models/material.dart';
 import '../services/supabase_crud_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

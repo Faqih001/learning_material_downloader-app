@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:url_launcher/url_launcher.dart';
-import '../widgets/google_map_widget.dart';
 import '../services/auth_service.dart';
-import '../utils/map_utils.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -675,15 +673,13 @@ class _MapScreenState extends State<MapScreen> {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not open directions.')),
       );
     }
   }
 
-  Widget _buildMapWidget(BuildContext context) {
-    return GoogleMapWidget(libraries: _filteredLibraries);
-  }
 
   void _showStaticMapDialog(Map<String, dynamic> lib) {
     final lat = lib['lat'] as double;
