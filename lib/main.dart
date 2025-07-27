@@ -10,8 +10,9 @@ import 'screens/upload_screen.dart';
 // import 'screens/chatbot_screen.dart';
 import 'screens/chat_page.dart';
 import 'screens/map_screen.dart';
-import 'screens/profile_screen.dart';
-import 'screens/splash_screen.dart';
+
+import 'package:uni_links/uni_links.dart';
+import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,8 +24,37 @@ void main() async {
   runApp(const LearningDownloaderApp());
 }
 
-class LearningDownloaderApp extends StatelessWidget {
+class LearningDownloaderApp extends StatefulWidget {
   const LearningDownloaderApp({super.key});
+
+  @override
+  State<LearningDownloaderApp> createState() => _LearningDownloaderAppState();
+}
+
+class _LearningDownloaderAppState extends State<LearningDownloaderApp> {
+  StreamSubscription? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = uriLinkStream.listen((Uri? uri) async {
+      if (uri != null &&
+          uri.scheme == 'learningmaterialdownloader' &&
+          uri.host == 'login-callback') {
+        // Complete Supabase sign-in from deep link
+        await Supabase.instance.client.auth.getSessionFromUrl(uri.toString());
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,10 +70,10 @@ class LearningDownloaderApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/search': (context) => const SearchScreen(),
         '/upload': (context) => const UploadScreen(),
-  // '/chatbot': (context) => const ChatbotScreen(),
-  '/map': (context) => const MapScreen(),
-  '/profile': (context) => const ProfileScreen(),
-  '/chat': (context) => const ChatPage(),
+        // '/chatbot': (context) => const ChatbotScreen(),
+        '/map': (context) => const MapScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/chat': (context) => const ChatPage(),
       },
     );
   }
