@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import '../widgets/google_map_widget.dart';
 import '../services/auth_service.dart';
@@ -94,8 +96,8 @@ class _MapScreenState extends State<MapScreen> {
                 final double mapHeight = isWide ? 320.0 : 220.0;
                 return Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: 900,
+                    constraints: BoxConstraints(
+                      maxWidth: isWide ? 900 : double.infinity,
                     ),
                     child: Column(
                       children: [
@@ -603,150 +605,4 @@ Widget _buildMapWidget(BuildContext context) {
     }
   }
                           Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: horizontalPadding,
-                              vertical: isWide ? 16 : 8,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    decoration: const InputDecoration(
-                                      hintText: 'Search libraries...',
-                                      prefixIcon: Icon(Icons.search),
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    onChanged: (val) {
-                                      setState(() => _searchQuery = val);
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: horizontalPadding,
-                              vertical: isWide ? 16 : 8,
-                            ),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Nearby Libraries',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: isWide ? 22 : 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: ListView.separated(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: horizontalPadding,
-                              ),
-                              itemCount: _filteredLibraries.length,
-                              separatorBuilder: (_, index) => const Divider(),
-                              itemBuilder: (context, i) {
-                                final lib = _filteredLibraries[i];
-                                return ListTile(
-                                  leading: const Icon(
-                                    Icons.location_on,
-                                    color: Color(0xFF2563EB),
-                                  ),
-                                  title: Text(
-                                    lib['name'],
-                                    style: TextStyle(
-                                      fontSize: isWide ? 18 : 16,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    'Distance: ${lib['distance']}',
-                                    style: TextStyle(
-                                      fontSize: isWide ? 15 : 13,
-                                    ),
-                                  ),
-                                  trailing: MouseRegion(
-                                    cursor: SystemMouseCursors.click,
-                                    child: ElevatedButton(
-                                      onPressed:
-                                          () => _showStaticMapDialog(lib),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(
-                                          0xFF2563EB,
-                                        ),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: isWide ? 24 : 12,
-                                          vertical: isWide ? 14 : 8,
-                                        ),
-                                        textStyle: TextStyle(
-                                          fontSize: isWide ? 16 : 14,
-                                        ),
-                                      ),
-                                      child: const Text('View'),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-    );
-  }
 
-  void _showStaticMapDialog(Map<String, dynamic> lib) {
-    final lat = lib['lat'] as double;
-    final lng = lib['lng'] as double;
-    final name = lib['name'] as String;
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(name),
-            content: GestureDetector(
-              onTap: () => _openGoogleMaps(lat, lng, name),
-              child: Image.network(
-                'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng&zoom=15&size=400x200&markers=color:blue%7C$lat,$lng&key=YOUR_GOOGLE_MAPS_API_KEY',
-                fit: BoxFit.cover,
-                errorBuilder:
-                    (context, error, stackTrace) =>
-                        const Text('Map preview unavailable.'),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
-              ),
-              TextButton(
-                onPressed: () => _openDirections(lat, lng),
-                child: const Text('Get Directions'),
-              ),
-            ],
-          ),
-    );
-  }
-
-  void _openGoogleMaps(double lat, double lng, String label) async {
-    try {
-      Navigator.pop(context);
-      await MapUtils.openGoogleMaps(lat: lat, lng: lng, label: label);
-    } catch (e) {
-      debugPrint('Could not open Google Maps: $e');
-    }
-  }
-
-  void _openDirections(double lat, double lng) async {
-    try {
-      Navigator.pop(context);
-      await MapUtils.openDirections(lat: lat, lng: lng);
-    } catch (e) {
-      debugPrint('Could not open directions: $e');
-    }
-  }
-}
