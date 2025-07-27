@@ -1,4 +1,6 @@
-
+import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import '../models/material.dart';
@@ -96,6 +98,58 @@ class _HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<_HomeTab> {
+  Future<void> _downloadMaterial(LearningMaterial mat) async {
+    if (!mounted) return;
+    final url = mat.fileUrl;
+    if (url.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No file URL provided.')));
+      return;
+    }
+
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      if (androidInfo.version.sdkInt <= 32) {
+        var status = await Permission.storage.request();
+        if (!status.isGranted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Storage permission is required to download files.',
+              ),
+            ),
+          );
+          return;
+        }
+      }
+    }
+
+    try {
+      final taskId = await FlutterDownloader.enqueue(
+        url: url,
+        savedDir: '/storage/emulated/0/Download',
+        fileName: '${mat.title.replaceAll(' ', '_')}.pdf',
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+      if (taskId == null) {
+        throw Exception('Failed to start download.');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Download started. Check notifications.')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Download failed. If you are on Android 13+, allow "Files and media" permission in system settings.',
+          ),
+        ),
+      );
+    }
+    // Removed duplicate 'url' declaration and unused code.
+  }
   static final List<Map<String, String>> forumItems = [
     {
       'title': 'How to prepare for KCSE?',
@@ -277,45 +331,6 @@ class _HomeTabState extends State<_HomeTab> {
     });
   }
 
-  Future<void> _downloadMaterial(LearningMaterial mat) async {
-    if (!mounted) return;
-    final url = mat.fileUrl;
-    if (url.isNotEmpty) {
-      try {
-        final taskId = await FlutterDownloader.enqueue(
-          url: url,
-          savedDir: '/storage/emulated/0/Download',
-          fileName: '${mat.title.replaceAll(' ', '_')}.pdf',
-          showNotification: true,
-          openFileFromNotification: true,
-        );
-        if (taskId == null) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to start download.')),
-          );
-        } else {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Download started. Check notifications.'),
-            ),
-          );
-        }
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Download error: $e')));
-      }
-    } else {
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('No file URL provided.')));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final userName =
@@ -385,8 +400,8 @@ class _HomeTabState extends State<_HomeTab> {
                                         Text(
                                           'Welcome back,',
                                           style: TextStyle(
-                                            color: Colors.white.withOpacity(
-                                              0.85,
+                                            color: Colors.white.withAlpha(
+                                              (0.85 * 255).toInt(),
                                             ),
                                             fontSize: isWide ? 36 : 26,
                                             fontWeight: FontWeight.w500,
@@ -422,7 +437,9 @@ class _HomeTabState extends State<_HomeTab> {
                                 borderRadius: BorderRadius.circular(50),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.06),
+                                    color: Colors.black.withAlpha(
+                                      (0.06 * 255).toInt(),
+                                    ),
                                     blurRadius: 12,
                                     offset: const Offset(0, 2),
                                   ),
@@ -538,7 +555,7 @@ class _HomeTabState extends State<_HomeTab> {
                                           colors: [
                                             const Color(
                                               0xFF60A5FA,
-                                            ).withOpacity(0.15),
+                                            ).withAlpha((0.15 * 255).toInt()),
                                             Colors.white,
                                           ],
                                           begin: Alignment.topLeft,
@@ -693,9 +710,8 @@ class _HomeTabState extends State<_HomeTab> {
                                           onTap: () => _downloadMaterial(mat),
                                           child: Card(
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                20,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                             ),
                                             elevation: 6,
                                             margin: const EdgeInsets.symmetric(
@@ -712,7 +728,9 @@ class _HomeTabState extends State<_HomeTab> {
                                                   colors: [
                                                     const Color(
                                                       0xFF60A5FA,
-                                                    ).withOpacity(0.15),
+                                                    ).withAlpha(
+                                                      (0.15 * 255).toInt(),
+                                                    ),
                                                     Colors.white,
                                                   ],
                                                   begin: Alignment.topLeft,
@@ -730,9 +748,9 @@ class _HomeTabState extends State<_HomeTab> {
                                                   style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: isWide ? 22 : 18,
-                                                    color: const Color(
-                                                      0xFF2563EB,
-                                                    ),
+                                                      color: const Color(
+                                                        0xFF2563EB,
+                                                      ),
                                                   ),
                                                 ),
                                                 const SizedBox(height: 9),
@@ -746,7 +764,7 @@ class _HomeTabState extends State<_HomeTab> {
                                                 const SizedBox(height: 12),
                                                 Row(
                                                   children: [
-                                                    const Icon(
+                                                      const Icon(
                                                       Icons.book,
                                                       color: Color(0xFF2563EB),
                                                       size: 20,
@@ -754,12 +772,12 @@ class _HomeTabState extends State<_HomeTab> {
                                                     const SizedBox(width: 6),
                                                     Text(
                                                       mat.subject,
-                                                      style: const TextStyle(
+                                                        style: const TextStyle(
                                                         color: Colors.black54,
                                                       ),
                                                     ),
                                                     const SizedBox(width: 18),
-                                                    const Icon(
+                                                      const Icon(
                                                       Icons.star,
                                                       color: Colors.amber,
                                                       size: 20,
@@ -768,7 +786,7 @@ class _HomeTabState extends State<_HomeTab> {
                                                     Text(
                                                       mat.rating
                                                           .toStringAsFixed(1),
-                                                      style: const TextStyle(
+                                                        style: const TextStyle(
                                                         color: Colors.black54,
                                                       ),
                                                     ),
@@ -777,8 +795,10 @@ class _HomeTabState extends State<_HomeTab> {
                                                 const SizedBox(height: 16),
                                                 ElevatedButton.icon(
                                                   style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color(0xFF2563EB),
+                                                      backgroundColor:
+                                                          const Color(
+                                                            0xFF2563EB,
+                                                          ),
                                                     foregroundColor:
                                                         Colors.white,
                                                     shape: RoundedRectangleBorder(
@@ -789,145 +809,134 @@ class _HomeTabState extends State<_HomeTab> {
                                                     ),
                                                   ),
                                                   onPressed: () async {
-                                                    await _downloadMaterial(
-                                                      mat,
-                                                    );
-                                                    if (!mounted) return;
-                                                    int selectedRating = 0;
-                                                    final dialogContext =
-                                                        context;
-                                                    await showDialog(
-                                                      context: dialogContext,
-                                                      builder: (context) {
-                                                        return StatefulBuilder(
-                                                          builder: (
-                                                            context,
-                                                            setState,
-                                                          ) {
-                                                            int hoverRating = 0;
-                                                            return AlertDialog(
-                                                              title: const Text(
-                                                                'Rate this material',
-                                                              ),
-                                                              content: Column(
-                                                                mainAxisSize:
-                                                                    MainAxisSize
-                                                                        .min,
-                                                                children: [
-                                                                  Row(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    children: List.generate(5, (
-                                                                      star,
-                                                                    ) {
-                                                                      return MouseRegion(
-                                                                        onEnter: (
-                                                                          _,
-                                                                        ) {
-                                                                          setState(() {
-                                                                            hoverRating =
-                                                                                star +
-                                                                                1;
-                                                                          });
-                                                                        },
-                                                                        onExit: (
-                                                                          _,
-                                                                        ) {
-                                                                          setState(() {
-                                                                            hoverRating =
-                                                                                0;
-                                                                          });
-                                                                        },
-                                                                        child: IconButton(
-                                                                          icon: Icon(
-                                                                            Icons.star,
-                                                                            color:
-                                                                                (hoverRating >
-                                                                                            0
-                                                                                        ? star <
-                                                                                            hoverRating
-                                                                                        : star <
-                                                                                            selectedRating)
-                                                                                    ? Colors.amber
-                                                                                    : Colors.grey[400],
-                                                                            size:
-                                                                                32,
-                                                                          ),
-                                                                          onPressed: () {
+                                                      await _downloadMaterial(
+                                                        mat,
+                                                      );
+                                                      if (!mounted) return;
+                                                      int selectedRating = 0;
+                                                      final dialogContext =
+                                                          context;
+                                                      await showDialog(
+                                                        context: dialogContext,
+                                                        builder: (context) {
+                                                          return StatefulBuilder(
+                                                            builder: (
+                                                              context,
+                                                              setState,
+                                                            ) {
+                                                              int hoverRating =
+                                                                  0;
+                                                              return AlertDialog(
+                                                                title: const Text(
+                                                                  'Rate this material',
+                                                                ),
+                                                                content: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: List.generate(5, (
+                                                                        star,
+                                                                      ) {
+                                                                        return MouseRegion(
+                                                                          onEnter: (
+                                                                            _,
+                                                                          ) {
                                                                             setState(() {
-                                                                              selectedRating =
+                                                                              hoverRating =
                                                                                   star +
                                                                                   1;
                                                                             });
                                                                           },
-                                                                        ),
-                                                                      );
-                                                                    }),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              actions: [
-                                                                Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  children: [
-                                                                    TextButton(
-                                                                      onPressed: () {
-                                                                        Navigator.of(
-                                                                          context,
-                                                                        ).pop();
-                                                                      },
-                                                                      child: const Text(
-                                                                        'Cancel',
-                                                                      ),
-                                                                    ),
-                                                                    ElevatedButton(
-                                                                      onPressed:
-                                                                          selectedRating >
-                                                                                  0
-                                                                              ? () async {
-                                                                                await SupabaseCrudService(
-                                                                                  Supabase.instance.client,
-                                                                                ).updateMaterialRating(
-                                                                                  mat.id,
-                                                                                  selectedRating.toDouble(),
-                                                                                );
-                                                                                if (!mounted) return;
-                                                                                Navigator.of(
-                                                                                  context,
-                                                                                ).pop();
-                                                                                ScaffoldMessenger.of(
-                                                                                  context,
-                                                                                ).showSnackBar(
-                                                                                  SnackBar(
-                                                                                    content: Text(
-                                                                                      'Thanks for rating $selectedRating star${selectedRating > 1 ? 's' : ''}!',
-                                                                                    ),
-                                                                                    backgroundColor:
-                                                                                        Colors.green,
-                                                                                  ),
-                                                                                );
-                                                                                setState(
-                                                                                  () {
-                                                                                    mat.rating = selectedRating.toDouble();
-                                                                                  },
-                                                                                );
-                                                                              }
-                                                                              : null,
-                                                                      child: const Text(
-                                                                        'Submit',
-                                                                      ),
+                                                                          onExit: (
+                                                                            _,
+                                                                          ) {
+                                                                            setState(() {
+                                                                              hoverRating =
+                                                                                  0;
+                                                                            });
+                                                                          },
+                                                                          child: IconButton(
+                                                                            icon: Icon(
+                                                                              Icons.star,
+                                                                              color:
+                                                                                  (hoverRating >
+                                                                                              0
+                                                                                          ? star <
+                                                                                              hoverRating
+                                                                                          : star <
+                                                                                              selectedRating)
+                                                                                      ? Colors.amber
+                                                                                      : Colors.grey[400],
+                                                                              size:
+                                                                                  32,
+                                                                            ),
+                                                                            onPressed: () {
+                                                                              setState(
+                                                                                () {
+                                                                                  selectedRating =
+                                                                                      star +
+                                                                                      1;
+                                                                                },
+                                                                              );
+                                                                            },
+                                                                          ),
+                                                                        );
+                                                                      }),
                                                                     ),
                                                                   ],
                                                                 ),
-                                                              ],
-                                                            );
-                                                          },
-                                                        );
-                                                      },
-                                                    );
+                                                                actions: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      TextButton(
+                                                                        onPressed: () {
+                                                                          Navigator.of(
+                                                                            context,
+                                                                          ).pop();
+                                                                        },
+                                                                        child: const Text(
+                                                                          'Cancel',
+                                                                        ),
+                                                                      ),
+                                                                      ElevatedButton(
+                                                                        onPressed:
+                                                                            selectedRating >
+                                                                                    0
+                                                                                ? () async {
+                                                                                  final dialogCtx =
+                                                                                      context;
+                                                                                  await SupabaseCrudService(
+                                                                                    Supabase.instance.client,
+                                                                                  ).updateMaterialRating(
+                                                                                    mat.id,
+                                                                                    selectedRating.toDouble(),
+                                                                                  );
+                                                                                  if (!mounted) return;
+                                                                                  Navigator.of(
+                                                                                    dialogCtx,
+                                                                                  ).pop();
+                                                                                }
+                                                                                : null,
+                                                                        child: const Text(
+                                                                          'Submit',
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                      );
                                                   },
                                                   icon: const Icon(
                                                     Icons.download,
@@ -936,6 +945,7 @@ class _HomeTabState extends State<_HomeTab> {
                                                 ),
                                               ],
                                             ),
+                                          ),
                                           ),
                                         );
                                       },
