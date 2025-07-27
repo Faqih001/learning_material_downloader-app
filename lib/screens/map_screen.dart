@@ -690,8 +690,7 @@ class _MapScreenState extends State<MapScreen> {
                       constraints: const BoxConstraints(maxWidth: 900),
                       child: Column(
                         children: [
-                          if ((_user['name']?.isNotEmpty ?? false) ||
-                              (_user['email']?.isNotEmpty ?? false))
+                          if ((_user['name']?.isNotEmpty ?? false) || (_user['email']?.isNotEmpty ?? false))
                             Container(
                               width: double.infinity,
                               color: Colors.blue.shade50,
@@ -708,25 +707,17 @@ class _MapScreenState extends State<MapScreen> {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        if (_user['name'] != null &&
-                                            _user['name']!.isNotEmpty)
+                                        if (_user['name'] != null && _user['name']!.isNotEmpty)
                                           Text(
                                             _user['name']!,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
                                           ),
-                                        if (_user['email'] != null &&
-                                            _user['email']!.isNotEmpty)
+                                        if (_user['email'] != null && _user['email']!.isNotEmpty)
                                           Text(
                                             _user['email']!,
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.black54,
-                                            ),
+                                            style: const TextStyle(fontSize: 13, color: Colors.black54),
                                           ),
                                       ],
                                     ),
@@ -746,62 +737,59 @@ class _MapScreenState extends State<MapScreen> {
                               vertical: isWide ? 16 : 8,
                             ),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        decoration: const InputDecoration(
-                                          hintText: 'Search libraries...',
-                                          prefixIcon: Icon(Icons.search),
-                                          border: OutlineInputBorder(),
-                                        ),
-                                        onChanged: (val) {
-                                          setState(() => _searchQuery = val);
-                                        },
+                                TextField(
+                                  decoration: const InputDecoration(
+                                    hintText: 'Search libraries...',
+                                    prefixIcon: Icon(Icons.search),
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  onChanged: (val) {
+                                    setState(() => _searchQuery = val);
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                                DropdownButton<String>(
+                                  value: _selectedCounty,
+                                  hint: const Text('County'),
+                                  isExpanded: true,
+                                  items: [
+                                    const DropdownMenuItem<String>(
+                                      value: null,
+                                      child: Text('All Counties'),
+                                    ),
+                                    ..._allCounties.map(
+                                      (county) => DropdownMenuItem(
+                                        value: county,
+                                        child: Text(county),
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
-                                    DropdownButton<String>(
-                                      value: _selectedCounty,
-                                      hint: const Text('County'),
-                                      items: [
-                                        const DropdownMenuItem<String>(
-                                          value: null,
-                                          child: Text('All Counties'),
-                                        ),
-                                        ..._allCounties.map(
-                                          (county) => DropdownMenuItem(
-                                            value: county,
-                                            child: Text(county),
-                                          ),
-                                        ),
-                                      ],
-                                      onChanged: (val) {
-                                        setState(() => _selectedCounty = val);
-                                      },
+                                  ],
+                                  onChanged: (val) {
+                                    setState(() => _selectedCounty = val);
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                                DropdownButton<String>(
+                                  value: _selectedType,
+                                  hint: const Text('Type'),
+                                  isExpanded: true,
+                                  items: [
+                                    const DropdownMenuItem<String>(
+                                      value: null,
+                                      child: Text('All Types'),
                                     ),
-                                    const SizedBox(width: 12),
-                                    DropdownButton<String>(
-                                      value: _selectedType,
-                                      hint: const Text('Type'),
-                                      items: [
-                                        const DropdownMenuItem<String>(
-                                          value: null,
-                                          child: Text('All Types'),
-                                        ),
-                                        ..._allTypes.map(
-                                          (type) => DropdownMenuItem(
-                                            value: type,
-                                            child: Text(type),
-                                          ),
-                                        ),
-                                      ],
-                                      onChanged: (val) {
-                                        setState(() => _selectedType = val);
-                                      },
+                                    ..._allTypes.map(
+                                      (type) => DropdownMenuItem(
+                                        value: type,
+                                        child: Text(type),
+                                      ),
                                     ),
                                   ],
+                                  onChanged: (val) {
+                                    setState(() => _selectedType = val);
+                                  },
                                 ),
                               ],
                             ),
