@@ -144,13 +144,110 @@ class _MapScreenState extends State<MapScreen> {
                                 ],
                               ),
                             ),
-                          Container(
-                            height: mapHeight,
-                            width: double.infinity,
-                            margin: EdgeInsets.all(isWide ? 32 : 16),
-                            child: _buildMapWidget(context),
+                        Container(
+                          height: mapHeight,
+                          width: double.infinity,
+                          margin: EdgeInsets.all(isWide ? 32 : 16),
+                          child: _buildMapWidget(context),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: horizontalPadding,
+                            vertical: isWide ? 16 : 8,
                           ),
-  Widget _buildMapWidget(BuildContext context) {
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  decoration: const InputDecoration(
+                                    hintText: 'Search libraries...',
+                                    prefixIcon: Icon(Icons.search),
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  onChanged: (val) {
+                                    setState(() => _searchQuery = val);
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: horizontalPadding,
+                            vertical: isWide ? 16 : 8,
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Nearby Libraries',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: isWide ? 22 : 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.separated(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: horizontalPadding,
+                            ),
+                            itemCount: _filteredLibraries.length,
+                            separatorBuilder: (_, index) => const Divider(),
+                            itemBuilder: (context, i) {
+                              final lib = _filteredLibraries[i];
+                              return ListTile(
+                                leading: const Icon(
+                                  Icons.location_on,
+                                  color: Color(0xFF2563EB),
+                                ),
+                                title: Text(
+                                  lib['name'],
+                                  style: TextStyle(
+                                    fontSize: isWide ? 18 : 16,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  'Distance: ${lib['distance']}',
+                                  style: TextStyle(
+                                    fontSize: isWide ? 15 : 13,
+                                  ),
+                                ),
+                                trailing: MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: ElevatedButton(
+                                    onPressed:
+                                        () => _showStaticMapDialog(lib),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(
+                                        0xFF2563EB,
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isWide ? 24 : 12,
+                                        vertical: isWide ? 14 : 8,
+                                      ),
+                                      textStyle: TextStyle(
+                                        fontSize: isWide ? 16 : 14,
+                                      ),
+                                    ),
+                                    child: const Text('View'),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+  );
+}
+
+Widget _buildMapWidget(BuildContext context) {
     // Show GoogleMapWidget on mobile/desktop, static map and button on web
     final platform = Theme.of(context).platform;
     if (platform == TargetPlatform.android ||
