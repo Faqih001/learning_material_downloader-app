@@ -1,9 +1,11 @@
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 //import 'package:flutter_ai_toolkit/flutter_ai_toolkit.dart' as ai;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class DbChatMessage {
   final String id;
@@ -431,19 +433,26 @@ class _ChatPageState extends State<ChatPage> {
                                                 const Text('Thinking...'),
                                               ],
                                             )
-                                            : Text(
-                                              msg.content,
-                                              style: TextStyle(
-                                                color:
-                                                    isUser
-                                                        ? Colors.black87
-                                                        : Colors.black87,
-                                                fontWeight:
-                                                    isUser
-                                                        ? FontWeight.w500
-                                                        : FontWeight.normal,
+                                            : (isUser
+                                                ? Text(
+                                                    msg.content,
+                                                    style: TextStyle(
+                                                      color: Colors.black87,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  )
+                                                : Padding(
+                                                    padding: const EdgeInsets.symmetric(vertical: 2.0),
+                                                    child: MarkdownBody(
+                                                      data: msg.content,
+                                                      styleSheet: MarkdownStyleSheet(
+                                                        p: const TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+                                                        strong: const TextStyle(fontWeight: FontWeight.bold),
+                                                        listBullet: const TextStyle(fontWeight: FontWeight.bold),
+                                                      ),
+                                                    ),
+                                                  )
                                               ),
-                                            ),
                                   ),
                                 ),
                                 if (isUser)

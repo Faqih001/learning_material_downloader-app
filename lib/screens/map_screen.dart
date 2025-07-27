@@ -870,41 +870,8 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildMapWidget(BuildContext context) {
-    final platform = Theme.of(context).platform;
-    if (platform == TargetPlatform.android ||
-        platform == TargetPlatform.iOS ||
-        platform == TargetPlatform.macOS ||
-        platform == TargetPlatform.windows ||
-        platform == TargetPlatform.linux) {
-      return const GoogleMapWidget();
-    } else {
-      const double lat = -1.286389;
-      const double lng = 36.817223;
-      final osmUrl =
-          'https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lng&zoom=12&size=600x220&markers=$lat,$lng,blue-pushpin';
-      return Column(
-        children: [
-          Image.network(
-            osmUrl,
-            fit: BoxFit.cover,
-            errorBuilder:
-                (context, error, stackTrace) =>
-                    const Text('Map preview unavailable.'),
-          ),
-          const SizedBox(height: 8),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.map),
-            label: const Text('Open in Google Maps'),
-            onPressed:
-                () => MapUtils.openGoogleMaps(
-                  lat: lat,
-                  lng: lng,
-                  label: 'Nairobi National Library',
-                ),
-          ),
-        ],
-      );
-    }
+  // Always show the map widget with all libraries as markers
+  return GoogleMapWidget(libraries: _filteredLibraries);
   }
 
   void _showStaticMapDialog(Map<String, dynamic> lib) {
@@ -915,54 +882,29 @@ class _MapScreenState extends State<MapScreen> {
         'https://staticmap.openstreetmap.de/staticmap.php?center=$lat,$lng&zoom=15&size=400x200&markers=$lat,$lng,blue-pushpin';
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(name),
-            content: GestureDetector(
-              onTap: () => _openGoogleMaps(lat: lat, lng: lng, label: name),
-              child: Image.network(
-                osmUrl,
-                fit: BoxFit.cover,
-                errorBuilder:
-                    (context, error, stackTrace) =>
-                        const Text('Map preview unavailable.'),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
-              ),
-              TextButton(
-                onPressed: () => _openDirections(lat: lat, lng: lng),
-                child: const Text('Get Directions'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(name),
+        content: GestureDetector(
+          onTap: () => _openGoogleMaps(lat: lat, lng: lng, label: name),
+          child: Image.network(
+            osmUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                const Text('Map preview unavailable.'),
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          TextButton(
+            onPressed: () => _openDirections(lat: lat, lng: lng),
+            child: const Text('Get Directions'),
+          ),
+        ],
+      ),
     );
-  }
-
-  void _openGoogleMaps({
-    required double lat,
-    required double lng,
-    required String label,
-  }) async {
-    try {
-      await MapUtils.openGoogleMaps(lat: lat, lng: lng, label: label);
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      debugPrint('Could not open Google Maps: $e');
-    }
-  }
-
-  void _openDirections({required double lat, required double lng}) async {
-    try {
-      await MapUtils.openDirections(lat: lat, lng: lng);
-      if (mounted) {
-        Navigator.pop(context);
-      }
     } catch (e) {
       debugPrint('Could not open directions: $e');
     }
