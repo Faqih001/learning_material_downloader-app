@@ -364,24 +364,20 @@ class _UploadScreenState extends State<UploadScreen> {
                             SizedBox(height: isWide ? 18 : 12),
                             DropdownButtonFormField<String>(
                               value: _subject,
-                              items:
-                                  _subjects
-                                      .map(
-                                        (s) => DropdownMenuItem(
-                                          value: s,
-                                          child: Text(
-                                            s,
-                                            style: const TextStyle(
-                                              color: Color(0xFF2563EB),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                      .toList(),
-                              onChanged:
-                                  _uploading
-                                      ? null
-                                      : (v) => setState(() => _subject = v),
+                              items: _subjects
+                                  .map(
+                                    (s) => DropdownMenuItem(
+                                      value: s,
+                                      child: Text(
+                                        s,
+                                        // Use default color for dropdown items
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: _uploading
+                                  ? null
+                                  : (v) => setState(() => _subject = v),
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(
@@ -395,8 +391,9 @@ class _UploadScreenState extends State<UploadScreen> {
                               ),
                               style: const TextStyle(
                                 fontSize: 17,
-                                color: Color(0xFF2563EB),
+                                color: Color(0xFF2563EB), // Selected value in blue
                               ),
+                              dropdownColor: Colors.white, // Keep dropdown menu white
                             ),
                             SizedBox(height: isWide ? 40 : 32),
                             SizedBox(
